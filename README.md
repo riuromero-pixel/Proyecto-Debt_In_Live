@@ -20,6 +20,8 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 ## Sistema de Enemigos
 
+-Los enemigos serán customizados como entidades que pueden restar dinero a como por ejemplo, una consola de videojuegos o impuestos.
+
 - Los enemigos aparecen en el mapa al comenzar el nivel.
 
 - A medida que se aumentan el nivel aparecerán más enemigos y serán más rápidos.
