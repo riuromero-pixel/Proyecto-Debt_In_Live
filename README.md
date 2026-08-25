@@ -43,6 +43,12 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 - Se identificará el dinero en una esquina, y al perderse dinero, se mostrará el dinero restado.
 
 - Record Personal del Jugador con la cantidad total de puntos obtenidos por partida.
+#### Diagrama de Clases UML (Conceptual)**
+https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
+
+<img width="3434" height="1902" alt="DiagramaUML" src="https://github.com/user-attachments/assets/9701c10e-ef42-4035-9af7-411f849a6926" />
+
+
 
 ## 4. Stack Tecnológico 
 
