@@ -46,7 +46,7 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 #### Diagrama de Clases UML (Conceptual)**
 https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
 
-<img width="3434" height="1902" alt="DiagramaUML" src="https://github.com/user-attachments/assets/9701c10e-ef42-4035-9af7-411f849a6926" />
+<img width="3434" height="1902" alt="Diagrama UML 2" src="https://github.com/user-attachments/assets/1741d013-8876-41da-9995-a52652e46e8d" />
 
 
 
