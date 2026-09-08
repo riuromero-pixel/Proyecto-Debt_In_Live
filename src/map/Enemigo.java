@@ -1,15 +1,16 @@
 package src.map;
 
 import java.util.Random;
+import src.entities.Personaje;
 
-public class Villano extends ObjetoEntorno {
+public class Enemigo extends ObjetoEntorno {
     public int x;
     public int y;
     public int danio;
     private Random random;
 
-    public Villano(int x, int y, int danio) {
-        // Un villano permite pisar su celda para iniciar la interacción de combate/daño
+    public Enemigo(int x, int y, int danio) {
+        //un Enemigo permite pisar su celda para iniciar la interacción de combate/daño
         super(true);
         this.x = x;
         this.y = y;
@@ -18,11 +19,11 @@ public class Villano extends ObjetoEntorno {
     }
 
     /**
-     * Mueve al villano a una direccion aleatoria (arriba, abajo, izquierda, derecha)
+     * Mueve al Enemigo a una direccion aleatoria (arriba, abajo, izquierda, derecha)
      * dentro de los limites del mapa, respetando las colisiones con las paredes.
      */
     public void mover(Mapa mapa) {
-        // Direcciones posibles: 0 = Arriba, 1 = Abajo, 2 = Izquierda, 3 = Derecha
+        //direcciones posibles: 0 = Arriba, 1 = Abajo, 2 = Izquierda, 3 = Derecha
         int direccion = random.nextInt(4);
         int nuevoX = this.x;
         int nuevoY = this.y;
@@ -38,33 +39,44 @@ public class Villano extends ObjetoEntorno {
         if (nuevoX >= 0 && nuevoX < mapa.ancho && nuevoY >= 0 && nuevoY < mapa.alto) {
             Celda celdaDestino = mapa.celdas[nuevoY][nuevoX];
 
-            // 2. Verificar colision con paredes u objetos infranqueables
-            /*
-            boolean hayPared = celdaDestino.contenido != null && !celdaDestino.contenido.pasoLibre;
-            */
-           boolean hayPared = false;
-           if (celdaDestino.contenido != null) {
-            ObjetoEntorno obj = (ObjetoEntorno) celdaDestino.contenido;
-            hayPared = !obj.pasoLibre;
-}
-
-
-            if (!hayPared) {
-                // Liberar la celda actual
-                mapa.celdas[this.y][this.x].contenido = null;
-
-                // Actualizar las coordenadas
-                this.x = nuevoX;
-                this.y = nuevoY;
-
-                // Ocupar la nueva celda
-                mapa.celdas[this.y][this.x].contenido = this;
+            // 2. Verificar si hay un Personaje en la celda destino
+            if (celdaDestino.contenido instanceof Personaje) {
+                Personaje jugador = (Personaje) celdaDestino.contenido;
+                jugador.danioRecibido(danio);
+                return; // No se mueve, solo hace danio
             }
+
+            // 3. Verificar si hay OTRO ENEMIGO en la celda destino (NO puede pisarlo)
+            if (celdaDestino.contenido instanceof Enemigo) {
+                return; // No se mueve, ya hay otro enemigo
+            }
+
+            // 4. Verificar si hay PARED en la celda destino (NO puede pisarla)
+            if (celdaDestino.contenido instanceof Pared) {
+                return; // No se mueve, hay pared
+            }
+
+            // 5. Verificar si hay DINERO en la celda destino (NO puede pisarlo)
+            // El enemigo NO puede pisar dinero, se queda donde esta
+            if (celdaDestino.contenido instanceof Dinero) {
+                return; // No se mueve, hay dinero
+            }
+
+            // 6. Si llegamos aqui, podemos mover
+            // Liberar la celda actual
+            mapa.celdas[this.y][this.x].contenido = null;
+
+            // Actualizar las coordenadas
+            this.x = nuevoX;
+            this.y = nuevoY;
+
+            // Ocupar la nueva celda
+            mapa.celdas[this.y][this.x].contenido = this;
         }
     }
 
     /**
-     * Retorna la cantidad de danio que inflige el villano al colisionar/atacar.
+     * Retorna la cantidad de danio que inflige el Enemigo al colisionar/atacar.
      */
     public int hacerDanio() {
         return this.danio;
