@@ -7,18 +7,20 @@ import src.map.Mapa;
 import src.map.Pared;
 import src.map.Dinero;
 import src.map.Bonus;
+import src.map.Villano;
 import javax.swing.*;
 import java.awt.*;   //swing y awt nos sirven para el diseño, unicamente como boceto y ver como va ser el juego.
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class VentanaJuego extends JFrame {      //creamos la clase VentanaJuego que se hereda de JFrame que es una ventana de java
+public class VentanaJuego extends JFrame{
     private Mapa mapa;
     private int tamaño = 30; //tamaño indica cuantos pixeles ocupa cada celda, en este caso por ahora 30x30
     private Adulto jugador; // Variable para almacenar el jugador
-    
+    private Timer timerMovimiento;
+    private Timer timerJuego;
     public VentanaJuego() {
-        mapa = new Mapa(15, 10); // Es el constructor de la ventanita, crea un mapa de 15x30 celdas
+        mapa = new Mapa(15, 10);
         mapa.cargarNivel(1);
         
 jugador = new Adulto(5, 5, mapa); //creamos un objeto adulto que es el jugador y lo ubicamos en la celda 1,1 del mapa
@@ -36,7 +38,6 @@ mapa.setPersonaje(jugador, 5, 5); //colocamos al jugador en el mapa en la celda 
         setFocusTraversalKeysEnabled(false);  // Evita que Tab mueva el foco
         
         addKeyListener(new TecladoListener());
-        
         setVisible(true);
 }
 
@@ -53,37 +54,57 @@ mapa.setPersonaje(jugador, 5, 5); //colocamos al jugador en el mapa en la celda 
         for (int x = 0; x < mapa.ancho; x++) {      //recorre todas las celdas del mapa
             int px = x * tamaño + desplazamientoX;
             int py = y * tamaño + desplazamientoY;        //calcula donde se va dibujar cada celda en la pantalla
-            
-            
-            g.setColor(Color.WHITE); //pinta el fondo de cada celda de blanco
-            g.fillRect(px, py, tamaño, tamaño); //fillRect dibuja un rectangulo relleno
-            
-            
-            if (mapa.celdas[y][x].contenido != null) { //comprueba si la celda tiene algun objeto
-                Object obj = mapa.celdas[y][x].contenido; //si el contenido es distinto de null guardamos ese objeto en obj
+      
+
+        setTitle("Juego");
+        setSize(15 * tamaño + 45, 10 * tamaño + 65);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Temporizador para mover villanos en ms
+        
+        
+        timerMovimiento = new Timer(10000, e -> {
+            mapa.moverVillanos();
+            //repaint();
+        });
+        
+        timerMovimiento.start();
+    
+
+                g.setColor(Color.WHITE);
+                g.fillRect(px, py, tamaño, tamaño);
                 
-                if (obj instanceof Pared) { //instanceof comprueba el tipo de objeto que es
-                    g.setColor(Color.BLACK); //si es pared dibuja un rectangulo negro
-                    g.fillRect(px, py, tamaño, tamaño);
-                } else if (obj instanceof Dinero) {
-                    g.setColor(Color.YELLOW); //si es dinero dibuja un circulo amarillo
-                    g.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
-                    g.setColor(Color.BLACK);
-                    g.drawString("$", px + 10, py + 20); //se le agrega el simbolo de dinero en medio
+                if (mapa.celdas[y][x].contenido != null) {
+                    Object obj = mapa.celdas[y][x].contenido;
+
+                    if (obj instanceof Pared) {
+                        g.setColor(Color.BLACK);
+                        g.fillRect(px, py, tamaño, tamaño);
+                    } else if (obj instanceof Dinero) {
+                        g.setColor(Color.YELLOW);
+                        g.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
+                        g.setColor(Color.BLACK);
+                        g.drawString("$", px + 10, py + 20);
+                    } else if (obj instanceof Villano) {
+                        g.setColor(Color.RED);
+                        g.fillRect(px + 4, py + 4, tamaño - 8, tamaño - 8);
+                        g.setColor(Color.WHITE);
+                        g.drawString("V", px + 11, py + 20);
+                    }
                 }
+
+                g.setColor(Color.GRAY);
+                g.drawRect(px, py, tamaño, tamaño);
             }
-            
-            
-            g.setColor(Color.GRAY);
-            g.drawRect(px, py, tamaño, tamaño); //aca nos dibuja los bordes de cada celda, asi podemos distingir cuando termina y empieza una nueva
         }
-    }
+    
       if (jugador != null) {
             int px = jugador.getX() * tamaño + desplazamientoX;  // ← Usamos jugador.x
             int py = jugador.getY() * tamaño + desplazamientoY;  // ← Usamos jugador.y
             dibujarPersonaje(g2d, px, py);
         }
-}
+    }
 
 private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
     int margen = tamaño / 10;           // 3px si tamaño=30
@@ -140,26 +161,27 @@ private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
         @Override
         public void keyPressed(KeyEvent e) {
             char tecla = e.getKeyChar();
-            
+            boolean seMovio = false;
             switch (tecla) {
                 case 'w': case 'W': 
                     jugador.moverse("W", mapa.getAncho(), mapa.getAlto());
                     repaint();
- 
+                    seMovio = true;
                     break;
                 case 's': case 'S': 
                     jugador.moverse("S", mapa.getAncho(), mapa.getAlto());
-                                        repaint();
- 
+                    repaint();
+                    seMovio = true;
                     break;
                 case 'a': case 'A': 
                     jugador.moverse("A", mapa.getAncho(), mapa.getAlto()); 
                     repaint();
-
+                    seMovio = true;
                     break;
                 case 'd': case 'D': 
                     jugador.moverse("D", mapa.getAncho(), mapa.getAlto()); 
                     repaint();
+                    seMovio = true;
                     break;
                 case 'r': case 'R': 
                     jugador.romperParedes();
@@ -171,7 +193,14 @@ private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
                     break;
                         default: return;
             }
+            // Mover villanos SOLO si el jugador se movió
+            if (seMovio) {
+                mapa.moverVillanos();
+                repaint();
+            }
+    
             
         }
     }
+    
 }
