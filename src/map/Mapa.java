@@ -1,5 +1,6 @@
 package src.map;
 
+import src.entities.Personaje;
 import java.util.Random; // permite utilizar numeros randoms un paquete ya de java
 
 public class Mapa {             //crea la clase mapa, tiene una matriz Celda que se llama celdas y representa el mapa
@@ -66,4 +67,34 @@ public class Mapa {             //crea la clase mapa, tiene una matriz Celda que
             celdas[y][x].contenido = new Pared();
         }
     }
+       public Celda conseguirCelda(int x, int y) {
+        if (x < 0 || x >= ancho || y < 0 || y >= alto) {
+            return null;
+        }
+        return celdas[y][x];
+    }
+    public int getAncho() {
+        return ancho;
+    }
+    public int getAlto() {
+        return alto;
+    }
+    
+    public void setPersonaje(Personaje personaje, int x, int y) {
+        Celda celda = conseguirCelda(x, y);
+        if (celda != null) {
+            celda.contenido = personaje;
+        }
+    }
+     public Personaje getPersonaje(int x, int y) {
+    if (x < 0 || x >= ancho || y < 0 || y >= alto) {
+        return null; // Fuera del mapa
+    }
+    Object contenido = celdas[y][x].contenido;
+    if (contenido instanceof Personaje) {
+        return (Personaje) contenido;
+    }
+    return null;
+}
+
 }
