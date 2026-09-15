@@ -46,9 +46,9 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 #### Diagrama de Clases UML (Conceptual)**
 https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
 
-<img width="3434" height="1902" alt="Diagrama UML 2" src="[(https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q)]" />
 
-![Diagrama UML](Untitled-2026-09-14-2313)
+
+![Diagrama UML](Untitled-2026-09-14-2313.png)
 
 ## 4. Stack Tecnológico 
 
