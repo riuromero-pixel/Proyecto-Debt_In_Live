@@ -55,7 +55,7 @@ https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
 
 
 
-![Diagrama UML](Untitled-2026-09-14-2313.png)
+![Diagrama UML](images/Untitled-2026-09-28-2334.png)
 
 ## 4. Stack Tecnológico 
 
