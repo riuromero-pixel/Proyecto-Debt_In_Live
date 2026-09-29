@@ -1,4 +1,4 @@
-# Proyecto: Debt_In_Live
+# Proyecto: Debt_In_Life
 
 ## 1. Integrantes del Equipo 
 
