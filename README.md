@@ -38,10 +38,20 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 ## Interfaz Grafica
 
-- Visualización de cada nivel con un mapa, enemigos, aspecto del jugador y mejoras diferentes. 
+- Visualización de cada nivel con un mapa, enemigos, aspecto del jugador.
+El jugador es una persona  que debe evitar sumar deudas a lo largo de su vida en una perspectiva top-down, en la cual en los niveles habrán objetos o entidades que harán que el jugador vaya acumulando deudas y por lo tanto se le reste dinero. El jugador deberá recoger dinero esparcido por el mapa donde en una determinada cantidad de dinero avanzará de nivel. Además, dependiendo del nivel, el jugador podrá construir o destruir paredes a voluntad. Como también, contará con potenciadores temporales donde dependiendo del nivel, afectará de manera diferente al jugador, como por ejemplo en velocidad al moverse o inmunidad. El juego tendrá 3 niveles: Estudiante (Con un mapa ambientado en una escuela), Adulto (ambientando el mapa en una oficina) y Jubilado (ambientando el mapa en un lugar calmo y natural), a medida que se vaya avanzando en los niveles, sera mas difícil sumar dinero. Los escenarios e incluso el mismo personaje que usará el jugador serán variados dependiendo el nivel y los enemigos serán distintos, como por ejemplo un enemigo podría ser Los Impuestos, habrá enemigos que siguen al jugador y otros que avanzarán de manera aleatoria en el mapa.
 
-- Se identificará el dinero en una esquina, y al perderse dinero, se mostrará el dinero restado.
+Algunos conceptos de los mapas:
+![Mapa Nivel 1](images/Al%20slop%20concepto%20mapa%20LV1%20Debt_in_life.png)
+![Mapa Nivel 2](images/Al%20slop%20concepto%20mapa%20LV2.png)
 
+
+Algunos conceptos de los enemigos:
+![Enemigos](images/valio%20la%20pena%20secar%20un%20logo%20concepto%20enemigos.png)
+
+
+Concepto personaje estudiante:
+![Personaje Jugable](images/Al%20slop%20concepto%20personaje%20jugable%20LV1.png)
 - Record Personal del Jugador con la cantidad total de puntos obtenidos por partida.
 #### Diagrama de Clases UML (Conceptual)**
 https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
