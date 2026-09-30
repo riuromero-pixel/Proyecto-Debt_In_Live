@@ -80,7 +80,7 @@ public class VistaMenu extends JFrame {
                 "- Presiona R para romper paredes cercanas.\n" +
                 "- Presiona C para crear paredes (según personaje).\n" +
                 "- Gana recolectando todo el dinero.\n" +
-                "- Pierde si tu dinero baja de 0.";
+                "- Perdes si tu dinero baja de 0.";
         JOptionPane.showMessageDialog(this, mensaje, "Cómo Jugar", JOptionPane.INFORMATION_MESSAGE);
     }
 
