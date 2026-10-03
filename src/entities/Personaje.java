@@ -25,7 +25,7 @@ public Personaje(int x, int y, int velocidad, int fuerza, int dinero, boolean bo
     this.y = y;
     this.velocidad = velocidad;
     this.fuerza = fuerza;
-    this.dinero = dinero; // AHORA SI ASIGNA EL DINERO INICIAL
+    this.dinero = dinero; 
     this.bonusActivado = bonusActivado;
     this.ultimoGolpe = 0;
     this.mapa = mapa;

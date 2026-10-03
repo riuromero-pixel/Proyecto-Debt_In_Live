@@ -43,20 +43,9 @@ public class Mapa {
             celdas[y][ancho - 1].contenido = new Pared();
         }
 
-        //generar dinero
-        int cantidadDinero = 5 + nivel * 3;
-        for (int i = 0; i < cantidadDinero; i++) {
-            int x, y;
-            do {
-                x = 1 + random.nextInt(ancho - 2);
-                y = 1 + random.nextInt(alto - 2);
-            } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
-
-            celdas[y][x].contenido = new Dinero(1 + random.nextInt(5));
-        }
-
+        
         //generar paredes internas
-        int cantidadParedes = nivel * 3;
+        int cantidadParedes = nivel * 40;
         for (int i = 0; i < cantidadParedes; i++) {
             int x, y;
             do {
@@ -68,7 +57,7 @@ public class Mapa {
         }
 
         //generar Enemigos
-        int cantidadEnemigos = 4 * nivel;
+        int cantidadEnemigos = 25 * nivel;
         for (int i = 0; i < cantidadEnemigos; i++) {
             int x, y;
             do {
@@ -79,7 +68,19 @@ public class Mapa {
             celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2));
         }
     }
+    //generar dinero
+     public void generarDinero() {
+        int cantidadDinero = 5 + 3 * 3;
+        for (int i = 0; i < cantidadDinero; i++) {
+            int x, y;
+            do {
+                x = 1 + random.nextInt(ancho - 2);
+                y = 1 + random.nextInt(alto - 2);
+            } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
 
+            celdas[y][x].contenido = new Dinero(1 + random.nextInt(5));
+        }
+    }
     public void moverEnemigos(){
         //lista para evitar modificar mientras iteramos
         List<Enemigo> enemigos = new ArrayList<>();

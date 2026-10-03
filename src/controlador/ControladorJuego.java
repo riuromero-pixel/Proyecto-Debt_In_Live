@@ -70,6 +70,9 @@ public class ControladorJuego {
             verificarPerdida();
 
             if (juegoActivo && mapa.noQuedaDinero()) {
+                mapa.generarDinero();
+            }
+            if (juegoActivo && jugador.getDinero() >= 10000) {
                 ganarJuego();
             }
 

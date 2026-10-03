@@ -104,7 +104,7 @@ public class VistaMenu extends JFrame {
 
     private void iniciarJuego() {
         // 1) MODELO
-        Mapa mapa = new Mapa(15, 10);
+        Mapa mapa = new Mapa(25, 25);
         mapa.cargarNivel(1);
 
         // Crear el personaje según la selección

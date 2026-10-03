@@ -15,7 +15,9 @@ public class VistaJuego extends JFrame {
     private final Mapa mapa;
     private final Personaje jugador;
     private final int nivelActual;
-    private final int tamaño = 30;
+    private final int tamaño = 60; // tamaño de cada celda en píxeles
+    private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
+    private static final int VIEW_ROWS = 10;
 
     //buffer para evitar parpadeo
     private Image bufferImagen;
@@ -64,11 +66,20 @@ public class VistaJuego extends JFrame {
         int desplazamientoX = 15;
         int desplazamientoY = 35;
 
-        //dibujar el mapa (ocupa la parte superior)
-        for (int y = 0; y < mapa.alto; y++) {
-            for (int x = 0; x < mapa.ancho; x++) {
-                int px = x * tamaño + desplazamientoX;
-                int py = y * tamaño + desplazamientoY;
+        // === CAMARA ===
+        int camX = 0, camY = 0;
+        if (jugador != null) {
+        camX = jugador.getX() - VIEW_COLS / 2;
+        camY = jugador.getY() - VIEW_ROWS / 2;
+        }
+        camX = Math.max(0, Math.min(camX, mapa.ancho - VIEW_COLS)); //Para no salir del mapa
+        camY = Math.max(0, Math.min(camY, mapa.alto  - VIEW_ROWS));
+
+        //dibujar el mapa 
+    for (int y = camY; y < camY + VIEW_ROWS; y++) {
+        for (int x = camX; x < camX + VIEW_COLS; x++) {
+            int px = (x - camX) * tamaño + desplazamientoX;
+            int py = (y - camY) * tamaño + desplazamientoY;
 
                 g2d.setColor(Color.WHITE);
                 g2d.fillRect(px, py, tamaño, tamaño);
@@ -106,10 +117,10 @@ public class VistaJuego extends JFrame {
 
         //dibujar el personaje
         if (jugador != null) {
-            int px = jugador.getX() * tamaño + desplazamientoX;
-            int py = jugador.getY() * tamaño + desplazamientoY;
-            dibujarPersonaje(g2d, px, py);
-        }
+        int px = (jugador.getX() - camX) * tamaño + desplazamientoX;
+        int py = (jugador.getY() - camY) * tamaño + desplazamientoY;
+        dibujarPersonaje(g2d, px, py);
+    }
 
         // === DIBUJAR PANEL DE INFORMACIÓN ABAJO ===
         int panelY = 10 * tamaño + 45; //justo debajo del mapa
