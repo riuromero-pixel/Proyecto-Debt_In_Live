@@ -1,9 +1,13 @@
 package src.map;
 
-import src.entities.Personaje;
-import java.util.Random; // permite utilizar numeros randoms un paquete ya de java
-import java.util.ArrayList;
+import java.io.File;
+import java.util.ArrayList; // permite utilizar numeros randoms un paquete ya de java
 import java.util.List;
+import java.util.Random;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import src.entities.Personaje;
 
 public class Mapa {
     public Celda[][] celdas;
@@ -179,4 +183,16 @@ public class Mapa {
         }
         return null;
     }
+     // REPRODUCTOR DE MUSICA (recibe el nombre exacto del archivo a reproducir(con extension.wav y todo))
+   public static void reproducirSonido(String nombrearchivo) {
+    try {
+       File archivo = new File(nombrearchivo); 
+        AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivo);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioStream);
+       clip.loop(Clip.LOOP_CONTINUOUSLY);
+    } catch (Exception e) {
+        System.out.println("Error al reproducir el audio: " + e.getMessage());
+    }
+}
 }

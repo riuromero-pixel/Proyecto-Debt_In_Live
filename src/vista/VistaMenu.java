@@ -1,14 +1,13 @@
 package src.vista;
 
+import java.awt.*;
+import javax.swing.*;
+import src.controlador.ControladorJuego;
 import src.entities.Adulto;
 import src.entities.Estudiante;
 import src.entities.Jubilado;
 import src.entities.Personaje;
 import src.map.Mapa;
-import src.controlador.ControladorJuego;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class VistaMenu extends JFrame {
 
@@ -106,7 +105,7 @@ public class VistaMenu extends JFrame {
         // 1) MODELO
         Mapa mapa = new Mapa(25, 25);
         mapa.cargarNivel(1);
-
+     //Mapa.reproducirSonido("musica_LV_X.wav");
         // Crear el personaje según la selección
         Personaje jugador;
         switch (tipoPersonaje) {

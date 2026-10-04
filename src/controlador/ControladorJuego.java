@@ -1,11 +1,10 @@
 package src.controlador;
-
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.*;
 import src.entities.Personaje;
 import src.map.Mapa;
 import src.vista.VistaJuego;
-import javax.swing.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class ControladorJuego {
 
@@ -34,6 +33,7 @@ public class ControladorJuego {
         this.vista.registrarTeclado(new TecladoListener());
 
         iniciarTimers();
+
     }
 
     // ---------- TIMERS ----------
@@ -125,7 +125,7 @@ public class ControladorJuego {
             }
         }
     }
-
+   
     // ---------- CIERRE ----------
     public void detener() {
         juegoActivo = false;
