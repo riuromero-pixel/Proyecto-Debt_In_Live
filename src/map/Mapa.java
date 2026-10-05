@@ -85,6 +85,23 @@ public class Mapa {
             celdas[y][x].contenido = new Dinero(1 + random.nextInt(5));
         }
     }
+
+    // NUEVO METODO: Cuenta cuantas monedas quedan en el mapa (tanto visibles como debajo de otros objetos)
+    public int contarDineroRestante() {
+        int contador = 0;
+        for (int y = 0; y < alto; y++) {
+            for (int x = 0; x < ancho; x++) {
+                if (celdas[y][x].contenido instanceof Dinero) {
+                    contador++;
+                }
+                if (celdas[y][x].dineroDebajo != null) {
+                    contador++;
+                }
+            }
+        }
+        return contador;
+    }
+
     public void moverEnemigos(){
         //lista para evitar modificar mientras iteramos
         List<Enemigo> enemigos = new ArrayList<>();
@@ -101,6 +118,21 @@ public class Mapa {
         //mover cada enemigo
         for (Enemigo enemigo : enemigos) {
             enemigo.mover(this);
+        }
+    }
+
+    // === NUEVO: actualiza las posiciones VISUALES de todos los enemigos ===
+    // Lo llama el timer de animación del controlador (~60 FPS) para interpolar
+    // el movimiento del enemigo entre la celda anterior y la nueva.
+    // Cuando agreguemos sprites, este método sigue siendo el encargado de actualizar
+    // la posición que usará la vista para dibujar el sprite del enemigo.
+    public void actualizarPosicionesVisualesEnemigos() {
+        for (int y = 0; y < alto; y++) {
+            for (int x = 0; x < ancho; x++) {
+                if (celdas[y][x].contenido instanceof Enemigo) {
+                    ((Enemigo) celdas[y][x].contenido).actualizarPosicionVisual();
+                }
+            }
         }
     }
     

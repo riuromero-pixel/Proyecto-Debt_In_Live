@@ -9,6 +9,18 @@ public class Enemigo extends ObjetoEntorno {
     public int danio;
     private Random random;
 
+    // === NUEVO: coordenadas VISUALES para interpolación suave ===
+    // La lógica usa (x, y). Estas coordenadas se usan SOLO para dibujar y permiten
+    // que el enemigo se desplace celda a celda de forma fluida.
+    // Cuando agreguemos sprites, el sprite del enemigo se dibujará en
+    // (posXVisual, posYVisual) * tamañoDeCelda (ver VistaJuego.paint).
+    public double posXVisual;
+    public double posYVisual;
+    // Mismo factor que Personaje para mantener consistencia visual.
+    // Si querés que los enemigos se muevan más "lento" visualmente entre celdas,
+    // bajá este valor (p.ej. 0.1). Si lo querés más snappy, subilo (p.ej. 0.3).
+    private static final double FACTOR_INTERPOLACION = 0.15;
+
     public Enemigo(int x, int y, int danio) {
         //un Enemigo permite pisar su celda para iniciar la interacción de combate/daño
         super(true);
@@ -16,6 +28,10 @@ public class Enemigo extends ObjetoEntorno {
         this.y = y;
         this.danio = danio;
         this.random = new Random();
+
+        // === NUEVO: inicializar posiciones visuales con la posición lógica inicial ===
+        this.posXVisual = x;
+        this.posYVisual = y;
     }
 
     /**
@@ -73,6 +89,17 @@ public class Enemigo extends ObjetoEntorno {
             // Ocupar la nueva celda
             mapa.celdas[this.y][this.x].contenido = this;
         }
+    }
+
+    // === NUEVO: interpola suavemente las coordenadas visuales hacia las lógicas ===
+    // Lo llama el timer de animación del controlador (~60 FPS) a través de Mapa.
+    public void actualizarPosicionVisual() {
+        posXVisual += (x - posXVisual) * FACTOR_INTERPOLACION;
+        posYVisual += (y - posYVisual) * FACTOR_INTERPOLACION;
+
+        // Umbral para no oscilar indefinidamente
+        if (Math.abs(posXVisual - x) < 0.01) posXVisual = x;
+        if (Math.abs(posYVisual - y) < 0.01) posYVisual = y;
     }
 
     /**

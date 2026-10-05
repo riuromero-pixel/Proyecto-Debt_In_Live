@@ -12,12 +12,19 @@ import java.awt.*;
 
 public class VistaJuego extends JFrame {
 
-    private final Mapa mapa;
-    private final Personaje jugador;
-    private final int nivelActual;
+    private Mapa mapa;
+    private Personaje jugador;
+    private int nivelActual;
     private final int tamaño = 60; // tamaño de cada celda en píxeles
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
+
+    // coordenadas suavizadas de la camara (double para permitir subpixel) 
+    // se actualizan cada frame en actualizarCamaraSuave() y se usan en paint().
+    // -1 significa "todavia sin inicializar".
+    private double camXSuave = -1;
+    private double camYSuave = -1;
+    private static final double SUAVIDAD_CAMARA = 0.15;
 
     //buffer para evitar parpadeo
     private Image bufferImagen;
@@ -36,6 +43,48 @@ public class VistaJuego extends JFrame {
 
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
+    }
+
+    //Permite al controlador actualizar el mapa, el jugador y el nivel actual al cambiar de nivel
+    public void actualizarModelo(Mapa mapa, Personaje jugador, int nivelActual) {
+        this.mapa = mapa;
+        this.jugador = jugador;
+        this.nivelActual = nivelActual;
+        this.bufferImagen = null; //reiniciar buffer para evitar problemas de renderizado al cambiar de nivel
+        //reiniciar la cámara suave para que arranque centrada en el nuevo nivel ===
+        this.reiniciarCamaraSuave();
+    }
+
+    // suaviza el desplazamiento de la camara hacia la posicion objetivo 
+    // sigue al jugador usando su posicion VISUAL (no la logica) para que el paneo
+    // sea continuo incluso entre celdas.
+    public void actualizarCamaraSuave() {
+        if (jugador == null || mapa == null) return;
+
+        // Objetivo: centrar al jugador en el viewport
+        double camXObjetivo = jugador.getPosXVisual() - VIEW_COLS / 2.0;
+        double camYObjetivo = jugador.getPosYVisual() - VIEW_ROWS / 2.0;
+
+        // clamp para no salir del mapa
+        camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.ancho - VIEW_COLS));
+        camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.alto - VIEW_ROWS));
+
+        // primera vez: inicializar sin interpolar (evita un "salto" inicial desde 0,0)
+        if (camXSuave < 0 || camYSuave < 0) {
+            camXSuave = camXObjetivo;
+            camYSuave = camYObjetivo;
+            return;
+        }
+
+        // interpolacion exponencial hacia el objetivo
+        camXSuave += (camXObjetivo - camXSuave) * SUAVIDAD_CAMARA;
+        camYSuave += (camYObjetivo - camYSuave) * SUAVIDAD_CAMARA;
+    }
+
+    // reinicia el estado de la camara suave (util al cambiar de nivel)
+    public void reiniciarCamaraSuave() {
+        camXSuave = -1;
+        camYSuave = -1;
     }
 
     //el controlador llama a este metodo para mostrar la ventana
@@ -66,20 +115,38 @@ public class VistaJuego extends JFrame {
         int desplazamientoX = 15;
         int desplazamientoY = 35;
 
-        // === CAMARA ===
-        int camX = 0, camY = 0;
-        if (jugador != null) {
-        camX = jugador.getX() - VIEW_COLS / 2;
-        camY = jugador.getY() - VIEW_ROWS / 2;
+        // === CAMARA SUAVIZADA ===
+        // se usan las coordenadas suavizadas (double) para permitir desplazamiento subpixel.
+        // si todavia no se llamo a actualizarCamaraSuave() (por ej primer paint)
+        // se calcula directamente como respaldo a partir de la posición visual del jugador.
+        double camX, camY;
+        if (camXSuave < 0 || camYSuave < 0) {
+            double camXCalc = jugador != null ? jugador.getPosXVisual() - VIEW_COLS / 2.0 : 0;
+            double camYCalc = jugador != null ? jugador.getPosYVisual() - VIEW_ROWS / 2.0 : 0;
+            camXCalc = Math.max(0, Math.min(camXCalc, mapa.ancho - VIEW_COLS));
+            camYCalc = Math.max(0, Math.min(camYCalc, mapa.alto - VIEW_ROWS));
+            camX = camXCalc;
+            camY = camYCalc;
+        } else {
+            camX = camXSuave;
+            camY = camYSuave;
         }
-        camX = Math.max(0, Math.min(camX, mapa.ancho - VIEW_COLS)); //Para no salir del mapa
-        camY = Math.max(0, Math.min(camY, mapa.alto  - VIEW_ROWS));
+
+        // rango de celdas a dibujar considerando desplazamiento subpixel 
+        // se agrega 1 celda extra a cada borde para no dejar huecos cuando la cámara
+        // esta entre dos celdas.
+        int inicioX = (int) Math.floor(camX);
+        int inicioY = (int) Math.floor(camY);
 
         //dibujar el mapa 
-    for (int y = camY; y < camY + VIEW_ROWS; y++) {
-        for (int x = camX; x < camX + VIEW_COLS; x++) {
-            int px = (x - camX) * tamaño + desplazamientoX;
-            int py = (y - camY) * tamaño + desplazamientoY;
+        for (int y = inicioY; y <= inicioY + VIEW_ROWS; y++) {
+            for (int x = inicioX; x <= inicioX + VIEW_COLS; x++) {
+                // Evitar dibujar fuera de los límites del mapa
+                if (y < 0 || y >= mapa.alto || x < 0 || x >= mapa.ancho) continue;
+
+                // Posición en pantalla usando las coordenadas double de la cámara
+                int px = (int) ((x - camX) * tamaño) + desplazamientoX;
+                int py = (int) ((y - camY) * tamaño) + desplazamientoY;
 
                 g2d.setColor(Color.WHITE);
                 g2d.fillRect(px, py, tamaño, tamaño);
@@ -94,12 +161,11 @@ public class VistaJuego extends JFrame {
                         g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
                         g2d.setColor(Color.BLACK);
                         g2d.drawString("$", px + 10, py + 20);
-                    } else if (obj instanceof Enemigo) {
-                        g2d.setColor(Color.RED);
-                        g2d.fillRect(px + 4, py + 4, tamaño - 8, tamaño - 8);
-                        g2d.setColor(Color.WHITE);
-                        g2d.drawString("V", px + 11, py + 20);
                     }
+                    // === NUEVO: los ENEMIGOS ya NO se dibujan acá ===
+                    // Se dibujan más abajo, en su propio bucle, usando su posición VISUAL
+                    // (posXVisual, posYVisual) para que la interpolación funcione.
+                    // Cuando agreguemos sprites, el sprite del enemigo se dibujará en ese bucle.
                 }
 
                 //dibujar dinero debajo (mismo estilo)
@@ -115,12 +181,38 @@ public class VistaJuego extends JFrame {
             }
         }
 
+        // dibujar los enemigos con su posicion visual interpolada 
+        // aca es donde, cuando tengamos sprites, se dibujara la imagen del enemigo
+        for (int y = 0; y < mapa.alto; y++) {
+            for (int x = 0; x < mapa.ancho; x++) {
+                if (mapa.celdas[y][x].contenido instanceof Enemigo) {
+                    Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+
+                    // Culling: dibujar solo si su posición visual cae dentro del viewport ampliado
+                    if (en.posXVisual + 1 < camX || en.posXVisual > camX + VIEW_COLS) continue;
+                    if (en.posYVisual + 1 < camY || en.posYVisual > camY + VIEW_ROWS) continue;
+
+                    int ex = (int) ((en.posXVisual - camX) * tamaño) + desplazamientoX;
+                    int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
+
+                    // --- placeholder actual: rectángulo rojo con "V" ---
+                    g2d.setColor(Color.RED);
+                    g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
+                    g2d.setColor(Color.WHITE);
+                    g2d.drawString("V", ex + 11, ey + 20);
+                }
+            }
+        }
+
         //dibujar el personaje
         if (jugador != null) {
-        int px = (jugador.getX() - camX) * tamaño + desplazamientoX;
-        int py = (jugador.getY() - camY) * tamaño + desplazamientoY;
-        dibujarPersonaje(g2d, px, py);
-    }
+            // se usa la posicion visual (double) del jugador para que se mueva suave 
+            // Cuando agreguemos sprites, aqui se dibujara la imagen del personaje:
+            // g2d.drawImage(spriteJugador, px, py, tamaño, tamaño, null);
+            int px = (int) ((jugador.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+            int py = (int) ((jugador.getPosYVisual() - camY) * tamaño) + desplazamientoY;
+            dibujarPersonaje(g2d, px, py);
+        }
 
         // === DIBUJAR PANEL DE INFORMACIÓN ABAJO ===
         int panelY = 10 * tamaño + 45; //justo debajo del mapa
@@ -135,6 +227,11 @@ public class VistaJuego extends JFrame {
         g2d.setFont(new Font("Arial", Font.BOLD, 20));
         String dineroTexto = "💰 Dinero: $" + (jugador != null ? jugador.getDinero() : 0);
         g2d.drawString(dineroTexto, 20, panelY + 35);
+
+        // NUEVO: Mostrar monedas restantes en el mapa (en color cyan para que resalte)
+        g2d.setColor(Color.CYAN);
+        String monedasRestantes = "Monedas restantes: " + (mapa != null ? mapa.contarDineroRestante() : 0);
+        g2d.drawString(monedasRestantes, 250, panelY + 35);
 
         //texto de información (blanco)
         g2d.setColor(Color.WHITE);

@@ -3,16 +3,14 @@ package src.vista;
 import java.awt.*;
 import javax.swing.*;
 import src.controlador.ControladorJuego;
-import src.entities.Adulto;
 import src.entities.Estudiante;
-import src.entities.Jubilado;
 import src.entities.Personaje;
 import src.map.Mapa;
 
 public class VistaMenu extends JFrame {
 
-    private int volumen = 50; // 0 a 100
-    private String tipoPersonaje = "Adulto"; // default
+    // MODIFICADO: Reemplazamos la variable de volumen por una booleana de silencio
+    private boolean silenciado = false;
 
     public VistaMenu() {
         setTitle("Debt In Live - Menú");
@@ -30,7 +28,6 @@ public class VistaMenu extends JFrame {
         JButton btnJugar = new JButton("Jugar");
         JButton btnOpciones = new JButton("Opciones");
         JButton btnComoJugar = new JButton("Cómo Jugar");
-        JButton btnCambiarPersonaje = new JButton("Cambiar Personaje");
         JButton btnSalir = new JButton("Salir");
 
         btnJugar.addActionListener(e -> {
@@ -40,35 +37,52 @@ public class VistaMenu extends JFrame {
 
         btnOpciones.addActionListener(e -> mostrarOpciones());
         btnComoJugar.addActionListener(e -> mostrarComoJugar());
-        btnCambiarPersonaje.addActionListener(e -> cambiarPersonaje());
         btnSalir.addActionListener(e -> System.exit(0));
 
         add(titulo);
         add(btnJugar);
         add(btnOpciones);
         add(btnComoJugar);
-        add(btnCambiarPersonaje);
         add(btnSalir);
     }
 
+    // MODIFICADO: Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
     private void mostrarOpciones() {
-        JPanel panel = new JPanel();
-        JLabel label = new JLabel("Volumen actual: " + volumen + "%");
-        JButton btnBajar = new JButton("Bajar Volumen (-10)");
+        JDialog dialogo = new JDialog(this, "Opciones", true);
+        dialogo.setSize(300, 180);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setResizable(false);
+        dialogo.setLayout(new BoxLayout(dialogo.getContentPane(), BoxLayout.Y_AXIS));
 
-        btnBajar.addActionListener(e -> {
-            if (volumen >= 10) {
-                volumen -= 10;
-            } else {
-                volumen = 0;
-            }
-            label.setText("Volumen actual: " + volumen + "%");
+        // Etiqueta del estado del sonido
+        JLabel label = new JLabel("Estado del sonido: " + (silenciado ? "Silenciado" : "Activado"));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // Boton para alternar el mute
+        JButton btnMute = new JButton(silenciado ? "Activar Sonido" : "Silenciar");
+        btnMute.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnMute.addActionListener(e -> {
+            silenciado = !silenciado;
+            label.setText("Estado del sonido: " + (silenciado ? "Silenciado" : "Activado"));
+            btnMute.setText(silenciado ? "Activar Sonido" : "Silenciar");
         });
 
-        panel.add(label);
-        panel.add(btnBajar);
+        // Boton Aceptar para cerrar
+        JButton btnAceptar = new JButton("Aceptar");
+        btnAceptar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnAceptar.addActionListener(e -> dialogo.dispose());
 
-        JOptionPane.showMessageDialog(this, panel, "Opciones", JOptionPane.PLAIN_MESSAGE);
+        // Espaciado entre componentes
+        dialogo.add(Box.createVerticalStrut(20));
+        dialogo.add(label);
+        dialogo.add(Box.createVerticalStrut(15));
+        dialogo.add(btnMute);
+        dialogo.add(Box.createVerticalStrut(15));
+        dialogo.add(btnAceptar);
+        dialogo.add(Box.createVerticalStrut(10));
+
+        dialogo.setVisible(true);
     }
 
     private void mostrarComoJugar() {
@@ -78,53 +92,25 @@ public class VistaMenu extends JFrame {
                 "- Evita a los enemigos (V), te restarán dinero.\n" +
                 "- Presiona R para romper paredes cercanas.\n" +
                 "- Presiona C para crear paredes (según personaje).\n" +
-                "- Gana recolectando todo el dinero.\n" +
-                "- Perdes si tu dinero baja de 0.";
+                "- Completa los 3 niveles para ganar el juego.\n" +
+                "- Pierdes si tu dinero baja de 0.";
         JOptionPane.showMessageDialog(this, mensaje, "Cómo Jugar", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void cambiarPersonaje() {
-        String[] opciones = {"Estudiante", "Adulto", "Jubilado"};
-        String seleccion = (String) JOptionPane.showInputDialog(
-                this,
-                "Selecciona tu personaje:",
-                "Cambiar Personaje",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                tipoPersonaje
-        );
-
-        if (seleccion != null) {
-            tipoPersonaje = seleccion;
-            JOptionPane.showMessageDialog(this, "Personaje cambiado a: " + tipoPersonaje);
-        }
-    }
-
     private void iniciarJuego() {
-        // 1) MODELO
+        // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
         Mapa mapa = new Mapa(25, 25);
         mapa.cargarNivel(1);
-     //Mapa.reproducirSonido("musica_LV_X.wav");
-        // Crear el personaje según la selección
-        Personaje jugador;
-        switch (tipoPersonaje) {
-            case "Estudiante":
-                jugador = new Estudiante(5, 5, mapa);
-                break;
-            case "Jubilado":
-                jugador = new Jubilado(5, 5, mapa);
-                break;
-            default:
-                jugador = new Adulto(5, 5, mapa);
-                break;
-        }
+        mapa.generarDinero();
+        
+        Personaje jugador = new Estudiante(5, 5, mapa);
+        mapa.celdas[5][5].contenido = null; // Limpiar por si las dudas
         mapa.setPersonaje(jugador, 5, 5);
 
         // 2) VISTA
         VistaJuego vista = new VistaJuego(mapa, jugador, 1);
 
-        // 3) CONTROLADOR
+        // 3) CONTROLADOR (El controlador se encarga de la transición de niveles)
         ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador);
 
         // 4) Mostrar

@@ -20,6 +20,19 @@ protected Mapa mapa;
 protected Object paredObjetivo;  
 protected String direccionActual; //guarda la ultima direccion del personaje
 
+// === NUEVO: coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
+// La lógica del juego sigue usando (x, y). Estas coordenadas se usan SOLO para dibujar
+// y permiten que el sprite se desplace celda a celda de forma fluida en vez de teletransportarse.
+// Cuando agreguemos los sprites, el sprite del personaje se dibujará en
+// (posXVisual, posYVisual) * tamañoDeCelda (ver VistaJuego.paint -> dibujarPersonaje).
+protected double posXVisual;
+protected double posYVisual;
+// Factor de interpolación exponencial: qué tan rápido la posición visual alcanza a la lógica.
+// Valores recomendados: 0.1 (lento, más "flotante") a 0.35 (rápido, más responsivo).
+// Si más adelante se cambia por sprites con animación por duración fija, este factor
+// puede reemplazarse por una velocidad en celdas/segundo.
+protected static final double FACTOR_INTERPOLACION = 0.2;
+
 public Personaje(int x, int y, int velocidad, int fuerza, int dinero, boolean bonusActivado, Mapa mapa){
     this.x = x;
     this.y = y;
@@ -30,6 +43,10 @@ public Personaje(int x, int y, int velocidad, int fuerza, int dinero, boolean bo
     this.ultimoGolpe = 0;
     this.mapa = mapa;
     this.direccionActual = null;
+
+    // === NUEVO: inicializar posiciones visuales con la posición lógica inicial ===
+    this.posXVisual = x;
+    this.posYVisual = y;
 }
 public int getX() { return x; }
     public int getY() { return y; }
@@ -46,6 +63,22 @@ public int getX() { return x; }
     public void setBonusActivado(boolean bonusActivado) { this.bonusActivado = bonusActivado; }
     public void setMapa(Mapa mapa) { this.mapa = mapa; }
     public String getDireccionActual() { return direccionActual; }
+
+    // === NUEVO: getters de las posiciones visuales, usados por la VistaJuego para dibujar ===
+    public double getPosXVisual() { return posXVisual; }
+    public double getPosYVisual() { return posYVisual; }
+
+    // === NUEVO: interpola suavemente las coordenadas visuales hacia las lógicas ===
+    // Lo llama el timer de animación del controlador (~60 FPS).
+    // NOTA: no modifica la lógica del juego; solo la representación visual.
+    public void actualizarPosicionVisual() {
+        posXVisual += (x - posXVisual) * FACTOR_INTERPOLACION;
+        posYVisual += (y - posYVisual) * FACTOR_INTERPOLACION;
+
+        // Umbral para evitar oscilaciones infinitas cuando ya está prácticamente encima
+        if (Math.abs(posXVisual - x) < 0.01) posXVisual = x;
+        if (Math.abs(posYVisual - y) < 0.01) posYVisual = y;
+    }
 
 public void moverse(String tecla, int anchoMapa, int altoMapa) {
     char direccion = tecla.toUpperCase().charAt(0);
