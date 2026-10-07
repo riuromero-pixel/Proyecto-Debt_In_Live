@@ -102,7 +102,7 @@ public class Mapa {
         return contador;
     }
 
-    public void moverEnemigos(){
+    public void moverEnemigos(Personaje jugador){
         //lista para evitar modificar mientras iteramos
         List<Enemigo> enemigos = new ArrayList<>();
         
@@ -117,7 +117,7 @@ public class Mapa {
         
         //mover cada enemigo
         for (Enemigo enemigo : enemigos) {
-            enemigo.mover(this);
+           enemigo.actualizarPersecucion(jugador, this);
         }
     }
 

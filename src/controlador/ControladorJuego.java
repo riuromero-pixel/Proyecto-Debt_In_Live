@@ -2,10 +2,9 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
-import src.entities.Personaje;
-import src.entities.Estudiante;
 import src.entities.Adulto;
 import src.entities.Jubilado;
+import src.entities.Personaje;
 import src.map.Mapa;
 import src.vista.VistaJuego;
 
@@ -53,7 +52,7 @@ public class ControladorJuego {
     private void iniciarTimers() {
         timerMovimientoEnemigos = new Timer(800, e -> {
             if (juegoActivo) {
-                mapa.moverEnemigos();
+                mapa.moverEnemigos(jugador);
                 verificarPerdida();
                 vista.repaint();
             }
