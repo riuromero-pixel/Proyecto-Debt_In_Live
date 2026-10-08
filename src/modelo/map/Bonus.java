@@ -1,4 +1,4 @@
-package src.map;
+package src.modelo.map;
 
 public class Bonus extends ObjetoEntorno {
 

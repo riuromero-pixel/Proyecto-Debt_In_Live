@@ -1,9 +1,9 @@
-package src.entities;
+package src.modelo.entities;
 
-import src.map.Celda;
-import src.map.Mapa;
-import src.map.Pared;
-import src.map.Bonus;
+import src.modelo.map.Celda;
+import src.modelo.map.Mapa;
+import src.modelo.map.Pared;
+import src.modelo.map.Bonus;
 public class Adulto extends Personaje {
 
     private int velocidadOriginal;
@@ -16,8 +16,8 @@ public class Adulto extends Personaje {
     public void activarBonus(Bonus bonus) {
         super.activarBonus(bonus);
         velocidadOriginal = velocidad; // Guardar la velocidad original
-        this.velocidad += bonus.bonusVelocidad + 3;
-        this.fuerza +=4; 
+        this.velocidad += bonus.bonusVelocidad + 2;
+        this.fuerza +=6; 
     }
     public void desactivarBonus() {
         super.desactivarBonus();

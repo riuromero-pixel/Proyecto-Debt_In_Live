@@ -1,4 +1,4 @@
-package src.map;
+package src.modelo.map;
 //este es un ejemplo de la aplicacion de polimorfismo ya q En laejecución, el programa reconoce la forma específica de cada objeto 
 // (mediante 'instanceof' o respondiendo a sus propios métodos/atributos heredados
 // como 'pasoLibre'), evitando tener que crear arreglos separados para cada elemento del juego.

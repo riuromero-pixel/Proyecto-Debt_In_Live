@@ -1,11 +1,11 @@
-package src.entities;
+package src.modelo.entities;
 
-import src.map.Bonus;
-import src.map.Celda;
-import src.map.Pared;
-import src.map.Mapa;
-import src.map.Dinero;
-import src.map.Enemigo;
+import src.modelo.map.Bonus;
+import src.modelo.map.Celda;
+import src.modelo.map.Pared;
+import src.modelo.map.Mapa;
+import src.modelo.map.Dinero;
+import src.modelo.map.Enemigo;
 
 public class Personaje{
 protected int x;

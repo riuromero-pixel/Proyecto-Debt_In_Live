@@ -1,4 +1,4 @@
-package src.map;
+package src.modelo.map;
 
 import java.io.File;
 import java.util.ArrayList; // permite utilizar numeros randoms un paquete ya de java
@@ -7,7 +7,7 @@ import java.util.Random;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import src.entities.Personaje;
+import src.modelo.entities.Personaje;
 
 public class Mapa {
     public Celda[][] celdas;
@@ -52,8 +52,8 @@ public class Mapa {
         int celdasInteriores = (ancho - 2) * (alto - 2);   // 23*23 = 529
         int maxObjetos = (int)(celdasInteriores * 0.30);   // ~158
 
-        int cantidadParedes = Math.min(nivel * 40, maxObjetos / 2);
-        int cantidadEnemigos = Math.min(25 * nivel, maxObjetos - cantidadParedes);
+        int cantidadParedes = Math.min(nivel * 40, maxObjetos / 2); //cantidad de paredes segun nivel
+        int cantidadEnemigos = Math.min(10 * nivel, maxObjetos - cantidadParedes); //cantidad de enemigos segun nivel
 
          colocarAleatorio(Pared.class, cantidadParedes, nivel);
          colocarAleatorio(Enemigo.class, cantidadEnemigos, nivel);

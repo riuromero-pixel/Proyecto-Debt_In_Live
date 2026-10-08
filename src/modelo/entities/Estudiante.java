@@ -1,8 +1,8 @@
-package src.entities;
+package src.modelo.entities;
 
 
-import src.map.Bonus;
-import src.map.Mapa;
+import src.modelo.map.Bonus;
+import src.modelo.map.Mapa;
 
 public class Estudiante extends Personaje{
 
@@ -17,7 +17,6 @@ public class Estudiante extends Personaje{
         super.activarBonus(bonus);
         velocidadOriginal = velocidad; // Guardar la velocidad original
         this.velocidad += bonus.bonusVelocidad + 3;
-        this.fuerza +=4; 
     }
     public void desactivarBonus() {
         super.desactivarBonus();

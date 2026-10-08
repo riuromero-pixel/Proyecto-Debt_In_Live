@@ -2,10 +2,10 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
-import src.entities.Adulto;
-import src.entities.Jubilado;
-import src.entities.Personaje;
-import src.map.Mapa;
+import src.modelo.entities.Adulto;
+import src.modelo.entities.Jubilado;
+import src.modelo.entities.Personaje;
+import src.modelo.map.Mapa;
 import src.vista.VistaJuego;
 
 public class ControladorJuego {
@@ -104,9 +104,9 @@ private void iniciarTimers() {
                         ganarJuego("¡Felicidades! Has completado TODOS los niveles del juego.");
                         return;
                     }
-                }
             }
-            else if (juegoActivo && mapa.noQuedaDinero()){
+        }
+        if (juegoActivo && mapa.noQuedaDinero()){
                 mapa.generarDinero();
             vista.repaint();
         }

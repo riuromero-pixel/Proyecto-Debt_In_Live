@@ -1,19 +1,17 @@
 package src.vista;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
-import src.controlador.ControladorJuego;
-import src.entities.Estudiante;
-import src.entities.Personaje;
-import src.map.Mapa;
 
 public class VistaMenu extends JFrame {
 
     // MODIFICADO: Reemplazamos la variable de volumen por una booleana de silencio
     private boolean silenciado = false;
+    private JButton btnJugar;
 
     public VistaMenu() {
-        setTitle("Debt In Live - Menú");
+        setTitle("Debt In Life - Menú");
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -22,18 +20,13 @@ public class VistaMenu extends JFrame {
 
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
-        JLabel titulo = new JLabel("DEBT IN LIVE");
+        JLabel titulo = new JLabel("DEBT IN LIFE");
         titulo.setFont(new Font("Arial", Font.BOLD, 28));
 
-        JButton btnJugar = new JButton("Jugar");
+        btnJugar = new JButton("Jugar");
         JButton btnOpciones = new JButton("Opciones");
         JButton btnComoJugar = new JButton("Cómo Jugar");
         JButton btnSalir = new JButton("Salir");
-
-        btnJugar.addActionListener(e -> {
-            dispose();
-            iniciarJuego();
-        });
 
         btnOpciones.addActionListener(e -> mostrarOpciones());
         btnComoJugar.addActionListener(e -> mostrarComoJugar());
@@ -44,6 +37,9 @@ public class VistaMenu extends JFrame {
         add(btnOpciones);
         add(btnComoJugar);
         add(btnSalir);
+    }
+     public void setAccionJugar(ActionListener listener) {
+        btnJugar.addActionListener(listener);
     }
 
     // MODIFICADO: Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
@@ -96,27 +92,6 @@ public class VistaMenu extends JFrame {
                 "- Pierdes si tu dinero baja de 0.";
         JOptionPane.showMessageDialog(this, mensaje, "Cómo Jugar", JOptionPane.INFORMATION_MESSAGE);
     }
-
-    private void iniciarJuego() {
-        // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
-        Mapa mapa = new Mapa(40 ,40);
-        mapa.cargarNivel(1);
-        mapa.generarDinero();
-        
-        Personaje jugador = new Estudiante(5, 5, mapa);
-        mapa.celdas[5][5].contenido = null; // Limpiar por si las dudas
-        mapa.setPersonaje(jugador, 5, 5);
-
-        // 2) VISTA
-        VistaJuego vista = new VistaJuego(mapa, jugador, 1);
-
-        // 3) CONTROLADOR (El controlador se encarga de la transición de niveles)
-        ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador);
-
-        // 4) Mostrar
-        vista.mostrar();
-    }
-
     public void mostrar() {
         setVisible(true);
     }

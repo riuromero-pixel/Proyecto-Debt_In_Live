@@ -1,10 +1,10 @@
-package src.entities;
+package src.modelo.entities;
 
 
-import src.map.Mapa;
-import src.map.Celda;
-import src.map.Pared;
-import src.map.Bonus;
+import src.modelo.map.Mapa;
+import src.modelo.map.Celda;
+import src.modelo.map.Pared;
+import src.modelo.map.Bonus;
 
 public class Jubilado extends Personaje {
 

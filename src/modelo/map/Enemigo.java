@@ -1,7 +1,7 @@
- package src.map;
+ package src.modelo.map;
 
 import java.util.Random;
-import src.entities.Personaje;
+import src.modelo.entities.Personaje;
 
 public class Enemigo extends ObjetoEntorno {
     public int x;

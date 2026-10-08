@@ -1,13 +1,13 @@
 package src.vista;
 
-import src.entities.Personaje;
-import src.entities.Adulto;
-import src.entities.Estudiante;
-import src.map.Mapa;
-import src.map.Pared;
-import src.map.Dinero;
-import src.map.Enemigo;
-import src.map.Bonus;
+import src.modelo.entities.Personaje;
+import src.modelo.entities.Adulto;
+import src.modelo.entities.Estudiante;
+import src.modelo.map.Mapa;
+import src.modelo.map.Pared;
+import src.modelo.map.Dinero;
+import src.modelo.map.Enemigo;
+import src.modelo.map.Bonus;
 
 import javax.swing.*;
 import java.awt.*;
