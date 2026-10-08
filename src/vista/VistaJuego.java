@@ -7,6 +7,8 @@ import src.map.Mapa;
 import src.map.Pared;
 import src.map.Dinero;
 import src.map.Enemigo;
+import src.map.Bonus;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -161,6 +163,11 @@ public class VistaJuego extends JFrame {
                         g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
                         g2d.setColor(Color.BLACK);
                         g2d.drawString("$", px + 10, py + 20);
+                    } else if (obj instanceof Bonus) {
+                        g2d.setColor(Color.GREEN);
+                        g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
+                        g2d.setColor(Color.BLACK);
+                        g2d.drawString("B", px + 10, py + 20);
                     }
                     // === NUEVO: los ENEMIGOS ya NO se dibujan acá ===
                     // Se dibujan más abajo, en su propio bucle, usando su posición VISUAL
@@ -174,6 +181,13 @@ public class VistaJuego extends JFrame {
                     g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
                     g2d.setColor(Color.BLACK);
                     g2d.drawString("$", px + 10, py + 20);
+                }
+                //dibujar bonus
+                if (mapa.celdas[y][x].bonusDebajo != null) {
+                    g2d.setColor(Color.GREEN);
+                    g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
+                    g2d.setColor(Color.BLACK);
+                    g2d.drawString("B", px + 10, py + 20);
                 }
 
                 g2d.setColor(Color.GRAY);

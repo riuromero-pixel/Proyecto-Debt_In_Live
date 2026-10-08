@@ -34,9 +34,10 @@ public class Mapa {
             for (int x = 0; x < ancho; x++) {
                 celdas[y][x].contenido = null;
                 celdas[y][x].dineroDebajo = null;
+                celdas[y][x].bonusDebajo = null;
+
             }
         }
-
         //paredes bordes
         for (int x = 0; x < ancho; x++) {
             celdas[0][x].contenido = new Pared();
@@ -47,31 +48,51 @@ public class Mapa {
             celdas[y][ancho - 1].contenido = new Pared();
         }
 
+        // esto hace que las paredes o enemigos no ocupen más del 30% del mapa
+        int celdasInteriores = (ancho - 2) * (alto - 2);   // 23*23 = 529
+        int maxObjetos = (int)(celdasInteriores * 0.30);   // ~158
+
+        int cantidadParedes = Math.min(nivel * 40, maxObjetos / 2);
+        int cantidadEnemigos = Math.min(25 * nivel, maxObjetos - cantidadParedes);
+
+         colocarAleatorio(Pared.class, cantidadParedes, nivel);
+         colocarAleatorio(Enemigo.class, cantidadEnemigos, nivel);
+         generarBonus(nivel * 4); // siempre 3 bonus por nivel
         
-        //generar paredes internas
-        int cantidadParedes = nivel * 40;
-        for (int i = 0; i < cantidadParedes; i++) {
-            int x, y;
-            do {
-                x = 1 + random.nextInt(ancho - 2);
-                y = 1 + random.nextInt(alto - 2);
-            } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
+    }
+    private void colocarAleatorio(Class<?> tipo, int cantidad, int nivel) { //coloca n objetos en el mapa con un maximo de intentos
+    int colocados = 0;
+    int intentos = 0;
+    int maxIntentos = cantidad * 50;   // si después de 50 intentos por objeto no encuentra, corta
 
+    while (colocados < cantidad && intentos < maxIntentos) {
+        intentos++;
+        int x = 1 + random.nextInt(ancho - 2);
+        int y = 1 + random.nextInt(alto - 2);
+
+        if (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null) continue;
+
+        if (tipo == Pared.class) {
             celdas[y][x].contenido = new Pared();
-        }
-
-        //generar Enemigos
-        int cantidadEnemigos = 25 * nivel;
-        for (int i = 0; i < cantidadEnemigos; i++) {
-            int x, y;
-            do {
-                x = 1 + random.nextInt(ancho - 2);
-                y = 1 + random.nextInt(alto - 2);
-            } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
-
+        } else if (tipo == Enemigo.class) {
             celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2));
         }
+        colocados++;
     }
+}
+    //generar bonus
+    public void generarBonus(int cantidad) {
+    for (int i = 0; i < cantidad; i++) {
+        int x, y;
+        do {
+            x = 1 + random.nextInt(ancho - 2);
+            y = 1 + random.nextInt(alto - 2);
+        } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
+
+        celdas[y][x].contenido = new Bonus(2, 5000);
+    }
+}
+
     //generar dinero
      public void generarDinero() {
         int cantidadDinero = 5 + 3 * 3;
@@ -160,7 +181,7 @@ public class Mapa {
     }
     
     //recolectar dinero si hay en contenido o en dineroDebajo
-    public void recolectarDineroDeCelda(Personaje jugador, int x, int y) {
+    public void recolectarDeCelda(Personaje jugador, int x, int y) {
         Celda celda = conseguirCelda(x, y);
         if (celda == null) return;
         
@@ -177,6 +198,20 @@ public class Mapa {
             jugador.recolectarDinero(dinero.cantidad);
             celda.dineroDebajo = null;
         }
+
+        //si hay bonus como contenido
+        if (celda.contenido instanceof Bonus) {
+            Bonus bonus = (Bonus) celda.contenido;
+            jugador.activarBonus(bonus);
+            celda.contenido = null;
+        }
+        //si hay bonus debajo
+         if (celda.bonusDebajo != null) {
+            Bonus bonus = celda.bonusDebajo;
+            jugador.activarBonus(bonus);
+            celda.bonusDebajo = null;
+        }
+
     }
     
     public Celda conseguirCelda(int x, int y) {

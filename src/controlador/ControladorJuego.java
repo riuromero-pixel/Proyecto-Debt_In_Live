@@ -26,8 +26,6 @@ public class ControladorJuego {
 
     //control de niveles y rondas de monedas
     private int nivelActual = 1;
-    private int rondaActual = 1;
-    private int rondasNecesarias = 1;
 
     // control de movimiento del jugador con velocidad
     private long ultimoMovimientoJugador = 0;
@@ -45,38 +43,40 @@ public class ControladorJuego {
         this.vista.registrarTeclado(new TecladoListener());
 
         iniciarTimers();
-
     }
-
     // ---------- TIMERS ----------
-    private void iniciarTimers() {
-        timerMovimientoEnemigos = new Timer(800, e -> {
-            if (juegoActivo) {
-                mapa.moverEnemigos(jugador);
-                verificarPerdida();
-                vista.repaint();
-            }
-        });
-        timerMovimientoEnemigos.start();
 
-        timerJuego = new Timer(50, e -> {
-            if (juegoActivo && teclaPulsada != ' ') {
-                moverJugadorConVelocidad();
-            }
-        });
-        timerJuego.start();
+private void iniciarTimers() {
+    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
+    if (timerJuego != null) timerJuego.stop();
+    if (timerAnimacion != null) timerAnimacion.stop();
 
-        
-        timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> {
-            if (juegoActivo) {
-                jugador.actualizarPosicionVisual();
-                mapa.actualizarPosicionesVisualesEnemigos();
-                vista.actualizarCamaraSuave();
-                vista.repaint();
-            }
-        });
-        timerAnimacion.start();
-    }
+    timerMovimientoEnemigos = new Timer(800, e -> {
+        if (juegoActivo) {
+            mapa.moverEnemigos(jugador);
+            verificarPerdida();
+            vista.repaint();
+        }
+    });
+    timerMovimientoEnemigos.start();
+
+    timerJuego = new Timer(50, e -> {
+        if (juegoActivo && teclaPulsada != ' ') {
+            moverJugadorConVelocidad();
+        }
+    });
+    timerJuego.start();
+
+    timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> {
+        if (juegoActivo) {
+            jugador.actualizarPosicionVisual();
+            mapa.actualizarPosicionesVisualesEnemigos();
+            vista.actualizarCamaraSuave();
+            vista.repaint();
+        }
+    });
+    timerAnimacion.start();
+}
 
     // ---------- LOGICA DE MOVIMIENTO ----------
     private void moverJugadorConVelocidad() {
@@ -92,42 +92,33 @@ public class ControladorJuego {
 
             verificarPerdida();
 
-            // LOGICA DE NIVELES Y RONDAS DE MONEDAS
-            if (juegoActivo && mapa.noQuedaDinero()) {
-                if (rondaActual < rondasNecesarias) {
-                    // MODIFICADO: Ya no se muestra el cartel avisando que aparecen mas monedas.
-                    // Simplemente se incrementa la ronda y se generan nuevas monedas.
-                    rondaActual++;
-                    mapa.generarDinero();
-                } else {
-                    // Se completaron las rondas de este nivel
+            // LOGICA DE NIVELES Y DINERO
+            if (juegoActivo && jugador.getDinero() >= 3000) {
                     if (nivelActual < 3) {
                         // MODIFICADO: Detenemos el juego antes de pasar de nivel.
                         detener();
                         nivelActual++;
                         iniciarNivel(nivelActual);
+                        return;
                     } else {
                         ganarJuego("¡Felicidades! Has completado TODOS los niveles del juego.");
+                        return;
                     }
                 }
             }
-
+            else if (juegoActivo && mapa.noQuedaDinero()){
+                mapa.generarDinero();
             vista.repaint();
         }
     }
 
     // prepara todo para el siguiente nivel
     private void iniciarNivel(int nivel) {
-        this.rondaActual = 1;
-
         if (nivel == 2) {
-            this.rondasNecesarias = 2;
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\nJuegas con el Adulto.\nDebes recolectar todas las monedas 2 veces.");
+            JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora eres un Adulto. A agarrar la pala.");
         } else if (nivel == 3) {
-            this.rondasNecesarias = 3;
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\nJuegas con el Jubilado.\nDebes recolectar todas las monedas 3 veces.");
+            JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora eres un Jubilado. Ahora cagaste.");
         }
-
         // Crear nuevo mapa y generar nivel
         this.mapa = new Mapa(25, 25);
         this.mapa.cargarNivel(nivel);
@@ -138,26 +129,26 @@ public class ControladorJuego {
             case 2: this.jugador = new Adulto(5, 5, this.mapa); break;
             case 3: this.jugador = new Jubilado(5, 5, this.mapa); break;
         }
-        
+
         // limpiar la celda de inicio por si hay paredes o enemigos de casualidad
         this.mapa.celdas[5][5].contenido = null; 
         this.mapa.setPersonaje(this.jugador, 5, 5);
 
         // actualizar la vista con los nuevos datos
         this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
-        
+
         // reiniciamos el juego (timers) despues de que el jugador acepte el mensaje.
         this.juegoActivo = true;
         iniciarTimers();
-        
         this.vista.repaint();
+
     }
 
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
         if (jugador.getDinero() < 0) {
             juegoActivo = false;
-            JOptionPane.showMessageDialog(vista, "¡PERDISTE! Te quedaste sin dinero.");
+            JOptionPane.showMessageDialog(vista, "¡PERDISTE! Te quedaste sin dinero. Pinchó.");
             System.exit(0);
         }
     }
@@ -201,6 +192,8 @@ public class ControladorJuego {
    
     // ---------- CIERRE ----------
     public void detener() {
+            System.out.println("### detener llamado");
+
         juegoActivo = false;
         if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
         if (timerJuego != null) timerJuego.stop();

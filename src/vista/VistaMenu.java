@@ -99,7 +99,7 @@ public class VistaMenu extends JFrame {
 
     private void iniciarJuego() {
         // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
-        Mapa mapa = new Mapa(25, 25);
+        Mapa mapa = new Mapa(40 ,40);
         mapa.cargarNivel(1);
         mapa.generarDinero();
         

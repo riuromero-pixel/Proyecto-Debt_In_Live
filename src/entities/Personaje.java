@@ -13,12 +13,13 @@ protected int y;
 protected int velocidad;
 protected int fuerza;
 protected int dinero;
-protected boolean bonusActivado;
+protected boolean bonusActivado = false;
 protected int golpesRestantes;   
 protected long ultimoGolpe;
 protected Mapa mapa;
 protected Object paredObjetivo;  
 protected String direccionActual; //guarda la ultima direccion del personaje
+protected long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
 
 // === NUEVO: coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
 // La lógica del juego sigue usando (x, y). Estas coordenadas se usan SOLO para dibujar
@@ -120,7 +121,7 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     if (nuevaX != this.x || nuevaY != this.y) {
         //recolectar dinero de la celda destino ANTES de mover al personaje
         if (celdaDestino != null) {
-            mapa.recolectarDineroDeCelda(this, nuevaX, nuevaY);
+            mapa.recolectarDeCelda(this, nuevaX, nuevaY);
         }
         
         //limpiar la celda anterior
@@ -199,6 +200,18 @@ public void romperParedes() {
         }    
 }
 
+public void activarBonus(Bonus bonus) {
+    this.bonusActivado = true;
+    this.bonusFin = System.currentTimeMillis() + bonus.duracionMs;
+}
+public void actualizarBonus() {
+    if (bonusActivado && System.currentTimeMillis() >= bonusFin) {
+        desactivarBonus();
+    }
+}
+public void desactivarBonus() {
+    this.bonusActivado = false;
+}
 //metodo base para crear paredes (sera sobreescrito)
 public void crearParedes() {
     System.out.println("Este personaje no puede crear paredes");

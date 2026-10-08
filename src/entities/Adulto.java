@@ -3,19 +3,27 @@ package src.entities;
 import src.map.Celda;
 import src.map.Mapa;
 import src.map.Pared;
+import src.map.Bonus;
 public class Adulto extends Personaje {
+
+    private int velocidadOriginal;
 
     public Adulto(int x, int y, Mapa mapa) {
         super(x, y, 2, 2, 40, false, mapa);
         this.velocidad = 2; // velocidad inicial por ser un adulto
         this.fuerza = 3; // fuerza inicial por ser un adulto
     }
-    public void activarBonus() {
-    if (this.bonusActivado) {
-        this.velocidad += 3; 
-        this.fuerza += 3;
+    public void activarBonus(Bonus bonus) {
+        super.activarBonus(bonus);
+        velocidadOriginal = velocidad; // Guardar la velocidad original
+        this.velocidad += bonus.bonusVelocidad + 3;
+        this.fuerza +=4; 
     }
-}
+    public void desactivarBonus() {
+        super.desactivarBonus();
+        this.velocidad = velocidadOriginal; 
+    }
+
 
 @Override
 public void crearParedes() {
