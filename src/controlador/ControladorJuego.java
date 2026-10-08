@@ -3,6 +3,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
 import src.modelo.entities.Adulto;
+import src.modelo.entities.Estudiante;
 import src.modelo.entities.Jubilado;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Mapa;
@@ -33,7 +34,6 @@ public class ControladorJuego {
 
     public ControladorJuego(VistaJuego vista, Mapa mapa, Personaje jugador) {
         if (vista == null || mapa == null || jugador == null) {
-            throw new IllegalArgumentException("vista, mapa y jugador son obligatorios");
         }
         this.vista = vista;
         this.mapa = mapa;
@@ -101,7 +101,7 @@ private void iniciarTimers() {
                         iniciarNivel(nivelActual);
                         return;
                     } else {
-                        ganarJuego("¡Felicidades! Has completado TODOS los niveles del juego.");
+                        ganarJuego("¡Bien ahi! Ganaste el juego! Lograste sobrevivir a las deudas de la vida.");
                         return;
                     }
             }
@@ -115,9 +115,9 @@ private void iniciarTimers() {
     // prepara todo para el siguiente nivel
     private void iniciarNivel(int nivel) {
         if (nivel == 2) {
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora eres un Adulto. A agarrar la pala.");
+            JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
         } else if (nivel == 3) {
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora eres un Jubilado. Ahora cagaste.");
+            JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
         }
         // Crear nuevo mapa y generar nivel
         this.mapa = new Mapa(25, 25);
@@ -126,6 +126,7 @@ private void iniciarTimers() {
 
         // crear el personaje correspondiente al nivel
         switch (nivel) {
+            case 1: this.jugador = new Estudiante(5, 5, this.mapa); break;
             case 2: this.jugador = new Adulto(5, 5, this.mapa); break;
             case 3: this.jugador = new Jubilado(5, 5, this.mapa); break;
         }
@@ -147,9 +148,30 @@ private void iniciarTimers() {
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
         if (jugador.getDinero() < 0) {
-            juegoActivo = false;
-            JOptionPane.showMessageDialog(vista, "¡PERDISTE! Te quedaste sin dinero. Pinchó.");
-            System.exit(0);
+            detener();
+
+            String mensaje;
+            switch (nivelActual) {
+                case 1: mensaje = "¡PERDISTE! Te quedaste sin plata. Chau play 5:(."; break;
+                case 2: mensaje = "¡PERDISTE! Te quedaste sin plata. No llegaste a fin de mes. Pinchó mal."; break;
+                case 3: mensaje = "¡PERDISTE! Te quedaste sin plata. Perdiste toda la plata de la jubilación. Cagamo."; break;
+                default: mensaje = "¡PERDISTE! Te quedaste sin plata."; break;
+            }
+            int opcion = JOptionPane.showOptionDialog(
+            vista, mensaje +  "¿Y ahora?", 
+            "¿Que hacemo?",
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            new Object[] {"Reintentar", "Salir"},
+            "Reintentar");
+            if (opcion == JOptionPane.YES_OPTION) {
+                // se reinicia el juego desde el nivel 1
+                nivelActual = 1;
+                iniciarNivel(nivelActual);
+            } else {
+                System.exit(0);
+            }
         }
     }
 
