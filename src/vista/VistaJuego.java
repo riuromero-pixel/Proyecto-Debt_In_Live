@@ -1,16 +1,15 @@
 package src.vista;
 
-import src.modelo.entities.Personaje;
+import java.awt.*;
+import javax.swing.*;
 import src.modelo.entities.Adulto;
 import src.modelo.entities.Estudiante;
-import src.modelo.map.Mapa;
-import src.modelo.map.Pared;
+import src.modelo.entities.Personaje;
+import src.modelo.map.Bonus;
 import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
-import src.modelo.map.Bonus;
-
-import javax.swing.*;
-import java.awt.*;
+import src.modelo.map.Mapa;
+import src.modelo.map.Pared;
 
 public class VistaJuego extends JFrame {
 
@@ -52,6 +51,7 @@ public class VistaJuego extends JFrame {
         this.mapa = mapa;
         this.jugador = jugador;
         this.nivelActual = nivelActual;
+        
         this.bufferImagen = null; //reiniciar buffer para evitar problemas de renderizado al cambiar de nivel
         //reiniciar la cámara suave para que arranque centrada en el nuevo nivel ===
         this.reiniciarCamaraSuave();

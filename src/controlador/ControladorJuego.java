@@ -38,6 +38,7 @@ public class ControladorJuego {
         this.vista = vista;
         this.mapa = mapa;
         this.jugador = jugador;
+        Mapa.reproducirSonido(1);
 
         // se registra como oyente del teclado a traves de la vista
         this.vista.registrarTeclado(new TecladoListener());
@@ -122,6 +123,7 @@ private void iniciarTimers() {
         // Crear nuevo mapa y generar nivel
         this.mapa = new Mapa(25, 25);
         this.mapa.cargarNivel(nivel);
+        Mapa.reproducirSonido(nivel);
         this.mapa.generarDinero();
 
         // crear el personaje correspondiente al nivel
@@ -148,6 +150,7 @@ private void iniciarTimers() {
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
         if (jugador.getDinero() < 0) {
+             Mapa.detenerSonido(); // ¡Para que frene la música al perder!Mapa.detenerSonido();
             detener();
 
             String mensaje;
@@ -165,6 +168,7 @@ private void iniciarTimers() {
             null, 
             new Object[] {"Reintentar", "Salir"},
             "Reintentar");
+           
             if (opcion == JOptionPane.YES_OPTION) {
                 // se reinicia el juego desde el nivel 1
                 nivelActual = 1;
@@ -217,6 +221,7 @@ private void iniciarTimers() {
             System.out.println("### detener llamado");
 
         juegoActivo = false;
+         Mapa.detenerSonido(); // ¡Para que frene la música al perder!Mapa.detenerSonido();
         if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
         if (timerJuego != null) timerJuego.stop();
         // === NUEVO: detener también el timer de animación ===
