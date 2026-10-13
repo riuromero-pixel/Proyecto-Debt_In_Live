@@ -9,28 +9,32 @@ import src.modelo.map.Bonus;
 public class Jubilado extends Personaje {
 
 private int velocidadOriginal;
+private int fuerzaOriginal;
 
 public Jubilado(int x, int y, Mapa mapa) {
-super(x, y, 1, 3, 50, false, mapa);
+super(x, y, 1, 3, 100, false, mapa);
    this.velocidad = 1; // velocidad inicial mas baja por ser un jubilado
    this.fuerza = 1; // fuerza inicial mas baja por ser un jubilado
 }
     public void activarBonus(Bonus bonus) {
+        if (!isBonusActivado()) {
+            velocidadOriginal = velocidad; // Guardar la velocidad original
+            fuerzaOriginal = fuerza; // Guardar la fuerza original
+        }
         super.activarBonus(bonus);
-        velocidadOriginal = velocidad; // Guardar la velocidad original
         this.velocidad += bonus.bonusVelocidad + 3;
         this.fuerza +=4; 
     }
     public void desactivarBonus() {
         super.desactivarBonus();
         this.velocidad = velocidadOriginal; 
+        this.fuerza = fuerzaOriginal;
     }
 
 @Override
 public void crearParedes() {
     //el jubilado solo puede poner 1 pared
     if (direccionActual == null) {
-        System.out.println("No tienes direccion definida");
         return;
     }
     
@@ -44,28 +48,23 @@ public void crearParedes() {
         case 'A': nuevaX--; break;
         case 'D': nuevaX++; break;
         default:
-            System.out.println("Direccion invalida");
             return;
     }
     
     // verificar que no sea borde
     if (nuevaX < 0 || nuevaX >= mapa.getAncho() || nuevaY < 0 || nuevaY >= mapa.getAlto()) {
-        System.out.println("No puedes poner paredes en los bordes del mapa");
         return;
     }
     
     Celda celda = mapa.conseguirCelda(nuevaX, nuevaY);
     if (celda == null) {
-        System.out.println("Celda fuera del mapa");
         return;
     }
     
     if (celda.contenido != null) {
-        System.out.println("La celda ya esta ocupada");
         return;
     }
     
     celda.contenido = new Pared();
-    System.out.println("Jubilado coloco 1 pared!");
 }
 }

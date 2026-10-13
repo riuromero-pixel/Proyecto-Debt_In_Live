@@ -7,21 +7,26 @@ import src.modelo.map.Bonus;
 public class Adulto extends Personaje {
 
     private int velocidadOriginal;
+    private int fuerzaOriginal;
 
     public Adulto(int x, int y, Mapa mapa) {
-        super(x, y, 2, 2, 40, false, mapa);
+        super(x, y, 2, 2, 100, false, mapa);
         this.velocidad = 2; // velocidad inicial por ser un adulto
         this.fuerza = 3; // fuerza inicial por ser un adulto
     }
     public void activarBonus(Bonus bonus) {
+        if (!isBonusActivado()) {
+            velocidadOriginal = velocidad; // Guardar la velocidad original
+            fuerzaOriginal = fuerza; // Guardar la fuerza original
+        }
         super.activarBonus(bonus);
-        velocidadOriginal = velocidad; // Guardar la velocidad original
         this.velocidad += bonus.bonusVelocidad + 2;
         this.fuerza +=6; 
     }
     public void desactivarBonus() {
         super.desactivarBonus();
         this.velocidad = velocidadOriginal; 
+        this.fuerza = fuerzaOriginal;
     }
 
 
@@ -29,7 +34,6 @@ public class Adulto extends Personaje {
 public void crearParedes() {
     // El adulto puede llenar su fila entera de paredes a la que apunta
     if (direccionActual == null) {
-        System.out.println("No tienes direccion definida");
         return;
     }
     
@@ -42,12 +46,10 @@ public void crearParedes() {
         case 'A': dx = -1; break;
         case 'D': dx = 1; break;
         default:
-            System.out.println("Direccion invalida");
             return;
     }
     
     //colocar paredes en toda la fila/columna desde la posicion actual hasta el borde
-    int paredesColocadas = 0;
     int nx = this.x + dx;
     int ny = this.y + dy;
     
@@ -55,16 +57,10 @@ public void crearParedes() {
         Celda celda = mapa.conseguirCelda(nx, ny);
         if (celda != null && celda.contenido == null) {
             celda.contenido = new Pared();
-            paredesColocadas++;
         }
         nx += dx;
         ny += dy;
     }
     
-    if (paredesColocadas > 0) {
-        System.out.println("Adulto coloco " + paredesColocadas + " paredes!");
-    } else {
-        System.out.println("No se pudo colocar paredes");
-    }
 }
 }

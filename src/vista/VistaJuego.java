@@ -1,5 +1,6 @@
 package src.vista;
 
+
 import java.awt.*;
 import javax.swing.*;
 import src.modelo.entities.Adulto;
@@ -16,7 +17,9 @@ public class VistaJuego extends JFrame {
     private Mapa mapa;
     private Personaje jugador;
     private int nivelActual;
-    private final int tamaño = 60; // tamaño de cada celda en píxeles
+    private int tamaño = 100;
+    private static final int PANEL_ALTO = 60;
+
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
 
@@ -41,9 +44,18 @@ public class VistaJuego extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
+
+         // Pantalla completa
+         setUndecorated(true);
+         GraphicsDevice gd = GraphicsEnvironment
+          .getLocalGraphicsEnvironment()
+          .getDefaultScreenDevice();
+          gd.setFullScreenWindow(this);
+         // Fondo oscuro (por si algo queda sin cubrir)
+         getContentPane().setBackground(new Color(30, 30, 40));
+
     }
 
     //Permite al controlador actualizar el mapa, el jugador y el nivel actual al cambiar de nivel
@@ -101,8 +113,13 @@ public class VistaJuego extends JFrame {
 
     @Override
     public void paint(Graphics g) {
+        int anchoPantalla = getWidth();
+        int altoPantalla  = getHeight();
         // Usar doble buffer para evitar parpadeo
-        if (bufferImagen == null) {
+        if (bufferImagen == null
+        || bufferImagen.getWidth(null) != anchoPantalla
+        || bufferImagen.getHeight(null) != altoPantalla)
+        {
             bufferImagen = createImage(getWidth(), getHeight());
             bufferGraphics = bufferImagen.getGraphics();
         }
@@ -110,12 +127,19 @@ public class VistaJuego extends JFrame {
         Graphics2D g2d = (Graphics2D) bufferGraphics;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        //limpiar fondo
-        g2d.setColor(getBackground());
-        g2d.fillRect(0, 0, getWidth(), getHeight());
+        g2d.setColor(new Color(30, 30, 40)); // fondo negro
+        g2d.fillRect(0, 0, anchoPantalla, altoPantalla);
+       
+        // === Calcular tamaño de celda dinámicamente ===
+       int tamañoX = anchoPantalla / VIEW_COLS;
+       int tamañoY = (altoPantalla - PANEL_ALTO) / VIEW_ROWS;
+       this.tamaño = Math.min(tamañoX, tamañoY);
 
-        int desplazamientoX = 15;
-        int desplazamientoY = 35;
+       // === Calcular desplazamiento para centrar ===
+       int anchoMapa = VIEW_COLS * tamaño;
+       int altoMapa  = VIEW_ROWS * tamaño;
+       int desplazamientoX = (anchoPantalla - anchoMapa) / 2;
+       int desplazamientoY = (altoPantalla - PANEL_ALTO - altoMapa) / 2;
 
         // === CAMARA SUAVIZADA ===
         // se usan las coordenadas suavizadas (double) para permitir desplazamiento subpixel.
@@ -229,7 +253,7 @@ public class VistaJuego extends JFrame {
         }
 
         // === DIBUJAR PANEL DE INFORMACIÓN ABAJO ===
-        int panelY = 10 * tamaño + 45; //justo debajo del mapa
+        int panelY = altoPantalla - PANEL_ALTO; //justo debajo del mapa
         int panelHeight = 60;
 
         //fondo del panel

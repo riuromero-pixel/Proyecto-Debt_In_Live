@@ -6,6 +6,7 @@
 - Del Rio, Axel 
 - Romero, Ignacio 
 - Vasquez, Joaquin
+
 ## 2. Dominio y Alcance del Sistema 
 
 ## Descripción del Problema
@@ -24,7 +25,7 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 - Los enemigos aparecen en el mapa al comenzar el nivel.
 
-- A medida que se aumentan el nivel aparecerán más enemigos y serán más rápidos.
+- A medida que se aumentan el nivel aparecerán más enemigos.
 
 - Los enemigos estarán a lo largo de todo el mapa de forma aleatoria y tendrán un recorrido preestablecido para dificultar la partida al jugador.
 
@@ -50,6 +51,19 @@ Algunos conceptos de los enemigos:
 
 Concepto personaje estudiante: 
 ![Personaje Jugable](images/AI%20slop%20concepto%20personaje%20jugable%20LV1.png)
+
+## 3. Arquitectura y Diseño
+
+#### Patron de Diseño Adicional: Factory Method y Strategy
+
+- **Nombre del Patrón:** **Factory Method**.
+
+- **Justificación:** Se utilizó este patrón para centralizar la creación de los objetos `Personaje` (Estudiante, Adulto, Jubilado). Se creó la clase `PersonajeFactory` con un método estático `crearPersonaje(int nivel, int x, int y, Mapa mapa)` que decide qué subclase instanciar según el nivel recibido. Esto hará que el controlador solo pida "un personaje para el nivel N" y la factory se encarga de instanciar el correcto. Así, agregar un nuevo tipo de personaje no requerirá modificar el código que gestiona los niveles.
+ 
+- **Nombre del Patrón:** **Strategy**.
+
+- **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. El que persigue al jugador y el errante que se mueve aleatoriamente. Se definió la interfaz `EstrategiaMovimiento` con las implementaciones `MovimientoPerseguidor` y `MovimientoErrante`. La clase `Enemigo` contiene una estrategia y le **delega** el movimiento, permitiendo intercambiarlo en runtime con `setEstrategia()`. Logrando asi poder agregar un nuevo comportamiento en un futuro solo haciendo una clase nueva, sin modificar `Enemigo` ni `Mapa`.
+
 #### Diagrama de Clases UML (Conceptual)**
 https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
 

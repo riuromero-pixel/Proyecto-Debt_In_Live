@@ -2,10 +2,8 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
-import src.modelo.entities.Adulto;
-import src.modelo.entities.Estudiante;
-import src.modelo.entities.Jubilado;
-import src.modelo.entities.Personaje;
+
+import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.vista.VistaJuego;
 
@@ -71,6 +69,7 @@ private void iniciarTimers() {
     timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> {
         if (juegoActivo) {
             jugador.actualizarPosicionVisual();
+            jugador.actualizarBonus();
             mapa.actualizarPosicionesVisualesEnemigos();
             vista.actualizarCamaraSuave();
             vista.repaint();
@@ -127,11 +126,7 @@ private void iniciarTimers() {
         this.mapa.generarDinero();
 
         // crear el personaje correspondiente al nivel
-        switch (nivel) {
-            case 1: this.jugador = new Estudiante(5, 5, this.mapa); break;
-            case 2: this.jugador = new Adulto(5, 5, this.mapa); break;
-            case 3: this.jugador = new Jubilado(5, 5, this.mapa); break;
-        }
+        this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, mapa);
 
         // limpiar la celda de inicio por si hay paredes o enemigos de casualidad
         this.mapa.celdas[5][5].contenido = null; 
@@ -164,7 +159,7 @@ private void iniciarTimers() {
             vista, mensaje +  "¿Y ahora?", 
             "¿Que hacemo?",
             JOptionPane.YES_NO_OPTION, 
-            JOptionPane.QUESTION_MESSAGE, 
+            JOptionPane.PLAIN_MESSAGE, 
             null, 
             new Object[] {"Reintentar", "Salir"},
             "Reintentar");
@@ -189,6 +184,29 @@ private void iniciarTimers() {
     private class TecladoListener extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
+
+            //Menu de Pausa
+            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                juegoActivo = false;
+                JLabel mensaje = new JLabel("Juego pausado.");
+                mensaje.setHorizontalAlignment(SwingConstants.CENTER);
+                int opcion = JOptionPane.showOptionDialog(
+                    vista, 
+                    mensaje,
+                    "Pausa",
+                    JOptionPane.YES_NO_OPTION, 
+                    JOptionPane.PLAIN_MESSAGE, 
+                    null, 
+                    new Object[] {"Continuar", "Salir"},
+                    "Continuar");
+                if (opcion == JOptionPane.YES_OPTION) {
+                    juegoActivo = true;
+                } else {
+                    System.exit(0);
+                }
+                return;
+            }
+
             char tecla = e.getKeyChar();
 
             switch (tecla) {

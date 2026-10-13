@@ -9,6 +9,10 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import src.modelo.entities.Personaje;
 
+import src.modelo.movimientos.EstrategiaMovimiento;
+import src.modelo.movimientos.MovimientoErrante;
+import src.modelo.movimientos.MovimientoPerseguidor;
+
 public class Mapa {
     public static Clip clipActual = null;
     public Celda[][] celdas;
@@ -76,7 +80,10 @@ public class Mapa {
         if (tipo == Pared.class) {
             celdas[y][x].contenido = new Pared();
         } else if (tipo == Enemigo.class) {
-            celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2));
+            EstrategiaMovimiento estrategia = random.nextBoolean() 
+            ? new MovimientoPerseguidor() 
+            : new MovimientoErrante(); //mezcla al azar entre perseguidor y errante
+            celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2), estrategia);
         }
         colocados++;
     }

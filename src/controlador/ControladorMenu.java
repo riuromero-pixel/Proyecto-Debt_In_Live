@@ -1,7 +1,7 @@
 package src.controlador;
 
-import src.modelo.entities.Estudiante;
 import src.modelo.entities.Personaje;
+import src.modelo.entities.PersonajeFactory;
 import src.modelo.map.Mapa;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
@@ -20,10 +20,13 @@ public class ControladorMenu {
         mapa.cargarNivel(1);
         mapa.generarDinero();
         
+        Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
+
+        /* 
         Personaje jugador = new Estudiante(5, 5, mapa);
         mapa.celdas[5][5].contenido = null; // Limpiar por si las dudas
         mapa.setPersonaje(jugador, 5, 5);
-
+*/
         // 2) VISTA
         VistaJuego vista = new VistaJuego(mapa, jugador, 1);
 

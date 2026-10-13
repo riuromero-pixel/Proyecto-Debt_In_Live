@@ -114,7 +114,6 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     if (celdaDestino != null && celdaDestino.contenido instanceof Enemigo) {
         Enemigo enemigo = (Enemigo) celdaDestino.contenido;
         this.dinero -= enemigo.danio;
-        System.out.println("Te piso un enemigo! Dinero: " + this.dinero);
         return; // NO nos movemos a la celda del enemigo
     }
     
@@ -140,7 +139,6 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
 
 public void recolectarDinero(int cantidad) {
     this.dinero += cantidad;
-    System.out.println("Dinero recolectado: " + cantidad + " (Total: " + this.dinero + ")");
 }
 public boolean danioRecibido(int danio) {
     this.dinero -= danio; // AHORA USA EL DANIO DEL Enemigo
