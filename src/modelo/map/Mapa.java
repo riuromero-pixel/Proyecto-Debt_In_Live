@@ -3,14 +3,13 @@ package src.modelo.map;
 import java.util.ArrayList;
 import java.util.List; // permite utilizar numeros randoms un paquete ya de java
 import java.util.Random;
-import javax.sound.sampled.Clip;
 import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
 import src.modelo.movimientos.MovimientoErrante;
 import src.modelo.movimientos.MovimientoPerseguidor;
 
 public class Mapa {
-    public static Clip clipActual = null;
+    
     public Celda[][] celdas;
     public int ancho;
     public int alto;
@@ -254,7 +253,7 @@ public class Mapa {
         }
         return null;
     }}
-     // REPRODUCTOR DE MUSICA (recibe el nombre exacto del archivo a reproducir(con extension.wav y todo))
+ 
 
         
     
