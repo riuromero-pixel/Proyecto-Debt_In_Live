@@ -57,13 +57,203 @@ Concepto personaje estudiante:
 #### Patron de Diseño Adicional: Factory Method y Strategy
 
 - **Nombre del Patrón:** **Factory Method**.
+  
+- ControladorJuego.iniciarNivel()
+  private void iniciarNivel(int nivel) {
+    if (nivel == 2) {
+        JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
+    } else if (nivel == 3) {
+        JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
+    }
+    // Crear nuevo mapa y generar nivel
+    this.mapa = new Mapa(25, 25);
+    this.mapa.cargarNivel(nivel);
+    Mapa.reproducirSonido(nivel);
+    this.mapa.generarDinero();
 
+    switch (nivel) {
+        case 1: this.jugador = new Estudiante(5, 5, this.mapa); break;
+        case 2: this.jugador = new Adulto(5, 5, this.mapa); break;
+        case 3: this.jugador = new Jubilado(5, 5, this.mapa); break;
+    }
+
+    // limpiar la celda de inicio por si hay paredes o enemigos de casualidad
+    this.mapa.celdas[5][5].contenido = null;
+    this.mapa.setPersonaje(this.jugador, 5, 5);
+
+    this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
+    this.juegoActivo = true;
+    iniciarTimers();
+    this.vista.repaint();
+}
+-ControladorJuego.iniciarJuego()
+private void iniciarJuego() {
+    // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
+    Mapa mapa = new Mapa(40, 40);
+    mapa.cargarNivel(1);
+    mapa.generarDinero();
+
+    Personaje jugador = new Estudiante(5, 5, mapa);
+
+    mapa.celdas[5][5].contenido = null;
+    mapa.setPersonaje(jugador, 5, 5);
+
+    VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+    ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador);
+
+    vistaMenu.dispose();
+    vista.mostrar();
+}
+- **Problema:** el controlador instancia directamente los personajes mediante un switch, lo que generaba un acoplamiento fuerte con las clases concretas Estudiante, Adulto y Jubilado.
 - **Justificación:** Se utilizó este patrón para centralizar la creación de los objetos `Personaje` (Estudiante, Adulto, Jubilado). Se creó la clase `PersonajeFactory` con un método estático `crearPersonaje(int nivel, int x, int y, Mapa mapa)` que decide qué subclase instanciar según el nivel recibido. Esto hará que el controlador solo pida "un personaje para el nivel N" y la factory se encarga de instanciar el correcto. Así, agregar un nuevo tipo de personaje no requerirá modificar el código que gestiona los niveles.
- 
+
+-PersonajeFactory.java //Clase nueva
+package src.modelo.entities;
+
+import src.modelo.map.Mapa;
+
+public class PersonajeFactory {
+
+    public static Personaje crearPersonaje(int nivel, int x, int y, Mapa mapa) {
+        switch (nivel) {
+            case 1: return new Estudiante(x, y, mapa);
+            case 2: return new Adulto(x, y, mapa);
+            case 3: return new Jubilado(x, y, mapa);
+            default: throw new IllegalArgumentException("Nivel inválido: " + nivel);
+        }
+    }
+}
+
+-ControladorJuego.iniciarNivel() //Con Factory
+private void iniciarNivel(int nivel) {
+    if (nivel == 2) {
+        JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
+    } else if (nivel == 3) {
+        JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
+    }
+    this.mapa = new Mapa(25, 25);
+    this.mapa.cargarNivel(nivel);
+    Mapa.reproducirSonido(nivel);
+    this.mapa.generarDinero();
+
+    this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, this.mapa); //este es el cambio
+
+    this.mapa.celdas[5][5].contenido = null;
+    this.mapa.setPersonaje(this.jugador, 5, 5);
+
+    this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
+    this.juegoActivo = true;
+    iniciarTimers();
+    this.vista.repaint();
+}
+-ControladorJuego.iniciarJuego() //con Factory
+private void iniciarJuego() {
+    Mapa mapa = new Mapa(40, 40);
+    mapa.cargarNivel(1);
+    mapa.generarDinero();
+
+    // ✅ ACÁ EL CAMBIO:
+    Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
+
+    mapa.celdas[5][5].contenido = null;
+    mapa.setPersonaje(jugador, 5, 5);
+
+    VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+    ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador);
+
+    vistaMenu.dispose();
+    vista.mostrar();
+}
+-----------------------------------------------------
 - **Nombre del Patrón:** **Strategy**.
+-Enemigo.java
+public class Enemigo extends ObjetoEntorno {
+    public int x;
+    public int y;
+    public int danio;
+    private Random random;
+
+    public double posXVisual;
+    public double posYVisual;
+    private static final double FACTOR_INTERPOLACION = 0.15;
+
+    public Enemigo(int x, int y, int danio) {   
+        super(true);
+        this.x = x;
+        this.y = y;
+        this.danio = danio;
+        this.random = new Random();
+        this.posXVisual = x;
+        this.posYVisual = y;
+    }
+  
+  public void actualizarPersecucion(Personaje personaje, Mapa mapa){}
+  //Toda la logica de movimiento de perseguir al jugador
+  .......
+  .......
+- **Problema:** La clase Enemigo contiene toda la lógica de movimiento adentro del método actualizarPersecucion(). Todos los enemigos se comportaban igual y no había forma de tener variación sin meter un if gigante.
 
 - **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. El que persigue al jugador y el errante que se mueve aleatoriamente. Se definió la interfaz `EstrategiaMovimiento` con las implementaciones `MovimientoPerseguidor` y `MovimientoErrante`. La clase `Enemigo` contiene una estrategia y le **delega** el movimiento, permitiendo intercambiarlo en runtime con `setEstrategia()`. Logrando asi poder agregar un nuevo comportamiento en un futuro solo haciendo una clase nueva, sin modificar `Enemigo` ni `Mapa`.
 
+-EstrategiaMovimiento.java //interfaz nueva
+package src.modelo.map.estrategias;
+
+import src.modelo.entities.Personaje;
+import src.modelo.map.Enemigo;
+import src.modelo.map.Mapa;
+
+public interface EstrategiaMovimiento {
+    void mover(Enemigo enemigo, Personaje jugador, Mapa mapa);
+}
+-MovimientoPerseguidor.java
+public class MovimientoPerseguidor implements EstrategiaMovimiento {
+
+    @Override
+    public void mover(Enemigo enemigo, Personaje jugador, Mapa mapa) {
+       //aca iria la logica de movimiento de perseguidor que antes estaba en Enemigo.java
+    }
+}
+-MovimientoErrante.java 
+public class MovimientoErrante implements EstrategiaMovimiento {
+
+    private final Random random = new Random();
+
+    @Override
+    public void mover(Enemigo enemigo, Personaje jugador, Mapa mapa) {
+        //aca va la logica del enemigo que se mueve aleatoriamente por el mapa
+    }
+}
+-Enemigo.java //Con Strategy
+public class Enemigo extends ObjetoEntorno {
+    public int x;
+    public int y;
+    public int danio;
+    private EstrategiaMovimiento estrategia; //Atributo de estrategia
+
+    public double posXVisual;
+    public double posYVisual;
+    private static final double FACTOR_INTERPOLACION = 0.15;
+
+    public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia) { //ahora pide estrategia
+        super(true);
+        this.x = x;
+        this.y = y;
+        this.danio = danio;
+        this.estrategia = estrategia;
+        this.posXVisual = x;
+        this.posYVisual = y;
+    }
+
+    public void setEstrategia(EstrategiaMovimiento estrategia) {
+        this.estrategia = estrategia;
+    }
+
+    public void actualizarPersecucion(Personaje personaje, Mapa mapa) {
+        if (estrategia != null) {
+            estrategia.mover(this, personaje, mapa);
+        }
+    }
+-----------------------------------------------------   
 - **Nombre del Patrón:** ** Singleton**.
 
 - **Justificación:** Se empleo debido a que con la música no necesitabamos tener más de una instancia, para simplificar sus llamados, para evitar solapamientos y tener un mayor encapsulamiento, esto mediante la clase 'Reproductor_audio' el cual posee un builder privado para restringir el acceso externo a la creación de objetos, impidiendo que cualquier otra clase pueda instanciar la clase mediante el operador new y un metodo getInstancia() que revisa si tiene o no una instancia, en el caso de que tenga, la devuelve, y si no tiene, la crea.
