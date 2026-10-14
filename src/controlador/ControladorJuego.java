@@ -2,9 +2,9 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
-
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
+import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 
 public class ControladorJuego {
@@ -36,7 +36,7 @@ public class ControladorJuego {
         this.vista = vista;
         this.mapa = mapa;
         this.jugador = jugador;
-        Mapa.reproducirSonido(1);
+        Reproductor_audio.getInstancia().reproducirSonido(1); // Arranca con la música del Nivel 1
 
         // se registra como oyente del teclado a traves de la vista
         this.vista.registrarTeclado(new TecladoListener());
@@ -122,7 +122,7 @@ private void iniciarTimers() {
         // Crear nuevo mapa y generar nivel
         this.mapa = new Mapa(25, 25);
         this.mapa.cargarNivel(nivel);
-        Mapa.reproducirSonido(nivel);
+      Reproductor_audio.getInstancia().reproducirSonido(1); // Arranca con la música del Nivel 1
         this.mapa.generarDinero();
 
         // crear el personaje correspondiente al nivel
@@ -145,7 +145,7 @@ private void iniciarTimers() {
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
         if (jugador.getDinero() < 0) {
-             Mapa.detenerSonido(); // ¡Para que frene la música al perder!Mapa.detenerSonido();
+             Reproductor_audio.getInstancia().detenerSonido();
             detener();
 
             String mensaje;
@@ -188,6 +188,7 @@ private void iniciarTimers() {
             //Menu de Pausa
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 juegoActivo = false;
+             
                 JLabel mensaje = new JLabel("Juego pausado.");
                 mensaje.setHorizontalAlignment(SwingConstants.CENTER);
                 int opcion = JOptionPane.showOptionDialog(
@@ -201,6 +202,7 @@ private void iniciarTimers() {
                     "Continuar");
                 if (opcion == JOptionPane.YES_OPTION) {
                     juegoActivo = true;
+                 
                 } else {
                     System.exit(0);
                 }
@@ -239,7 +241,7 @@ private void iniciarTimers() {
             System.out.println("### detener llamado");
 
         juegoActivo = false;
-         Mapa.detenerSonido(); // ¡Para que frene la música al perder!Mapa.detenerSonido();
+         Reproductor_audio.getInstancia().detenerSonido(); // ¡Para que frene la música al perder!Mapa.detenerSonido();
         if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
         if (timerJuego != null) timerJuego.stop();
         // === NUEVO: detener también el timer de animación ===

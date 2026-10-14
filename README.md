@@ -64,6 +64,10 @@ Concepto personaje estudiante:
 
 - **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. El que persigue al jugador y el errante que se mueve aleatoriamente. Se definió la interfaz `EstrategiaMovimiento` con las implementaciones `MovimientoPerseguidor` y `MovimientoErrante`. La clase `Enemigo` contiene una estrategia y le **delega** el movimiento, permitiendo intercambiarlo en runtime con `setEstrategia()`. Logrando asi poder agregar un nuevo comportamiento en un futuro solo haciendo una clase nueva, sin modificar `Enemigo` ni `Mapa`.
 
+- **Nombre del Patrón:** ** Singleton**.
+
+- **Justificación:** Se empleo debido a que con la música no necesitabamos tener más de una instancia de esta, para simplificar los llamados e instancias de la música, para evitar solapamientos y tener una mejor abstraccion, esto mediante la clase 'Reproductor_audio' el cual posee un builder privado para restringir el acceso externo a la creación de objetos, impidiendo que cualquier otra clase pueda instanciar la clase mediante el operador new y un metodo getInstancia() que revisa si tiene o no una instancia, en el caso de que tenga, la devuelve, y si no tiene, la crea.
+
 #### Diagrama de Clases UML (Conceptual)**
 https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
 

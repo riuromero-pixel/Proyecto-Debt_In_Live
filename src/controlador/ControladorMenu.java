@@ -3,6 +3,7 @@ package src.controlador;
 import src.modelo.entities.Personaje;
 import src.modelo.entities.PersonajeFactory;
 import src.modelo.map.Mapa;
+import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
 
@@ -19,6 +20,7 @@ public class ControladorMenu {
         Mapa mapa = new Mapa(40 ,40);
         mapa.cargarNivel(1);
         mapa.generarDinero();
+        Reproductor_audio.getInstancia().reproducirSonido(1); // Arranca con la música del Nivel 1
         
         Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
 

@@ -1,14 +1,10 @@
 package src.modelo.map;
 
-import java.io.File;
-import java.util.ArrayList; // permite utilizar numeros randoms un paquete ya de java
-import java.util.List;
+import java.util.ArrayList;
+import java.util.List; // permite utilizar numeros randoms un paquete ya de java
 import java.util.Random;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import src.modelo.entities.Personaje;
-
 import src.modelo.movimientos.EstrategiaMovimiento;
 import src.modelo.movimientos.MovimientoErrante;
 import src.modelo.movimientos.MovimientoPerseguidor;
@@ -257,56 +253,8 @@ public class Mapa {
             return (Personaje) contenido;
         }
         return null;
-    }
+    }}
      // REPRODUCTOR DE MUSICA (recibe el nombre exacto del archivo a reproducir(con extension.wav y todo))
-public static void reproducirSonido(int nivelActual) {
-    String nombreArchivo = "";
 
-    switch (nivelActual) {
-        case 1: 
-            nombreArchivo = "images/Movimiento-Naranja-NES-FC.wav"; 
-            break;
-        case 3: 
-            nombreArchivo = "images/Tango-in-8-bits-por-una-cabeza-NES-famitracker-EliKomponistaSaturn.wav"; 
-            break;
-        default:
-            System.out.println("Nivel sin música configurada: " + nivelActual);
-            return;
-    }
-
-    try {
-        // Si ya hay música sonando, la detenemos y cerramos antes de poner la nueva
-        if (clipActual != null && clipActual.isRunning()) {
-            clipActual.stop();
-            clipActual.close();
-        }
-
-        File archivo = new File(nombreArchivo);
-        if (!archivo.exists()) {
-            System.out.println("❌ Archivo de audio no encontrado en: " + archivo.getAbsolutePath());
-            return;
-        }
-
-        AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivo);
-        clipActual = AudioSystem.getClip();
-        clipActual.open(audioStream);
-        clipActual.start();
-        clipActual.loop(Clip.LOOP_CONTINUOUSLY);
-        
-        System.out.println("▶️ Sonando música del nivel: " + nivelActual);
-
-    } catch (Exception e) {
-        System.out.println("❌ Error al reproducir el audio: " + e.getMessage());
-        e.printStackTrace();
-    }
-}
-public static void detenerSonido() {
-    if (clipActual != null) {
-        clipActual.stop();
-        clipActual.close();
-        clipActual = null;
-    }
-}}
-    
         
     
