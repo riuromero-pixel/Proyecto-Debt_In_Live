@@ -59,6 +59,7 @@ Concepto personaje estudiante:
 - **Nombre del Patrón:** **Factory Method**.
   
 - ControladorJuego.iniciarNivel()
+ ```java
   private void iniciarNivel(int nivel) {
     if (nivel == 2) {
         JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
@@ -86,7 +87,9 @@ Concepto personaje estudiante:
     iniciarTimers();
     this.vista.repaint();
 }
+ ```
 -ControladorJuego.iniciarJuego()
+ ```java
 private void iniciarJuego() {
     // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
     Mapa mapa = new Mapa(40, 40);
@@ -104,14 +107,12 @@ private void iniciarJuego() {
     vistaMenu.dispose();
     vista.mostrar();
 }
+ ```
 - **Problema:** el controlador instancia directamente los personajes mediante un switch, lo que generaba un acoplamiento fuerte con las clases concretas Estudiante, Adulto y Jubilado.
 - **Justificación:** Se utilizó este patrón para centralizar la creación de los objetos `Personaje` (Estudiante, Adulto, Jubilado). Se creó la clase `PersonajeFactory` con un método estático `crearPersonaje(int nivel, int x, int y, Mapa mapa)` que decide qué subclase instanciar según el nivel recibido. Esto hará que el controlador solo pida "un personaje para el nivel N" y la factory se encarga de instanciar el correcto. Así, agregar un nuevo tipo de personaje no requerirá modificar el código que gestiona los niveles.
 
 -PersonajeFactory.java //Clase nueva
-package src.modelo.entities;
-
-import src.modelo.map.Mapa;
-
+ ```java
 public class PersonajeFactory {
 
     public static Personaje crearPersonaje(int nivel, int x, int y, Mapa mapa) {
@@ -123,8 +124,9 @@ public class PersonajeFactory {
         }
     }
 }
-
+ ```
 -ControladorJuego.iniciarNivel() //Con Factory
+ ```java
 private void iniciarNivel(int nivel) {
     if (nivel == 2) {
         JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
@@ -146,14 +148,15 @@ private void iniciarNivel(int nivel) {
     iniciarTimers();
     this.vista.repaint();
 }
+ ```
 -ControladorJuego.iniciarJuego() //con Factory
+ ```java
 private void iniciarJuego() {
     Mapa mapa = new Mapa(40, 40);
     mapa.cargarNivel(1);
     mapa.generarDinero();
 
-    // ✅ ACÁ EL CAMBIO:
-    Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
+    Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa); //aca esta el cambio
 
     mapa.celdas[5][5].contenido = null;
     mapa.setPersonaje(jugador, 5, 5);
@@ -164,8 +167,10 @@ private void iniciarJuego() {
     vistaMenu.dispose();
     vista.mostrar();
 }
+ ```
 -----------------------------------------------------
 - **Nombre del Patrón:** **Strategy**.
+ ```java
 -Enemigo.java
 public class Enemigo extends ObjetoEntorno {
     public int x;
@@ -191,21 +196,19 @@ public class Enemigo extends ObjetoEntorno {
   //Toda la logica de movimiento de perseguir al jugador
   .......
   .......
+ ```
 - **Problema:** La clase Enemigo contiene toda la lógica de movimiento adentro del método actualizarPersecucion(). Todos los enemigos se comportaban igual y no había forma de tener variación sin meter un if gigante.
 
 - **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. El que persigue al jugador y el errante que se mueve aleatoriamente. Se definió la interfaz `EstrategiaMovimiento` con las implementaciones `MovimientoPerseguidor` y `MovimientoErrante`. La clase `Enemigo` contiene una estrategia y le **delega** el movimiento, permitiendo intercambiarlo en runtime con `setEstrategia()`. Logrando asi poder agregar un nuevo comportamiento en un futuro solo haciendo una clase nueva, sin modificar `Enemigo` ni `Mapa`.
 
 -EstrategiaMovimiento.java //interfaz nueva
-package src.modelo.map.estrategias;
-
-import src.modelo.entities.Personaje;
-import src.modelo.map.Enemigo;
-import src.modelo.map.Mapa;
-
+ ```java
 public interface EstrategiaMovimiento {
     void mover(Enemigo enemigo, Personaje jugador, Mapa mapa);
 }
+ ```
 -MovimientoPerseguidor.java
+ ```java
 public class MovimientoPerseguidor implements EstrategiaMovimiento {
 
     @Override
@@ -213,7 +216,9 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
        //aca iria la logica de movimiento de perseguidor que antes estaba en Enemigo.java
     }
 }
+ ```
 -MovimientoErrante.java 
+ ```java
 public class MovimientoErrante implements EstrategiaMovimiento {
 
     private final Random random = new Random();
@@ -223,7 +228,9 @@ public class MovimientoErrante implements EstrategiaMovimiento {
         //aca va la logica del enemigo que se mueve aleatoriamente por el mapa
     }
 }
+ ```
 -Enemigo.java //Con Strategy
+ ```java
 public class Enemigo extends ObjetoEntorno {
     public int x;
     public int y;
@@ -253,6 +260,7 @@ public class Enemigo extends ObjetoEntorno {
             estrategia.mover(this, personaje, mapa);
         }
     }
+ ```
 -----------------------------------------------------   
 Markdown
 - **Código Anterior (estaba en la clase Mapa):**
