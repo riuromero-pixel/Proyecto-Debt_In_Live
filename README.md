@@ -330,7 +330,7 @@ public class Reproductor_audio {
             clipActual.close();
         }
     }
-
+}
 
 
 #### Diagrama de Clases UML (Conceptual)**
