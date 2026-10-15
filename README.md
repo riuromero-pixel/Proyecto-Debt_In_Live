@@ -254,23 +254,23 @@ public class Enemigo extends ObjetoEntorno {
         }
     }
 -----------------------------------------------------   
-Nombre del Patrón: Singleton.
+**Nombre del Patrón:** Singleton.
 
-Justificación:
+**Justificación:** 
+- **Problema:** Antes teníamos la lógica del sonido dentro de la clase `Mapa` con un método estático que abría un clip nuevo cada vez que lo llamábamos. ¿Qué pasaba? Si cambiabas de nivel o se ejecutaba mal, se solapaban los audios, se consumía memoria innecesariamente y cualquier clase podía instanciar la reproducción sin control.
+- **Solución:** Aplicamos el patrón Singleton con la clase `Reproductor_audio`. Le pusimos un constructor privado para que nadie pueda crear objetos con `new` en otras clases, y un método `getInstancia()` que controla si ya hay una instancia creada; si existe la devuelve, y si no, la crea de cero. Con esto nos aseguramos de que haya un único reproductor en todo el programa, simplificamos los llamados y evitamos que los temas se encimen (agregando un `detenerSonido()` antes de arrancar otro).
 
-Problema: Antes teníamos la lógica del sonido, dentro de la clase Mapa con un método estático que abría un clip nuevo cada vez que lo llamábamos. ¿Qué pasaba? Si cambiabas de nivel o se ejecutaba mal, se solapaban los audios, se consumía memoria innecesariamente y cualquier clase podía instanciar la reproducción sin control.
-Código Anterior (estaba en la clase Mapa):
-
-Java
-public static void reproducirSonido(String nombrearchivo) {
+**Código Anterior (estaba en la clase Mapa):**
+```java
+public static void reproducirSonido(String nombrearchivo) { 
     try {
         File archivo = new File(nombrearchivo); 
         AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivo);
         Clip clip = AudioSystem.getClip();
         clip.open(audioStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
-    } catch (Exception e) {
-        System.out.println("Error al reproducir el audio: " + e.getMessage());
+    } catch (Exception e) { 
+        System.out.println("Error al reproducir el audio: " + e.getMessage()); 
     }
 }
 
