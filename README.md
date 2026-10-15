@@ -254,9 +254,83 @@ public class Enemigo extends ObjetoEntorno {
         }
     }
 -----------------------------------------------------   
-- **Nombre del Patrón:** ** Singleton**.
+Nombre del Patrón: Singleton.
 
-- **Justificación:** Se empleo debido a que con la música no necesitabamos tener más de una instancia, para simplificar sus llamados, para evitar solapamientos y tener un mayor encapsulamiento, esto mediante la clase 'Reproductor_audio' el cual posee un builder privado para restringir el acceso externo a la creación de objetos, impidiendo que cualquier otra clase pueda instanciar la clase mediante el operador new y un metodo getInstancia() que revisa si tiene o no una instancia, en el caso de que tenga, la devuelve, y si no tiene, la crea.
+Justificación:
+
+Problema: Antes teníamos la lógica del sonido, dentro de la clase Mapa con un método estático que abría un clip nuevo cada vez que lo llamábamos. ¿Qué pasaba? Si cambiabas de nivel o se ejecutaba mal, se solapaban los audios, se consumía memoria innecesariamente y cualquier clase podía instanciar la reproducción sin control.
+Código Anterior (estaba en la clase Mapa):
+
+Java
+public static void reproducirSonido(String nombrearchivo) {
+    try {
+        File archivo = new File(nombrearchivo); 
+        AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivo);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioStream);
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+    } catch (Exception e) {
+        System.out.println("Error al reproducir el audio: " + e.getMessage());
+    }
+}
+
+Solución: aplicamos el patrón Singleton con la clase Reproductor_audio. Le pusimos un constructor privado para que nadie pueda crear objetos con new en otras clases, y un método getInstancia() que controla si ya hay una instancia creada; si existe la devuelve, y si no, la crea de cero. Con esto nos aseguramos de que haya un único reproductor en todo el programa, simplificamos los llamados y evitamos que los temas se encimen (agregando un detenerSonido() antes de arrancar otro).
+
+
+Código Nuevo / Aplicado (Clase nueva Reproductor_audio):
+
+Java
+package src.modelo.map;
+import java.io.File;
+import java.io.IOException;
+import javax.sound.sampled.*;
+
+public class Reproductor_audio {
+    private static Reproductor_audio instanciaUnica;
+    private Clip clipActual;
+
+    private Reproductor_audio() {
+        // Constructor privado para evitar que lo instancien afuera
+    }
+
+    public static Reproductor_audio getInstancia() {
+        if (instanciaUnica == null) {
+            instanciaUnica = new Reproductor_audio();
+        }
+        return instanciaUnica;
+    }
+
+    public void reproducirSonido(int nivel) {
+        detenerSonido(); // Corta el audio anterior antes de meter el nuevo
+
+        String nombreArchivo = "";
+        switch (nivel) {
+            case 1: nombreArchivo = "images/Movimiento-Naranja-NES-FC.wav"; break;
+            case 3: nombreArchivo = "images/Tango-in-8-bits-por-una-cabeza-NES-famitracker-EliKomponistaSaturn.wav"; break;
+            default: return;
+        }
+
+        try {
+            File archivoAudio = new File(nombreArchivo);
+            if (archivoAudio.exists()) {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoAudio);
+                clipActual = AudioSystem.getClip();
+                clipActual.open(audioStream);
+                clipActual.start();
+                clipActual.loop(Clip.LOOP_CONTINUOUSLY);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void detenerSonido() {
+        if (clipActual != null && clipActual.isRunning()) {
+            clipActual.stop();
+            clipActual.close();
+        }
+    }
+}
 
 #### Diagrama de Clases UML (Conceptual)**
 https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
