@@ -7,7 +7,7 @@ import src.modelo.map.Mapa;
 import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
 
-public class Personaje{
+public abstract class Personaje{
 protected int x;
 protected int y;
 protected int velocidad;
@@ -211,8 +211,6 @@ public void desactivarBonus() {
     this.bonusActivado = false;
 }
 //metodo base para crear paredes (sera sobreescrito)
-public void crearParedes() {
-    System.out.println("Este personaje no puede crear paredes");
-}
+public abstract void crearParedes();
 
 }

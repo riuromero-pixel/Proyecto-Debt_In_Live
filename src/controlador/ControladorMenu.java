@@ -6,6 +6,7 @@ import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
+import src.vista.VistaIntro;
 
 public class ControladorMenu {
     private final VistaMenu vistaMenu;
@@ -15,7 +16,15 @@ public class ControladorMenu {
         this.vistaMenu.setAccionJugar(e -> iniciarJuego());
     }
 
+    public void Iniciar(){
+        new VistaIntro(()->{
+            vistaMenu.mostrar();
+        });
+    }
+
+
     private void iniciarJuego() {
+
         // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
         Mapa mapa = new Mapa(40 ,40);
         mapa.cargarNivel(1);
