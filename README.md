@@ -255,11 +255,6 @@ public class Enemigo extends ObjetoEntorno {
     }
 -----------------------------------------------------   
 Markdown
-- **Nombre del Patrón:** Singleton.
-
-- **Justificación:** 
-  - **Problema:** Antes teníamos la lógica del sonido dentro de la clase `Mapa` con un método estático que abría un clip nuevo cada vez que lo llamábamos. ¿Qué pasaba? Si cambiabas de nivel o se ejecutaba mal, se solapaban los audios, se consumía memoria innecesariamente y cualquier clase podía instanciar la reproducción sin control.
-
 - **Código Anterior (estaba en la clase Mapa):**
 ```java
 public static void reproducirSonido(String nombrearchivo) { 
@@ -277,7 +272,7 @@ Solución: Aplicamos el patrón Singleton con la clase Reproductor_audio. Le pus
 
 Código Nuevo / Aplicado (Clase nueva Reproductor_audio):
 
-```java
+Java
 package src.modelo.map;
 
 import java.io.File;
@@ -342,4 +337,4 @@ Base de Datos: MySQL 8.0 (para persistencia de High Scores)
 
 Framework de IGU: Java Swing
 
-Control de Versiones: Git y GitHub Classroom
+Control de Versiones: Git y GitHub Classro
