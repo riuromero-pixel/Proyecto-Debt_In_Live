@@ -277,7 +277,7 @@ Solución: Aplicamos el patrón Singleton con la clase Reproductor_audio. Le pus
 
 Código Nuevo / Aplicado (Clase nueva Reproductor_audio):
 
-Java
+```java
 package src.modelo.map;
 
 import java.io.File;
