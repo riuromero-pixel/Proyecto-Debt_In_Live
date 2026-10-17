@@ -8,6 +8,7 @@ import src.modelo.entities.Personaje;
 import src.modelo.map.Celda;
 import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
+import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
 import src.modelo.map.Pared;
 
@@ -32,7 +33,11 @@ public class MovimientoErrante implements EstrategiaMovimiento {
 
             // Si pisa al jugador, le hace daño
             if (celdaDestino.contenido instanceof Personaje) {
+                if (enemigo instanceof EnemigoLetal){
+                    jugador.danioRecibido(jugador.getDinero()+1);
+                } else{
                 jugador.danioRecibido(enemigo.danio);
+                }
                 return;
             }
 

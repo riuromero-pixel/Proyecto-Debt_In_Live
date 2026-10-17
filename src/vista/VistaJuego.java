@@ -9,6 +9,7 @@ import src.modelo.entities.Personaje;
 import src.modelo.map.Bonus;
 import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
+import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
 import src.modelo.map.Pared;
 
@@ -232,12 +233,20 @@ public class VistaJuego extends JFrame {
 
                     int ex = (int) ((en.posXVisual - camX) * tamaño) + desplazamientoX;
                     int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
+                    if (en instanceof EnemigoLetal){
+                        //dibujo enemigo letal (por ahora es negro)
+                    g2d.setColor(Color.BLACK);
+                    g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
+                    g2d.setColor(Color.RED);
+                    g2d.drawString("V", ex + 11, ey + 20);
 
+                    } else {
                     // --- placeholder actual: rectángulo rojo con "V" ---
                     g2d.setColor(Color.RED);
                     g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
                     g2d.setColor(Color.WHITE);
                     g2d.drawString("V", ex + 11, ey + 20);
+                    }
                 }
             }
         }

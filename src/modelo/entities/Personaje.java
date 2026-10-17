@@ -6,6 +6,7 @@ import src.modelo.map.Pared;
 import src.modelo.map.Mapa;
 import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
+import src.modelo.map.EnemigoLetal;
 
 public abstract class Personaje{
 protected int x;
@@ -110,8 +111,11 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
         return; // No se puede pisar una pared
     }
     
-    //verificar si la celda destino tiene un ENEMIGO (NO se mueve, solo recibe daño)
-    if (celdaDestino != null && celdaDestino.contenido instanceof Enemigo) {
+    //verificar si la celda destino tiene un ENEMIGO o ENEMIGO LETAL (NO se mueve, solo recibe daño)
+    if (celdaDestino != null && celdaDestino.contenido instanceof EnemigoLetal) {
+        this.dinero = -9999;
+        return;
+    } else if (celdaDestino != null && celdaDestino.contenido instanceof Enemigo){
         Enemigo enemigo = (Enemigo) celdaDestino.contenido;
         this.dinero -= enemigo.danio;
         return; // NO nos movemos a la celda del enemigo

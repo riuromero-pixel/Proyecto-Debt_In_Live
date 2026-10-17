@@ -122,7 +122,7 @@ private void iniciarTimers() {
         // Crear nuevo mapa y generar nivel
         this.mapa = new Mapa(25, 25);
         this.mapa.cargarNivel(nivel);
-      Reproductor_audio.getInstancia().reproducirSonido(1); // Arranca con la música del Nivel 1
+      Reproductor_audio.getInstancia().reproducirSonido(nivel); // Arranca con la música del Nivel 1
         this.mapa.generarDinero();
 
         // crear el personaje correspondiente al nivel
