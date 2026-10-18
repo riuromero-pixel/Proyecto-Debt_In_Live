@@ -27,7 +27,6 @@ public class Mapa {
             }
         }
     }
-
     public void cargarNivel(int nivel) {
         //limpiar mapa
         for (int y = 0; y < alto; y++) {

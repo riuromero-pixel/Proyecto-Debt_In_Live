@@ -89,7 +89,8 @@ public class VistaMenu extends JFrame {
                 "- Presiona R para romper paredes cercanas.\n" +
                 "- Presiona C para crear paredes (según personaje).\n" +
                 "- Completa los 3 niveles para ganar el juego.\n" +
-                "- Pierdes si tu dinero baja de 0.";
+                "- Pierdes si tu dinero baja de 0." +
+                "- Ganas o aumentas de nivel si llegas a recolectar $3000.";
         JOptionPane.showMessageDialog(this, mensaje, "Cómo Jugar", JOptionPane.INFORMATION_MESSAGE);
     }
     public void mostrar() {

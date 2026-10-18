@@ -1,5 +1,6 @@
 package src.controlador;
 
+import src.controlador.ControladorMenu;
 import src.modelo.entities.Personaje;
 import src.modelo.entities.PersonajeFactory;
 import src.modelo.map.Mapa;
@@ -33,16 +34,18 @@ public class ControladorMenu {
         
         Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
 
-        /* 
-        Personaje jugador = new Estudiante(5, 5, mapa);
-        mapa.celdas[5][5].contenido = null; // Limpiar por si las dudas
-        mapa.setPersonaje(jugador, 5, 5);
-*/
         // 2) VISTA
         VistaJuego vista = new VistaJuego(mapa, jugador, 1);
 
         // 3) CONTROLADOR (El controlador se encarga de la transición de niveles)
         ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador);
+
+        controlador.setAccionVolverMenu(() -> {
+            //se vuelve a crear el menu en el caso de querer volver
+            VistaMenu nuevoMenu = new VistaMenu();
+            new ControladorMenu(nuevoMenu);
+            nuevoMenu.mostrar();
+        });
 
         // 4) Mostrar
         vistaMenu.dispose(); 

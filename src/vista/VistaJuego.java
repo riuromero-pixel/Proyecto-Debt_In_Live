@@ -20,6 +20,7 @@ public class VistaJuego extends JFrame {
     private int nivelActual;
     private int tamaño = 100;
     private static final int PANEL_ALTO = 60;
+    private boolean gameOver = false; //bandera para saber si terminó el juego
 
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
@@ -57,6 +58,13 @@ public class VistaJuego extends JFrame {
          // Fondo oscuro (por si algo queda sin cubrir)
          getContentPane().setBackground(new Color(30, 30, 40));
 
+    }
+    public void mostrarGameOver(){
+        this.gameOver = true;
+        this.repaint();
+    }
+    public void desactivarGameOver(){
+        this.gameOver = false;
     }
 
     //Permite al controlador actualizar el mapa, el jugador y el nivel actual al cambiar de nivel
@@ -128,7 +136,11 @@ public class VistaJuego extends JFrame {
         Graphics2D g2d = (Graphics2D) bufferGraphics;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g2d.setColor(new Color(30, 30, 40)); // fondo negro
+        if(gameOver){
+            g2d.setColor(new Color(150, 0 ,0 )); // fondo rojo del game over
+        } else {
+            g2d.setColor(new Color(30, 30, 40)); // fondo negro por defecto
+        }
         g2d.fillRect(0, 0, anchoPantalla, altoPantalla);
        
         // === Calcular tamaño de celda dinámicamente ===
@@ -294,6 +306,14 @@ public class VistaJuego extends JFrame {
                 jugador != null ? jugador.getVelocidad() : 0,
                 nivelActual);
         g2d.drawString(infoTexto, 20, panelY + 15);
+
+        if (gameOver){
+            g2d.setColor(Color.BLACK);
+            g2d.setFont(new Font("Arial", Font.BOLD, 80));
+            String texto = "PINCHÓ";
+            FontMetrics fm = g2d.getFontMetrics();
+            g2d.drawString(texto, (anchoPantalla - fm.stringWidth(texto)) / 2, (altoPantalla -PANEL_ALTO)/ 2 - 50);
+        }
 
         //copiar el buffer a la pantalla
         g.drawImage(bufferImagen, 0, 0, this);

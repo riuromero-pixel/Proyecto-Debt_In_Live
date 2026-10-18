@@ -16,6 +16,8 @@ public class ControladorJuego {
     private Timer timerMovimientoEnemigos;
     private Timer timerJuego;
 
+    private Runnable accionVolverMenu;
+
     // timer de animación para interpolación suave 
     // solo actualiza posiciones visuales y la camara; no modifica la logica del juego
     private Timer timerAnimacion;
@@ -115,12 +117,12 @@ private void iniciarTimers() {
     // prepara todo para el siguiente nivel
     private void iniciarNivel(int nivel) {
         if (nivel == 2) {
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
+            JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto.\n A agarrar la pala.");
         } else if (nivel == 3) {
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
+            JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado.\n Ahora cagaste.");
         }
         // Crear nuevo mapa y generar nivel
-        this.mapa = new Mapa(25, 25);
+        this.mapa = new Mapa(40, 40);
         this.mapa.cargarNivel(nivel);
       Reproductor_audio.getInstancia().reproducirSonido(nivel); // Arranca con la música del Nivel 1
         this.mapa.generarDinero();
@@ -134,6 +136,7 @@ private void iniciarTimers() {
 
         // actualizar la vista con los nuevos datos
         this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
+        this.vista.desactivarGameOver();
 
         // reiniciamos el juego (timers) despues de que el jugador acepte el mensaje.
         this.juegoActivo = true;
@@ -146,6 +149,7 @@ private void iniciarTimers() {
     private void verificarPerdida() {
         if (jugador.getDinero() < 0) {
              Reproductor_audio.getInstancia().detenerSonido();
+             vista.mostrarGameOver();
             detener();
 
             String mensaje;
@@ -158,20 +162,28 @@ private void iniciarTimers() {
             int opcion = JOptionPane.showOptionDialog(
             vista, mensaje +  "¿Y ahora?", 
             "¿Que hacemo?",
-            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.YES_NO_CANCEL_OPTION, 
             JOptionPane.PLAIN_MESSAGE, 
             null, 
-            new Object[] {"Reintentar", "Salir"},
+            new Object[] {"Reintentar","Volver al Menú","Salir"},
             "Reintentar");
            
-            if (opcion == JOptionPane.YES_OPTION) {
+            if (opcion == 0) { //Reintentar
                 // se reinicia el juego desde el nivel 1
                 nivelActual = 1;
                 iniciarNivel(nivelActual);
-            } else {
-                System.exit(0);
+            } else if (opcion == 1){ //Volver al menu
+                vista.dispose(); //se cierra la ventana del juego
+                if(accionVolverMenu != null){
+                    accionVolverMenu.run(); //se ejecuta la accion para volver al menu
+                }
+            } else { //salir
+                 System.exit(0);
             }
         }
+    }
+    public void setAccionVolverMenu(Runnable accion){
+        this.accionVolverMenu = accion;
     }
 
     private void ganarJuego(String mensaje) {
@@ -195,16 +207,24 @@ private void iniciarTimers() {
                     vista, 
                     mensaje,
                     "Pausa",
-                    JOptionPane.YES_NO_OPTION, 
+                    JOptionPane.YES_NO_CANCEL_OPTION, 
                     JOptionPane.PLAIN_MESSAGE, 
                     null, 
-                    new Object[] {"Continuar", "Salir"},
+                    new Object[] {"Continuar", "Volver al Menú", "Salir"},
                     "Continuar");
-                if (opcion == JOptionPane.YES_OPTION) {
+                if (opcion == 0) { //continuar
                     juegoActivo = true;
+                    vista.requestFocusInWindow(); //le devuelvo el foco a la ventana del juego
                  
-                } else {
-                    System.exit(0);
+                } else if (opcion == 1){ //volver al menu
+                    detener();
+                    vista.dispose(); //se cierra la ventana del juego
+                    if(accionVolverMenu != null){
+                    accionVolverMenu.run(); //se ejecuta la accion para volver al menu
+                } 
+                }
+                else {
+                    System.exit(0); //se cierra el juego
                 }
                 return;
             }
@@ -238,8 +258,6 @@ private void iniciarTimers() {
    
     // ---------- CIERRE ----------
     public void detener() {
-            System.out.println("### detener llamado");
-
         juegoActivo = false;
          Reproductor_audio.getInstancia().detenerSonido(); // ¡Para que frene la música al perder!Mapa.detenerSonido();
         if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
