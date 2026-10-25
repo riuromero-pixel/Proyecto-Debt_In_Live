@@ -4,7 +4,7 @@ import src.modelo.map.Celda;
 import src.modelo.map.Mapa;
 import src.modelo.map.Pared;
 import src.modelo.map.Bonus;
-public class Adulto extends Personaje {
+public class Adulto extends Personaje implements CreadorParedes{
 
     private int velocidadOriginal;
     private int fuerzaOriginal;

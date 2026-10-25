@@ -113,6 +113,8 @@ public class VistaJuego extends JFrame {
     //el controlador llama a este metodo para mostrar la ventana
     public void mostrar() {
         setVisible(true);
+        this.requestFocus();
+        this.requestFocusInWindow();
     }
 
     //el controlador se registra como listener del teclado a traves de la vista

@@ -214,7 +214,4 @@ public void actualizarBonus() {
 public void desactivarBonus() {
     this.bonusActivado = false;
 }
-//metodo base para crear paredes (sera sobreescrito)
-public abstract void crearParedes();
-
 }

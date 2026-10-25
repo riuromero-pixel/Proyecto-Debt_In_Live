@@ -6,7 +6,7 @@ import src.modelo.map.Celda;
 import src.modelo.map.Pared;
 import src.modelo.map.Bonus;
 
-public class Jubilado extends Personaje {
+public class Jubilado extends Personaje implements CreadorParedes{
 
 private int velocidadOriginal;
 private int fuerzaOriginal;

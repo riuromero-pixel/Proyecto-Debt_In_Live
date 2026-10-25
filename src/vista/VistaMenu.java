@@ -9,6 +9,8 @@ public class VistaMenu extends JFrame {
     // MODIFICADO: Reemplazamos la variable de volumen por una booleana de silencio
     private boolean silenciado = false;
     private JButton btnJugar;
+    private JButton btnRecords; //boton para ver records
+
 
     // NUEVO: panel con la imagen de fondo a pantalla completa
     private JPanel panelFondo;
@@ -76,6 +78,8 @@ public class VistaMenu extends JFrame {
         JButton btnOpciones = crearBoton("Opciones");
         JButton btnComoJugar = crearBoton("Cómo Jugar");
         JButton btnSalir = crearBoton("Salir");
+        btnRecords = crearBoton("Récords"); 
+
 
         btnOpciones.addActionListener(e -> mostrarOpciones());
         btnComoJugar.addActionListener(e -> mostrarComoJugar());
@@ -86,6 +90,8 @@ public class VistaMenu extends JFrame {
         panelBotones.add(btnOpciones);
         panelBotones.add(Box.createVerticalStrut(15));
         panelBotones.add(btnComoJugar);
+        panelBotones.add(Box.createVerticalStrut(15));
+        panelBotones.add(btnRecords); 
         panelBotones.add(Box.createVerticalStrut(15));
         panelBotones.add(btnSalir);
 
@@ -118,6 +124,9 @@ public class VistaMenu extends JFrame {
 
     public void setAccionJugar(ActionListener listener) {
         btnJugar.addActionListener(listener);
+    }
+      public void setAccionRecords(ActionListener listener) {
+        btnRecords.addActionListener(listener);
     }
 
     // MODIFICADO: Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
@@ -176,8 +185,8 @@ public class VistaMenu extends JFrame {
         GraphicsDevice gd = GraphicsEnvironment
             .getLocalGraphicsEnvironment()
             .getDefaultScreenDevice();
-    gd.setFullScreenWindow(this);
-    setVisible(true);
+            gd.setFullScreenWindow(this);
+            setVisible(true);
         
     }
 }

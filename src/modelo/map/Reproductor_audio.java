@@ -43,7 +43,6 @@ public static Reproductor_audio getInstancia() {
                 clipActual.open(audioStream);
                 clipActual.start();
                 clipActual.loop(Clip.LOOP_CONTINUOUSLY); // Reproducción en bucle
-                System.out.println("Sonando música del nivel: " + nivel);
             } else {
                 System.out.println("Archivo de audio no encontrado en: " + archivoAudio.getAbsolutePath());
             }
@@ -57,7 +56,6 @@ public static Reproductor_audio getInstancia() {
         if (clipActual != null && clipActual.isRunning()) {
             clipActual.stop();
             clipActual.close();
-            System.out.println("### Detener llamado");
         }
     }
 }

@@ -2,10 +2,12 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
+
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
+import src.modelo.entities.Record;
 
 public class ControladorJuego {
 
@@ -32,13 +34,20 @@ public class ControladorJuego {
     private long ultimoMovimientoJugador = 0;
     private char teclaPulsada = ' '; //espacio = ninguna tecla
 
-    public ControladorJuego(VistaJuego vista, Mapa mapa, Personaje jugador) {
+    private long tiempoInicioPartida;
+    private RecordDAO recordDAO;
+    private String nombreJugador;
+
+    public ControladorJuego(VistaJuego vista, Mapa mapa, Personaje jugador, long tiempoInicioPartida, RecordDAO recordDAO, String nombreJugador) {
         if (vista == null || mapa == null || jugador == null) {
         }
         this.vista = vista;
         this.mapa = mapa;
         this.jugador = jugador;
-        Reproductor_audio.getInstancia().reproducirSonido(1); // Arranca con la música del Nivel 1
+        this.tiempoInicioPartida = tiempoInicioPartida; // guarda el tiempo
+        this.recordDAO = recordDAO; // guarda el DAO para guardar el récord luego
+        this.nombreJugador = nombreJugador;
+        Reproductor_audio.getInstancia().reproducirSonido(1); // arranca con la música del nivel 1
 
         // se registra como oyente del teclado a traves de la vista
         this.vista.registrarTeclado(new TecladoListener());
@@ -61,7 +70,7 @@ private void iniciarTimers() {
     });
     timerMovimientoEnemigos.start();
 
-    timerJuego = new Timer(50, e -> {
+    timerJuego = new Timer(100, e -> { //--------------------------
         if (juegoActivo && teclaPulsada != ' ') {
             moverJugadorConVelocidad();
         }
@@ -148,6 +157,7 @@ private void iniciarTimers() {
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
         if (jugador.getDinero() < 0) {
+            guardarRecordActual(nivelActual);
              Reproductor_audio.getInstancia().detenerSonido();
              vista.mostrarGameOver();
             detener();
@@ -188,6 +198,8 @@ private void iniciarTimers() {
 
     private void ganarJuego(String mensaje) {
         juegoActivo = false;
+        guardarRecordActual(3); // Guarda récord de nivel 3
+        long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
         JOptionPane.showMessageDialog(vista, mensaje);
         System.exit(0);
     }
@@ -241,9 +253,14 @@ private void iniciarTimers() {
                     vista.repaint();
                     break;
                 case 'c': case 'C':
-                    jugador.crearParedes();
+                    if (jugador instanceof CreadorParedes){
+                        CreadorParedes creador = (CreadorParedes) jugador;
+                    creador.crearParedes();
                     vista.repaint();
+                }
+                
                     break;
+                    
             }
         }
 
@@ -254,6 +271,13 @@ private void iniciarTimers() {
                 teclaPulsada = ' ';
             }
         }
+    }
+
+      private void guardarRecordActual(int nivelAlcanzado) {
+        if (recordDAO == null) return;
+        long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
+        Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
+        recordDAO.guardar(nuevoRecord);
     }
    
     // ---------- CIERRE ----------
