@@ -1,6 +1,5 @@
 package src.vista;
 
-
 import java.awt.*;
 import javax.swing.*;
 import src.modelo.entities.Adulto;
@@ -14,14 +13,14 @@ import src.modelo.map.Mapa;
 import src.modelo.map.Pared;
 
 public class VistaJuego extends JFrame {
-
+    
     private Mapa mapa;
     private Personaje jugador;
     private int nivelActual;
     private int tamaño = 100;
     private static final int PANEL_ALTO = 60;
     private boolean gameOver = false; //bandera para saber si terminó el juego
-
+   
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
 
@@ -40,7 +39,7 @@ public class VistaJuego extends JFrame {
         this.mapa = mapa;
         this.jugador = jugador;
         this.nivelActual = nivelActual;
-
+        
         setTitle("Juego");
         setSize(15 * tamaño + 45, 10 * tamaño + 120);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,6 +47,8 @@ public class VistaJuego extends JFrame {
         setResizable(false);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
+
+        
 
          // Pantalla completa
          setUndecorated(true);
@@ -202,12 +203,15 @@ public class VistaJuego extends JFrame {
                         g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
                         g2d.setColor(Color.BLACK);
                         g2d.drawString("$", px + 10, py + 20);
+
+                        
                     } else if (obj instanceof Bonus) {
-                        g2d.setColor(Color.GREEN);
-                        g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
-                        g2d.setColor(Color.BLACK);
-                        g2d.drawString("B", px + 10, py + 20);
-                    }
+                 Bonus unBonus = (Bonus) obj; // Convierte el objeto genérico a Bonus
+    
+                   g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+                   g2d.setColor(Color.BLACK);
+                    g2d.drawString("B", px + 10, py + 20);
+}
                     // === NUEVO: los ENEMIGOS ya NO se dibujan acá ===
                     // Se dibujan más abajo, en su propio bucle, usando su posición VISUAL
                     // (posXVisual, posYVisual) para que la interpolación funcione.

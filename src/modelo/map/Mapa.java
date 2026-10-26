@@ -56,7 +56,7 @@ public class Mapa {
 
          colocarAleatorio(Pared.class, cantidadParedes, nivel);
          colocarAleatorio(Enemigo.class, cantidadEnemigos, nivel);
-         generarBonus(nivel * 4); // siempre 3 bonus por nivel
+         generarBonus(nivel * 4, nivel); // siempre 3 bonus por nivel
          colocarEnemigoLetal(nivel);
     }
     private void colocarAleatorio(Class<?> tipo, int cantidad, int nivel) { //coloca n objetos en el mapa con un maximo de intentos
@@ -100,7 +100,7 @@ public class Mapa {
     }
     }
     //generar bonus
-    public void generarBonus(int cantidad) {
+    public void generarBonus(int cantidad, int nivel) {
     for (int i = 0; i < cantidad; i++) {
         int x, y;
         do {
@@ -108,7 +108,7 @@ public class Mapa {
             y = 1 + random.nextInt(alto - 2);
         } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
 
-        celdas[y][x].contenido = new Bonus(2, 5000);
+        celdas[y][x].contenido = new Bonus(2, 5000, nivel);
     }
 }
 
