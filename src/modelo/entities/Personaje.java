@@ -21,7 +21,6 @@ protected Mapa mapa;
 protected Object paredObjetivo;  
 protected String direccionActual; //guarda la ultima direccion del personaje
 protected long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
-
 // === NUEVO: coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
 // La lógica del juego sigue usando (x, y). Estas coordenadas se usan SOLO para dibujar
 // y permiten que el sprite se desplace celda a celda de forma fluida en vez de teletransportarse.
@@ -34,6 +33,15 @@ protected double posYVisual;
 // Si más adelante se cambia por sprites con animación por duración fija, este factor
 // puede reemplazarse por una velocidad en celdas/segundo.
 protected static final double FACTOR_INTERPOLACION = 0.2;
+
+// NUEVO: variables para animación de sprites
+public String direccionVisual = "S";
+public int frameAnimacion = 0;
+public long ultimoFrameAnimacion = 0;
+public boolean enMovimiento = false;
+//aa
+public boolean isEnMovimiento() { return enMovimiento; }
+public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
 
 public Personaje(int x, int y, int velocidad, int fuerza, int dinero, boolean bonusActivado, Mapa mapa){
     this.x = x;
@@ -92,16 +100,16 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     
     switch (direccion) {
         case 'W':
-            nuevaY = Math.min(altoMapa - 1, this.y - 1); 
+            nuevaY = Math.min(altoMapa - 1, this.y - 1); this.direccionVisual = "N";
             break;
         case 'S':
-            nuevaY = Math.max(0, this.y + 1);  
+            nuevaY = Math.max(0, this.y + 1); this.direccionVisual = "S";
             break;
         case 'A':
-            nuevaX = Math.max(0, this.x - 1); 
+            nuevaX = Math.max(0, this.x - 1); this.direccionVisual = "O";
             break;
         case 'D':
-            nuevaX = Math.min(anchoMapa - 1, this.x + 1); 
+            nuevaX = Math.min(anchoMapa - 1, this.x + 1); this.direccionVisual = "E";
             break;
     }
     

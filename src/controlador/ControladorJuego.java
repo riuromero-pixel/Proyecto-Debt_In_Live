@@ -8,6 +8,7 @@ import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.modelo.entities.Record;
+import src.modelo.entities.Personaje;
 
 public class ControladorJuego {
 
@@ -81,6 +82,24 @@ private void iniciarTimers() {
         if (juegoActivo) {
             jugador.actualizarPosicionVisual();
             jugador.actualizarBonus();
+
+// === Animación del sprite del jugador ===
+        boolean moviendo = (teclaPulsada != ' ');
+        jugador.setEnMovimiento(moviendo);
+
+        if (moviendo) {
+            long ahora = System.currentTimeMillis();
+            if (ahora - jugador.ultimoFrameAnimacion > 100) { // 100ms por frame
+                jugador.frameAnimacion++;
+                if (jugador.frameAnimacion >= 22) { // 11 cols x 2 filas
+                    jugador.frameAnimacion = 0;
+                }
+                jugador.ultimoFrameAnimacion = ahora;
+            }
+        } else {
+            jugador.frameAnimacion = 0; // idle: vuelve al primer frame
+        }
+
             mapa.actualizarPosicionesVisualesEnemigos();
             vista.actualizarCamaraSuave();
             vista.repaint();

@@ -24,9 +24,9 @@ public static Reproductor_audio getInstancia() {
     this.silenciado = !this.silenciado;
     
     if (this.silenciado) {
-        detenerSonido(); // Llamá al método que ya tenés para frenar la música
+        detenerSonido(); 
     } else {
-        reproducirSonido(1); // Llamá al método para volver a darle play
+        reproducirSonido(1);
     }
 }
     public void reproducirSonido(int nivel) {

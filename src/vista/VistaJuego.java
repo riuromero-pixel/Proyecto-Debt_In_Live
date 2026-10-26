@@ -326,52 +326,41 @@ public class VistaJuego extends JFrame {
     }
 
     private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
+        
+         // NUEVO: dibujamos estudiante
+    if (jugador instanceof Estudiante) {
+        java.awt.Image sprite = ((Estudiante) jugador).getSpriteActual();
+        if (sprite != null) {
+
+            //Obtenemos el ancho y alto original de la imagen
+            int anchoOriginal = sprite.getWidth(null);
+            int altoOriginal = sprite.getHeight(null);
+
+            // Calculamos la escala para que la imagen entre en la celda
+            double margen = 1.3; // 1.3 veces el tamaño de la celda
+            double escala = (double) tamaño / Math.max(anchoOriginal, altoOriginal) * margen;
+
+            // Calculamos las nuevas dimensiones manteniendo la proporción
+            int anchoDibujo = (int) (anchoOriginal * escala);
+            int altoDibujo  = (int) (altoOriginal * escala);
+
+            // Calculamos la posición para que quede centrado horizontalmente 
+            // y apoyado en la parte de abajo de la celda (los pies en el piso)
+            int dibujoX = px + (tamaño - anchoDibujo) / 2;
+            int dibujoY = py + (tamaño - altoDibujo); // Lo pegamos abajo
+
+            // Dibujamos con las medidas calculadas
+            g2d.drawImage(sprite, dibujoX, dibujoY, anchoDibujo, altoDibujo, null);
+            return;
+        }
+    }
+
+        
         int margen = tamaño / 10;
         int radio = tamaño / 2 - margen;
 
         // === SOMBRA ===
         g2d.setColor(new Color(0, 0, 0, 60));
         g2d.fillOval(px + margen + 2, py + margen + 4, radio * 2, radio * 2);
-
-        // === CARA ===
-        g2d.setColor(new Color(255, 220, 50));
-        g2d.fillOval(px + margen, py + margen, radio * 2, radio * 2);
-
-        // === BORDE ===
-        g2d.setColor(new Color(200, 170, 0));
-        g2d.setStroke(new BasicStroke(2));
-        g2d.drawOval(px + margen, py + margen, radio * 2, radio * 2);
-
-        // === OJOS ===
-        int ojoTamaño = tamaño / 6;
-        int ojoY = py + tamaño / 3;
-        int ojoX1 = px + tamaño / 4;
-        int ojoX2 = px + tamaño * 3 / 4 - ojoTamaño;
-
-        g2d.setColor(Color.BLACK);
-        g2d.fillOval(ojoX1, ojoY, ojoTamaño, ojoTamaño);
-        g2d.fillOval(ojoX2, ojoY, ojoTamaño, ojoTamaño);
-
-        // === REFLEJO EN OJOS ===
-        int reflejo = ojoTamaño / 3;
-        g2d.setColor(Color.WHITE);
-        g2d.fillOval(ojoX1 + 2, ojoY + 1, reflejo, reflejo);
-        g2d.fillOval(ojoX2 + 2, ojoY + 1, reflejo, reflejo);
-
-        // === SONRISA ===
-        int sonrisaX = px + tamaño / 5;
-        int sonrisaY = py + tamaño / 2 + 2;
-        int sonrisaAncho = tamaño * 3 / 5;
-        int sonrisaAlto = tamaño / 4;
-
-        g2d.setColor(Color.BLACK);
-        g2d.setStroke(new BasicStroke(2));
-        g2d.drawArc(sonrisaX, sonrisaY, sonrisaAncho, sonrisaAlto, 0, -180);
-
-        // === MEJILLAS ===
-        int mejillaTamaño = tamaño / 6;
-        g2d.setColor(new Color(255, 150, 150, 100));
-        g2d.fillOval(px + margen + 2, py + tamaño / 2 + 2, mejillaTamaño, mejillaTamaño / 2);
-        g2d.fillOval(px + tamaño - margen - mejillaTamaño - 2, py + tamaño / 2 + 2, mejillaTamaño, mejillaTamaño / 2);
     }
 }
