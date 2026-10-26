@@ -36,9 +36,10 @@ public static Reproductor_audio getInstancia() {
         switch (nivel) {
             case 1:
                 nombreArchivo = "images/Movimiento-Naranja-NES-FC.wav";
+                
                 break;
             case 2:
-            
+                nombreArchivo = "images/Homero_Chiptune_Master.wav";
                 break;
             case 3:
                 nombreArchivo = "images/Tango-in-8-bits-por-una-cabeza-NES-famitracker-EliKomponistaSaturn.wav";
