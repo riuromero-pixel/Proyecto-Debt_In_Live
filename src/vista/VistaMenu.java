@@ -6,16 +6,18 @@ import javax.swing.*;
 
 public class VistaMenu extends JFrame {
 
-    // MODIFICADO: Reemplazamos la variable de volumen por una booleana de silencio
-    private boolean silenciado = false;
+    // BORRADO: La variable "silenciado" se quitó 
+
+    // NUEVO: Variable para guardar la conexión con el Controlador para el botón de silenciar
+    private ActionListener accionSilenciar;
+
     private JButton btnJugar;
-    private JButton btnRecords; //boton para ver records
+    private JButton btnRecords; 
 
-
-    // NUEVO: panel con la imagen de fondo a pantalla completa
+    
     private JPanel panelFondo;
 
-    // NUEVO: ruta de la imagen de fondo del menú (actualizada a .jpeg)
+    
     private static final String RUTA_IMAGEN_FONDO = "images/menu.jpeg";
 
     public VistaMenu() {
@@ -128,7 +130,10 @@ public class VistaMenu extends JFrame {
       public void setAccionRecords(ActionListener listener) {
         btnRecords.addActionListener(listener);
     }
-
+// NUEVO: Listener para el botón silenciar, que delega la acción al controlador
+    public void setAccionSilenciar(ActionListener listener) {
+        this.accionSilenciar = listener;
+    }
     // MODIFICADO: Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
     private void mostrarOpciones() {
         JDialog dialogo = new JDialog(this, "Opciones", true);
@@ -137,18 +142,20 @@ public class VistaMenu extends JFrame {
         dialogo.setResizable(false);
         dialogo.setLayout(new BoxLayout(dialogo.getContentPane(), BoxLayout.Y_AXIS));
 
-        // Etiqueta del estado del sonido
-        JLabel label = new JLabel("Estado del sonido: " + (silenciado ? "Silenciado" : "Activado"));
+        // MODIFICADO: El label ahora es genérico.
+        JLabel label = new JLabel("Ajustes de Sonido");
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setFont(new Font("Arial", Font.BOLD, 14));
 
-        // Boton para alternar el mute
-        JButton btnMute = new JButton(silenciado ? "Activar Sonido" : "Silenciar");
+        // MODIFICADO: El texto del botón queda estático para simplificar la delegación.
+        JButton btnMute = new JButton("Activar/Desactivar Sonido");
         btnMute.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+         // MODIFICADO: En vez de cambiar el estado interno, le delegamos la acción al Controlador.
         btnMute.addActionListener(e -> {
-            silenciado = !silenciado;
-            label.setText("Estado del sonido: " + (silenciado ? "Silenciado" : "Activado"));
-            btnMute.setText(silenciado ? "Activar Sonido" : "Silenciar");
+            if (accionSilenciar != null) {
+                accionSilenciar.actionPerformed(e); 
+            }
         });
 
         // Boton Aceptar para cerrar

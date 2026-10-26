@@ -6,6 +6,8 @@ import javax.sound.sampled.*;
 public class Reproductor_audio {
     private static Reproductor_audio instanciaUnica;
     private Clip clipActual;
+    // NUEVO: atributo para controlar el silencio
+    private boolean silenciado = false;
     
 private Reproductor_audio() {
         // Constructor privado para evitar instanciación externa
@@ -17,6 +19,16 @@ public static Reproductor_audio getInstancia() {
         }
         return instanciaUnica;
     }
+    // NUEVO: Método para alternar el silencio
+    public void alternarSilencio() {
+    this.silenciado = !this.silenciado;
+    
+    if (this.silenciado) {
+        detenerSonido(); // Llamá al método que ya tenés para frenar la música
+    } else {
+        reproducirSonido(1); // Llamá al método para volver a darle play
+    }
+}
     public void reproducirSonido(int nivel) {
         detenerSonido(); // Se asegura de cortar la música anterior antes de arrancar otra
 
@@ -26,7 +38,7 @@ public static Reproductor_audio getInstancia() {
                 nombreArchivo = "images/Movimiento-Naranja-NES-FC.wav";
                 break;
             case 2:
-                // Agrega aquí la ruta del nivel 2 si corresponde
+            
                 break;
             case 3:
                 nombreArchivo = "images/Tango-in-8-bits-por-una-cabeza-NES-famitracker-EliKomponistaSaturn.wav";

@@ -29,6 +29,14 @@ public class ControladorMenu {
         this.vistaMenu = vistaMenu;
         this.vistaMenu.setAccionJugar(e -> iniciarJuego());
         this.vistaMenu.setAccionRecords(e -> mostrarRecords());
+
+// NUEVO: Conectamos la acción del botón "Alternar Sonido" de la vista con el controlador.
+        // El controlador es quien realiaz la accion
+        this.vistaMenu.setAccionSilenciar(e -> {
+            // Le pedimos a Reproductor_audio que alterne el volumen
+            Reproductor_audio.getInstancia().alternarSilencio(); 
+        });
+
         try {
         Connection conexion = Conexion.getInstancia().get();
         this.recordDAO = new RecordDAOSQLite(conexion);
