@@ -121,10 +121,10 @@ public class Mapa {
                 x = 1 + random.nextInt(ancho - 2);
                 y = 1 + random.nextInt(alto - 2);
             } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
-                celdas[y][x].contenido = new Dinero(2999);
+                
 
 
-            //celdas[y][x].contenido = new Dinero(100 + random.nextInt(400));
+            celdas[y][x].contenido = new Dinero(100 + random.nextInt(400));
         }
     }
 

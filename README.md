@@ -21,26 +21,46 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 ## Sistema de Enemigos
 
--Los enemigos serán customizados como entidades que pueden restar dinero a como por ejemplo, una consola de videojuegos o impuestos.
+- Los enemigos serán customizados como entidades que pueden restar dinero, como por ejemplo, una consola de videojuegos o impuestos.
 
 - Los enemigos aparecen en el mapa al comenzar el nivel.
 
 - A medida que se aumentan el nivel aparecerán más enemigos.
 
-- Los enemigos estarán a lo largo de todo el mapa de forma aleatoria y tendrán un recorrido preestablecido para dificultar la partida al jugador.
+- Los enemigos estarán a lo largo de todo el mapa de forma aleatoria y tendrán un recorrido preestablecido para dificultar la partida al jugador. Algunos persiguen al jugador y otros se mueven de forma errante.
+
+- En el nivel final aparece además un **Enemigo Letal** que elimina al jugador con solo tocarlo.
 
 ## Mecanicas de Juego
 
 - El jugador comenzará la partida con una cantidad ($) preestablecida en el nivel 1 (Estudiante) y deberá recolectar los puntos (Dinero) que estarán repartidos en el mapa.
 
-- El jugador perderá la partida en cuanto sus puntos caigan por debajo de 0 y empezará desde el nivel 1.
+- El jugador perderá la partida en cuanto sus puntos caigan por debajo de 0 y deberá elegir entre reintentar, volver al menú o salir.
 
-- Habrán mejoras donde cada una será diferente dependiendo el nivel actual y que aparecerán cada cierta cantidad de dinero recolectado.
+- Habrán mejoras (Bonus) que afectan la velocidad y fuerza del personaje según el nivel, y que aparecen repartidas por el mapa. Tienen duración limitada.
+
+- Al recolectar $3000 el jugador avanza al siguiente nivel (o gana el juego si estaba en el último).
+
+- Dependiendo del nivel, el jugador puede **romper paredes** (tecla R) o **crear paredes** (tecla C): el Adulto puede llenar una fila/columna entera, el Jubilado solo puede colocar una pared.
 
 ## Interfaz Grafica
 
 - Visualización de cada nivel con un mapa, enemigos, aspecto del jugador.
 El jugador es una persona  que debe evitar sumar deudas a lo largo de su vida en una perspectiva top-down, en la cual en los niveles habrán objetos o entidades que harán que el jugador vaya acumulando deudas y por lo tanto se le reste dinero. El jugador deberá recoger dinero esparcido por el mapa donde en una determinada cantidad de dinero avanzará de nivel. Además, dependiendo del nivel, el jugador podrá construir o destruir paredes a voluntad. Como también, contará con potenciadores temporales donde dependiendo del nivel, afectará de manera diferente al jugador, como por ejemplo en velocidad al moverse o inmunidad. El juego tendrá 3 niveles: Estudiante (Con un mapa ambientado en una escuela), Adulto (ambientando el mapa en una oficina) y Jubilado (ambientando el mapa en un lugar calmo y natural), a medida que se vaya avanzando en los niveles, sera mas difícil sumar dinero. Los escenarios e incluso el mismo personaje que usará el jugador serán variados dependiendo el nivel y los enemigos serán distintos, como por ejemplo un enemigo podría ser Los Impuestos, habrá enemigos que siguen al jugador y otros que avanzarán de manera aleatoria en el mapa.
+
+- El juego muestra un **HUD inferior** con el dinero del jugador, la cantidad de monedas que quedan en el mapa, la fuerza, la velocidad y el nivel actual.
+
+- Hay una **pantalla de introducción** con un GIF animado antes de llegar al menú principal.
+
+- El movimiento del personaje y de los enemigos se dibuja con **interpolación suave** (se deslizan entre celdas en vez de saltar de golpe), y la **cámara sigue al jugador** de forma fluida dentro de un viewport de 15x10 celdas.
+
+
+## Sistema de Récords y Sonido
+
+- La partida pide el nombre del jugador al iniciar. Los récords se guardan en una **base de datos SQLite** al perder o al ganar, y se pueden consultar desde el menú con el botón "Récords". Se muestran los 10 mejores ordenados por tiempo jugado.
+
+- La música cambia según el nivel, con un tema diferente para el menú. Existe una opción en el menú para **activar/desactivar el sonido**.
+
 
 Algunos conceptos de los mapas: 
 ![Mapa Nivel 1](images/AI%20slop%20concepto%20mapa%20LV1%20Debt_in_life.png)
@@ -50,7 +70,7 @@ Algunos conceptos de los enemigos:
 ![Enemigos](images/valio%20la%20pena%20secar%20un%20lago%20concepto%20enemigos%20DEbt_in_LIfe.png)
 
 Concepto personaje estudiante: 
-![Personaje Jugable](images/AI%20slop%20concepto%20personaje%20jugable%20LV1.png)
+![Personaje Jugable](images/sprite4peladofrontal.png)
 
 ## 3. Arquitectura y Diseño
 
@@ -67,9 +87,9 @@ Concepto personaje estudiante:
         JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
     }
     // Crear nuevo mapa y generar nivel
-    this.mapa = new Mapa(25, 25);
+    this.mapa = new Mapa(40, 40);
     this.mapa.cargarNivel(nivel);
-    Mapa.reproducirSonido(nivel);
+    Reproductor_audio.getInstancia().reproducirSonido(nivel);
     this.mapa.generarDinero();
 
     switch (nivel) {
@@ -83,6 +103,7 @@ Concepto personaje estudiante:
     this.mapa.setPersonaje(this.jugador, 5, 5);
 
     this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
+    this.vista.desactivarGameOver();
     this.juegoActivo = true;
     iniciarTimers();
     this.vista.repaint();
@@ -91,21 +112,21 @@ Concepto personaje estudiante:
 -ControladorJuego.iniciarJuego()
  ```java
 private void iniciarJuego() {
-    // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
-    Mapa mapa = new Mapa(40, 40);
-    mapa.cargarNivel(1);
-    mapa.generarDinero();
+   // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
+   Mapa mapa = new Mapa(40, 40);
+   mapa.cargarNivel(1);
+   mapa.generarDinero();
 
-    Personaje jugador = new Estudiante(5, 5, mapa);
+   Personaje jugador = new Estudiante(5, 5, mapa);
 
-    mapa.celdas[5][5].contenido = null;
-    mapa.setPersonaje(jugador, 5, 5);
+   mapa.celdas[5][5].contenido = null;
+   mapa.setPersonaje(jugador, 5, 5);
 
-    VistaJuego vista = new VistaJuego(mapa, jugador, 1);
-    ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador);
+   VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+   ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador, this.tiempoInicioPartida, this.recordDAO, nombreJugador);
 
-    vistaMenu.dispose();
-    vista.mostrar();
+   vistaMenu.dispose();
+   vista.mostrar();
 }
  ```
 - **Problema:** el controlador instancia directamente los personajes mediante un switch, lo que generaba un acoplamiento fuerte con las clases concretas Estudiante, Adulto y Jubilado.
@@ -116,56 +137,59 @@ private void iniciarJuego() {
 public class PersonajeFactory {
 
     public static Personaje crearPersonaje(int nivel, int x, int y, Mapa mapa) {
-        switch (nivel) {
-            case 1: return new Estudiante(x, y, mapa);
-            case 2: return new Adulto(x, y, mapa);
-            case 3: return new Jubilado(x, y, mapa);
-            default: throw new IllegalArgumentException("Nivel inválido: " + nivel);
-        }
-    }
+       switch (nivel) {
+           case 1: return new Estudiante(x, y, mapa);
+           case 2: return new Adulto(x, y, mapa);
+           case 3: return new Jubilado(x, y, mapa);
+           default: return new Estudiante(x, y, mapa); //Personaje por defecto
+       }
+   }
 }
  ```
 -ControladorJuego.iniciarNivel() //Con Factory
  ```java
 private void iniciarNivel(int nivel) {
-    if (nivel == 2) {
-        JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
-    } else if (nivel == 3) {
-        JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
-    }
-    this.mapa = new Mapa(25, 25);
-    this.mapa.cargarNivel(nivel);
-    Mapa.reproducirSonido(nivel);
-    this.mapa.generarDinero();
+   if (nivel == 2) {
+       JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
+   } else if (nivel == 3) {
+       JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
+   }
+   this.mapa = new Mapa(40, 40);
+   this.mapa.cargarNivel(nivel);
+   Reproductor_audio.getInstancia().reproducirSonido(nivel);
+   this.mapa.generarDinero();
 
-    this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, this.mapa); //este es el cambio
+   this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, this.mapa); //este es el cambio
 
-    this.mapa.celdas[5][5].contenido = null;
-    this.mapa.setPersonaje(this.jugador, 5, 5);
+   this.mapa.celdas[5][5].contenido = null;
+   this.mapa.setPersonaje(this.jugador, 5, 5);
 
-    this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
-    this.juegoActivo = true;
-    iniciarTimers();
-    this.vista.repaint();
+   this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
+   this.vista.desactivarGameOver();
+   this.juegoActivo = true;
+   iniciarTimers();
+   this.vista.repaint();
 }
  ```
 -ControladorJuego.iniciarJuego() //con Factory
  ```java
 private void iniciarJuego() {
-    Mapa mapa = new Mapa(40, 40);
-    mapa.cargarNivel(1);
-    mapa.generarDinero();
+   // (pedir nombre al jugador) 
 
-    Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa); //aca esta el cambio
+   Mapa mapa = new Mapa(40, 40);
+   mapa.cargarNivel(1);
+   mapa.generarDinero();
 
-    mapa.celdas[5][5].contenido = null;
-    mapa.setPersonaje(jugador, 5, 5);
+   Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa); //aca esta el cambio
 
-    VistaJuego vista = new VistaJuego(mapa, jugador, 1);
-    ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador);
+   mapa.celdas[5][5].contenido = null;
+   mapa.setPersonaje(jugador, 5, 5);
 
-    vistaMenu.dispose();
-    vista.mostrar();
+   VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+   ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador, this.tiempoInicioPartida, this.recordDAO, nombreJugador);
+
+   vistaMenu.dispose();
+   vista.mostrar();
 }
  ```
 -----------------------------------------------------
@@ -173,29 +197,29 @@ private void iniciarJuego() {
  ```java
 -Enemigo.java
 public class Enemigo extends ObjetoEntorno {
-    public int x;
-    public int y;
-    public int danio;
-    private Random random;
+   public int x;
+   public int y;
+   public int danio;
+   private Random random;
 
-    public double posXVisual;
-    public double posYVisual;
-    private static final double FACTOR_INTERPOLACION = 0.15;
+   public double posXVisual;
+   public double posYVisual;
+   private static final double FACTOR_INTERPOLACION = 0.15;
 
-    public Enemigo(int x, int y, int danio) {   
-        super(true);
-        this.x = x;
-        this.y = y;
-        this.danio = danio;
-        this.random = new Random();
-        this.posXVisual = x;
-        this.posYVisual = y;
-    }
-  
-  public void actualizarPersecucion(Personaje personaje, Mapa mapa){}
-  //Toda la logica de movimiento de perseguir al jugador
-  .......
-  .......
+   public Enemigo(int x, int y, int danio) {   
+       super(true);
+       this.x = x;
+       this.y = y;
+       this.danio = danio;
+       this.random = new Random();
+       this.posXVisual = x;
+       this.posYVisual = y;
+   }
+ 
+ public void actualizarPersecucion(Personaje personaje, Mapa mapa){}
+ //Toda la logica de movimiento de perseguir al jugador
+ .......
+ .......
  ```
 - **Problema:** La clase Enemigo contiene toda la lógica de movimiento adentro del método actualizarPersecucion(). Todos los enemigos se comportaban igual y no había forma de tener variación sin meter un if gigante.
 
@@ -262,7 +286,7 @@ public class Enemigo extends ObjetoEntorno {
     }
  ```
 -----------------------------------------------------   
-ombre del Patrón: Singleton.
+Nombre del Patrón: Singleton.
 
 Justificación:
 
@@ -280,6 +304,31 @@ Solución: Aplicamos el patrón Singleton con la clase Reproductor_audio. Le pus
 Código Nuevo / Aplicado (Clase nueva Reproductor_audio):
 <img width="980" height="642" alt="image" src="https://github.com/user-attachments/assets/02766d17-54ce-4e81-abed-bf83e2cfd743" />
 <img width="848" height="588" alt="image" src="https://github.com/user-attachments/assets/61bbc140-1cbd-4168-849b-57f9a2f22dd7" />
+
+- **Interfaz adicional:** CreadorParedes
+
+- **Problema:** Algunos personajes (Adulto y Jubilado) pueden crear paredes, pero cada uno lo hace de forma distinta. Si el controlador o la vista tuvieran que chequear el tipo concreto de personaje para saber si puede crear paredes, se complicaba el código y se rompía el polimorfismo.
+
+- **Justificación:** Se creó la interfaz CreadorParedes con el método crearParedes(). Las clases Adulto y Jubilado la implementan, cada una con su propia lógica (el Adulto llena una fila/columna entera en la dirección actual, el Jubilado coloca una sola pared). De esta forma, el controlador solo pregunta if (jugador instanceof CreadorParedes) y llama a crearParedes() sin importarle qué personaje concreto es. El Estudiante, que no implementa la interfaz, simplemente no puede usar la tecla C.
+
+
+-CreadorParedes.java // Interfaz Nueva
+ ```java
+public interface CreadorParedes {
+   void crearParedes();
+}
+```
+
+-Uso desde el ControladorJuego (tecla C):
+ ```java
+case 'c': case 'C':
+   if (jugador instanceof CreadorParedes){
+       CreadorParedes creador = (CreadorParedes) jugador;
+       creador.crearParedes();
+       vista.repaint();
+   }
+   break;
+```
 
 
 Diagrama de Clases UML (Conceptual)
