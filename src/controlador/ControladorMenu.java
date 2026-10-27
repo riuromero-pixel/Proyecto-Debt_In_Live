@@ -30,7 +30,7 @@ public class ControladorMenu {
         this.vistaMenu.setAccionJugar(e -> iniciarJuego());
         this.vistaMenu.setAccionRecords(e -> mostrarRecords());
 
-// NUEVO: Conectamos la acción del botón "Alternar Sonido" de la vista con el controlador.
+    // NUEVO: Conectamos la acción del botón "Alternar Sonido" de la vista con el controlador.
         // El controlador es quien realiaz la accion
         this.vistaMenu.setAccionSilenciar(e -> {
             // Le pedimos a Reproductor_audio que alterne el volumen
@@ -96,6 +96,8 @@ public class ControladorMenu {
             VistaMenu nuevoMenu = new VistaMenu();
             new ControladorMenu(nuevoMenu);
             nuevoMenu.mostrar();
+            Reproductor_audio.getInstancia().reproducirSonido(3); 
+
         });
 
         // 4) Mostrar

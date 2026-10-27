@@ -35,6 +35,7 @@ public class VistaJuego extends JFrame {
     private Image bufferImagen;
     private Graphics bufferGraphics;
 
+
     public VistaJuego(Mapa mapa, Personaje jugador, int nivelActual) {
         this.mapa = mapa;
         this.jugador = jugador;

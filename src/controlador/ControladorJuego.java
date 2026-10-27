@@ -8,7 +8,6 @@ import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.modelo.entities.Record;
-import src.modelo.entities.Personaje;
 
 public class ControladorJuego {
 
@@ -219,8 +218,14 @@ private void iniciarTimers() {
         juegoActivo = false;
         guardarRecordActual(3); // Guarda récord de nivel 3
         long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
-        JOptionPane.showMessageDialog(vista, mensaje);
-        System.exit(0);
+        long segundosTotal = tiempoTotal/1000;
+        long minutos = segundosTotal/60;
+        long segundos = segundosTotal % 60;
+        JOptionPane.showMessageDialog(vista, mensaje + "\n\n¡Tu tiempo total fue de: " + minutos + " minutos y " + segundos + "segundos!");
+        vista.dispose(); //se cierra la ventana
+        if (accionVolverMenu != null) { //se vuelve al menu
+            accionVolverMenu.run();
+        }
     }
 
     // ---------- OYENTE DEL TECLADO ----------

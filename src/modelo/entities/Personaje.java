@@ -120,10 +120,7 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     }
     
     //verificar si la celda destino tiene un ENEMIGO o ENEMIGO LETAL (NO se mueve, solo recibe daño)
-    if (celdaDestino != null && celdaDestino.contenido instanceof EnemigoLetal) {
-        this.dinero = -9999;
-        return;
-    } else if (celdaDestino != null && celdaDestino.contenido instanceof Enemigo){
+    if (celdaDestino != null && celdaDestino.contenido instanceof Enemigo && !(celdaDestino.contenido instanceof EnemigoLetal)) {
         Enemigo enemigo = (Enemigo) celdaDestino.contenido;
         this.dinero -= enemigo.danio;
         return; // NO nos movemos a la celda del enemigo
@@ -146,6 +143,11 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
         
         //colocar al personaje en la nueva celda
         mapa.setPersonaje(this, nuevaX, nuevaY);
+        Celda celdaActual = mapa.conseguirCelda(this.x, this.y);
+        if (celdaActual != null && celdaActual.contenido instanceof EnemigoLetal){
+            this.dinero = -9999;
+            return;
+        }
     }
 }
 

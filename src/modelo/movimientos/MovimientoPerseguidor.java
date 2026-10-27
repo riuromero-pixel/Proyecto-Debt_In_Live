@@ -36,7 +36,6 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
                 // SI LA CELDA TIENE AL PERSONAJE: Colisión directa, le hace daño y termina
                 if (celdaDestino.contenido instanceof Personaje) {
                     personaje.danioRecibido(enemigo.danio);
-                    System.out.println("¡Te tocó un enemigo! Daño: " + enemigo.danio);
                     return; 
                 }
 
@@ -51,8 +50,8 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
                     }
                 }
             }
-            moverEnemigo(enemigo, mejorX, mejorY, mapa);
         } 
+        moverEnemigo(enemigo, mejorX, mejorY, mapa);
     }   
 
         
