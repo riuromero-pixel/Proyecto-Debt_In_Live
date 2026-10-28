@@ -325,15 +325,16 @@ public class VistaJuego extends JFrame {
         //copiar el buffer a la pantalla
         g.drawImage(bufferImagen, 0, 0, this);
     }
-
-    private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
         
          // NUEVO: dibujamos estudiante
-    if (jugador instanceof Estudiante) {
-        java.awt.Image sprite = ((Estudiante) jugador).getSpriteActual();
+        private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
+        
+        // MODIFICADO: Se elimina el if(jugador instanceof Estudiante) y todo el casting engorroso.
+        // Ahora le pedimos a GestorSprites que nos dé la imagen correspondiente de manera limpia.
+        java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador);
+        
         if (sprite != null) {
-
-            //Obtenemos el ancho y alto original de la imagen
+            // Obtenemos el ancho y alto original de la imagen
             int anchoOriginal = sprite.getWidth(null);
             int altoOriginal = sprite.getHeight(null);
 
@@ -345,23 +346,23 @@ public class VistaJuego extends JFrame {
             int anchoDibujo = (int) (anchoOriginal * escala);
             int altoDibujo  = (int) (altoOriginal * escala);
 
-            // Calculamos la posición para que quede centrado horizontalmente 
-            // y apoyado en la parte de abajo de la celda (los pies en el piso)
+            // Calculamos la posición para que quede centrado horizontalmente y pegado al piso
             int dibujoX = px + (tamaño - anchoDibujo) / 2;
-            int dibujoY = py + (tamaño - altoDibujo); // Lo pegamos abajo
+            int dibujoY = py + (tamaño - altoDibujo); 
 
             // Dibujamos con las medidas calculadas
             g2d.drawImage(sprite, dibujoX, dibujoY, anchoDibujo, altoDibujo, null);
-            return;
+            
+        } else {
+            // Se mantiene el círculo de sombra por defecto si la imagen no llegara a cargar
+            int margen = tamaño / 10;
+            int radio = tamaño / 2 - margen;
+            
+            g2d.setColor(new Color(0, 0, 0, 60));
+            g2d.fillOval(px + margen + 2, py + margen + 4, radio * 2, radio * 2);
         }
     }
 
         
-        int margen = tamaño / 10;
-        int radio = tamaño / 2 - margen;
-
-        // === SOMBRA ===
-        g2d.setColor(new Color(0, 0, 0, 60));
-        g2d.fillOval(px + margen + 2, py + margen + 4, radio * 2, radio * 2);
+     
     }
-}

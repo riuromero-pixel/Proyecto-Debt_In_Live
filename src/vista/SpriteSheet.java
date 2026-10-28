@@ -11,8 +11,15 @@ public class SpriteSheet {
     private int anchoFrame;
     private int altoFrame;
 
+    // NUEVO: Guardamos las columnas y filas con las que se inicializó este spritesheet específico
+    private int columnas;
+    private int filas;
+
     // Para spritesheets con grilla (caminata: 11 columnas x 2 filas)
     public SpriteSheet(String ruta, int columnas, int filas) {
+     
+    this.columnas = columnas; 
+    this.filas = filas;        
         try {
             imagen = ImageIO.read(new File(ruta));
             if (imagen != null) {
@@ -24,6 +31,11 @@ public class SpriteSheet {
             e.printStackTrace();
         }
     }
+
+// NUEVO: Getters para que GestorSprites o el Controlador sepan la estructura de este sprite
+    public int getColumnas() { return columnas; }
+    public int getFilas() { return filas; }
+    public int getTotalFrames() { return columnas * filas; }
 
     // Para imágenes estáticas (1 sola imagen)
     public SpriteSheet(String ruta) {
