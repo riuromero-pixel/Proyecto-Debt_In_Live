@@ -1,6 +1,9 @@
 package src.vista;
 
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import src.modelo.entities.Adulto;
 import src.modelo.entities.Estudiante;
@@ -10,7 +13,6 @@ import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
-import src.modelo.map.Pared;
 
 public class VistaJuego extends JFrame {
     
@@ -34,13 +36,49 @@ public class VistaJuego extends JFrame {
     //buffer para evitar parpadeo
     private Image bufferImagen;
     private Graphics bufferGraphics;
+    //NACHO SI LEES ESTO ACA ESTAN LAS VARIABLES DE FONDO Y MURO CAMBIALAS SEGUN EL NIVEL
+    private Image imagenPARED;
+    private Image imagenPISO;
 
+
+    public void cargarImagenesNivel() {
+    String paredtemp;
+    String pisotemp;
+
+    switch (nivelActual) {
+        case 1:
+            paredtemp = "images/casillero.PNG";
+            pisotemp = "images/baldosablanca.PNG";
+            break;
+        case 2:
+            paredtemp = "images/casillero.PNG";
+            pisotemp = "images/baldosatierra.PNG";
+            break;
+        case 3:
+            paredtemp = "images/arbusto.PNG";
+            pisotemp = "images/baldosapasto.PNG";
+            break;
+        default:
+            imagenPARED = null;
+            imagenPISO = null;
+            return;
+    }
+
+    try {
+        imagenPARED = ImageIO.read(new File(paredtemp));
+        imagenPISO = ImageIO.read(new File(pisotemp));
+    } catch (IOException e) {
+        System.out.println("❌ Error al cargar imágenes del nivel " + nivelActual);
+        e.printStackTrace();
+    }
+}
 
     public VistaJuego(Mapa mapa, Personaje jugador, int nivelActual) {
         this.mapa = mapa;
         this.jugador = jugador;
         this.nivelActual = nivelActual;
-        
+      
+        cargarImagenesNivel();
         setTitle("Juego");
         setSize(15 * tamaño + 45, 10 * tamaño + 120);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,6 +116,7 @@ public class VistaJuego extends JFrame {
         this.bufferImagen = null; //reiniciar buffer para evitar problemas de renderizado al cambiar de nivel
         //reiniciar la cámara suave para que arranque centrada en el nuevo nivel ===
         this.reiniciarCamaraSuave();
+        cargarImagenesNivel();
     }
 
     // suaviza el desplazamiento de la camara hacia la posicion objetivo 
@@ -190,55 +229,51 @@ public class VistaJuego extends JFrame {
                 // Posición en pantalla usando las coordenadas double de la cámara
                 int px = (int) ((x - camX) * tamaño) + desplazamientoX;
                 int py = (int) ((y - camY) * tamaño) + desplazamientoY;
-
-                g2d.setColor(Color.WHITE);
+                //g2d.setColor(Color.WHITE);
                 g2d.fillRect(px, py, tamaño, tamaño);
 
-                if (mapa.celdas[y][x].contenido != null) {
-                    Object obj = mapa.celdas[y][x].contenido;
-                    if (obj instanceof Pared) {
-                        g2d.setColor(Color.BLACK);
-                        g2d.fillRect(px, py, tamaño, tamaño);
-                    } else if (obj instanceof Dinero) {
-                        g2d.setColor(Color.YELLOW);
-                        g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
-                        g2d.setColor(Color.BLACK);
-                        g2d.drawString("$", px + 10, py + 20);
+               // dibujamos el piso 
+if (imagenPISO != null) {
+    g2d.drawImage(imagenPISO, px, py, tamaño, tamaño, null);
+} else {
+    g2d.setColor(Color.WHITE); // Por si no carga la imagen
+    g2d.fillRect(px, py, tamaño, tamaño);
 
-                        
-                    } else if (obj instanceof Bonus) {
-                 Bonus unBonus = (Bonus) obj; // Convierte el objeto genérico a Bonus
-    
-                   g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
-                   g2d.setColor(Color.BLACK);
-                    g2d.drawString("B", px + 10, py + 20);
 }
-                    // === NUEVO: los ENEMIGOS ya NO se dibujan acá ===
-                    // Se dibujan más abajo, en su propio bucle, usando su posición VISUAL
-                    // (posXVisual, posYVisual) para que la interpolación funcione.
-                    // Cuando agreguemos sprites, el sprite del enemigo se dibujará en ese bucle.
-                }
 
-                //dibujar dinero debajo (mismo estilo)
-                if (mapa.celdas[y][x].dineroDebajo != null) {
-                    g2d.setColor(Color.YELLOW);
-                    g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
-                    g2d.setColor(Color.BLACK);
-                    g2d.drawString("$", px + 10, py + 20);
-                }
-                //dibujar bonus
-                if (mapa.celdas[y][x].bonusDebajo != null) {
-                    g2d.setColor(Color.GREEN);
-                    g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
-                    g2d.setColor(Color.BLACK);
-                    g2d.drawString("B", px + 10, py + 20);
-                }
+// dibujamos el contenido
+if (mapa.celdas[y][x].contenido != null) {
+    Object obj = mapa.celdas[y][x].contenido;
+    
+    // 1. SOLO si es Pared, dibujamos la imagen de pared
+    if (obj instanceof src.modelo.map.Pared) {
+        if (imagenPARED != null) {
+            g2d.drawImage(imagenPARED, px, py, tamaño, tamaño, null);
+        } else {
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(px, py, tamaño, tamaño);
+        }
+    } 
+    // 2. Si es Dinero
+    else if (obj instanceof Dinero) {
+        g2d.setColor(Color.YELLOW);
+        g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
+        g2d.setColor(Color.BLACK);
+        g2d.drawString("$", px + 10, py + 20);
+    } 
+    // 3. Si es un Bonus
+    else if (obj instanceof Bonus) {
+        Bonus unBonus = (Bonus) obj;
+        g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+        g2d.setColor(Color.BLACK);
+        g2d.drawString("B", px + 10, py + 20);
+    }
 
                 g2d.setColor(Color.GRAY);
                 g2d.drawRect(px, py, tamaño, tamaño);
             }
-        }
-
+        
+        }}
         // dibujar los enemigos con su posicion visual interpolada 
         // aca es donde, cuando tengamos sprites, se dibujara la imagen del enemigo
         for (int y = 0; y < mapa.alto; y++) {
@@ -365,4 +400,4 @@ public class VistaJuego extends JFrame {
 
         
      
-    }
+ }
