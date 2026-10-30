@@ -2,6 +2,8 @@ package src.vista;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 public class VistaMenu extends JFrame {
@@ -13,6 +15,8 @@ public class VistaMenu extends JFrame {
 
     private JButton btnJugar;
     private JButton btnRecords; 
+    private JButton btnComoJugar; 
+    private JButton btnOpciones; 
 
     
     private JPanel panelFondo;
@@ -77,14 +81,12 @@ public class VistaMenu extends JFrame {
         panelBotones.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
 
         btnJugar = crearBoton("Jugar");
-        JButton btnOpciones = crearBoton("Opciones");
-        JButton btnComoJugar = crearBoton("Cómo Jugar");
+        btnOpciones = crearBoton("Opciones"); 
+        btnComoJugar = crearBoton("Como Jugar"); 
         JButton btnSalir = crearBoton("Salir");
         btnRecords = crearBoton("Récords"); 
 
 
-        btnOpciones.addActionListener(e -> mostrarOpciones());
-        btnComoJugar.addActionListener(e -> mostrarComoJugar());
         btnSalir.addActionListener(e -> System.exit(0));
 
         panelBotones.add(btnJugar);
@@ -111,16 +113,48 @@ public class VistaMenu extends JFrame {
     }
 
     // creo los botones con el mismo estilo
-    private JButton crearBoton(String texto) {
-        JButton boton = new JButton(texto);
+     private JButton crearBoton(String texto) {
+        JButton boton = new JButton(texto) {
+            private Image imagen = new ImageIcon("images/sprites/plata.png").getImage();
+            private boolean hover = false;
+            private int anchoImagen = 360;
+            private int altoImagen = 130;
+            {
+                addMouseListener(new MouseAdapter() {
+                    public void mouseEntered(MouseEvent e) { hover = true; repaint(); }
+                    public void mouseExited(MouseEvent e) { hover = false; repaint(); }
+                });
+                setContentAreaFilled(false);
+                setBorderPainted(false);
+                setFocusPainted(false);
+                setOpaque(false);
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                int imgX = (getWidth() - anchoImagen) / 2;
+                int imgY = (getHeight() - altoImagen) / 2;
+                g2.drawImage(imagen, imgX, imgY, anchoImagen, altoImagen, this);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                if (hover) {
+                    g2.setFont(new Font("Arial", Font.BOLD, 22));
+                    g2.setColor(Color.YELLOW);
+                } else {
+                    g2.setFont(new Font("Arial", Font.BOLD, 18));
+                    g2.setColor(Color.BLACK);
+                }
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                g2.drawString(getText(), x, y);
+                g2.dispose();
+            }
+        };
         boton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        boton.setMaximumSize(new Dimension(180, 50));
-        boton.setPreferredSize(new Dimension(180, 50));
+        boton.setMaximumSize(new Dimension(200, 60));
+        boton.setPreferredSize(new Dimension(200, 60));
         boton.setFont(new Font("Arial", Font.BOLD, 18));
         boton.setFocusPainted(false);
-        boton.setBackground(new Color(255, 220, 50));
-        boton.setForeground(Color.BLACK);
-        boton.setOpaque(true);
         return boton;
     }
 
@@ -130,63 +164,21 @@ public class VistaMenu extends JFrame {
       public void setAccionRecords(ActionListener listener) {
         btnRecords.addActionListener(listener);
     }
+    public void setAccionOpciones(ActionListener listener) {
+        btnOpciones.addActionListener(listener);
+    }
+
+    public void setAccionComoJugar(ActionListener listener) {
+        btnComoJugar.addActionListener(listener);
+    }
 // NUEVO: Listener para el botón silenciar, que delega la acción al controlador
     public void setAccionSilenciar(ActionListener listener) {
         this.accionSilenciar = listener;
     }
     // MODIFICADO: Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
-    private void mostrarOpciones() {
-        JDialog dialogo = new JDialog(this, "Opciones", true);
-        dialogo.setSize(300, 180);
-        dialogo.setLocationRelativeTo(this);
-        dialogo.setResizable(false);
-        dialogo.setLayout(new BoxLayout(dialogo.getContentPane(), BoxLayout.Y_AXIS));
+    
 
-        // MODIFICADO: El label ahora es genérico.
-        JLabel label = new JLabel("Ajustes de Sonido");
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        label.setFont(new Font("Arial", Font.BOLD, 14));
-
-        // MODIFICADO: El texto del botón queda estático para simplificar la delegación.
-        JButton btnMute = new JButton("Activar/Desactivar Sonido");
-        btnMute.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-         // MODIFICADO: En vez de cambiar el estado interno, le delegamos la acción al Controlador.
-        btnMute.addActionListener(e -> {
-            if (accionSilenciar != null) {
-                accionSilenciar.actionPerformed(e); 
-            }
-        });
-
-        // Boton Aceptar para cerrar
-        JButton btnAceptar = new JButton("Aceptar");
-        btnAceptar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnAceptar.addActionListener(e -> dialogo.dispose());
-
-        // Espaciado entre componentes
-        dialogo.add(Box.createVerticalStrut(20));
-        dialogo.add(label);
-        dialogo.add(Box.createVerticalStrut(15));
-        dialogo.add(btnMute);
-        dialogo.add(Box.createVerticalStrut(15));
-        dialogo.add(btnAceptar);
-        dialogo.add(Box.createVerticalStrut(10));
-
-        dialogo.setVisible(true);
-    }
-
-    private void mostrarComoJugar() {
-        String mensaje = "Instrucciones:\n" +
-                "- Usa W, A, S, D para moverte.\n" +
-                "- Recolecta dinero ($) para aumentar tu puntaje.\n" +
-                "- Evita a los enemigos (V), te restarán dinero.\n" +
-                "- Presiona R para romper paredes cercanas.\n" +
-                "- Presiona C para crear paredes (según personaje).\n" +
-                "- Completa los 3 niveles para ganar el juego.\n" +
-                "- Pierdes si tu dinero baja de 0." +
-                "- Ganas o aumentas de nivel si llegas a recolectar $3000.";
-        JOptionPane.showMessageDialog(this, mensaje, "Cómo Jugar", JOptionPane.INFORMATION_MESSAGE);
-    }
+    
 
     public void mostrar() {
         GraphicsDevice gd = GraphicsEnvironment

@@ -19,14 +19,18 @@ public static Reproductor_audio getInstancia() {
         }
         return instanciaUnica;
     }
+
+    public boolean isSilenciado() {
+    return silenciado;
+}
+
     // NUEVO: Método para alternar el silencio
     public void alternarSilencio() {
     this.silenciado = !this.silenciado;
-    
     if (this.silenciado) {
         detenerSonido(); 
     } else {
-        reproducirSonido(1);
+        reproducirSonido(1);   
     }
 }
     public void reproducirSonido(int nivel) {

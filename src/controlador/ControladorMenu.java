@@ -6,6 +6,11 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import src.modelo.entities.Record;
+import src.vista.VistaRecords;
+import src.vista.VistaComoJugar;
+import src.vista.VistaOpciones;
+
 import src.modelo.entities.Personaje;
 import src.modelo.entities.PersonajeFactory;
 import src.modelo.entities.RecordDAO;
@@ -22,6 +27,7 @@ public class ControladorMenu {
     private final VistaMenu vistaMenu;
     private RecordDAO recordDAO;
     private long tiempoInicioPartida;
+    private java.awt.event.ActionListener accionSilenciarGlobal;
 
 
 
@@ -29,13 +35,15 @@ public class ControladorMenu {
         this.vistaMenu = vistaMenu;
         this.vistaMenu.setAccionJugar(e -> iniciarJuego());
         this.vistaMenu.setAccionRecords(e -> mostrarRecords());
+        this.vistaMenu.setAccionComoJugar(e -> mostrarComoJugar());
+        this.vistaMenu.setAccionOpciones(e -> mostrarOpciones());
 
     // NUEVO: Conectamos la acción del botón "Alternar Sonido" de la vista con el controlador.
         // El controlador es quien realiaz la accion
-        this.vistaMenu.setAccionSilenciar(e -> {
-            // Le pedimos a Reproductor_audio que alterne el volumen
-            Reproductor_audio.getInstancia().alternarSilencio(); 
-        });
+        this.accionSilenciarGlobal = e -> {
+    Reproductor_audio.getInstancia().alternarSilencio(); 
+};
+this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
 
         try {
         Connection conexion = Conexion.getInstancia().get();
@@ -104,40 +112,29 @@ public class ControladorMenu {
         vistaMenu.dispose(); 
         vista.mostrar();
     }
+
     private void mostrarRecords() {
     if (this.recordDAO == null) {
         JOptionPane.showMessageDialog(vistaMenu, "Error: Base de datos no conectada.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
-    java.util.List<src.modelo.entities.Record> records = this.recordDAO.obtenerMejores();
-    
-    StringBuilder mensaje = new StringBuilder();
-    mensaje.append("🏆 RECORDS 🏆\n\n");
-    
-    if (records.isEmpty()) {
-        mensaje.append("Todavía no hay récords guardados.\n¡Sé el primero en jugar!");
-    } else {
-        mensaje.append(String.format("%-15s %-10s %s\n", "Jugador", "Tiempo", "Nivel"));
-        mensaje.append("--------------------------------------------------\n");
-        
-        int posicion = 1;
-        for (src.modelo.entities.Record r : records) {
-            long segundosTotales = r.getTiempoMilisegundos() / 1000;
-            long minutos = segundosTotales / 60;
-            long segundos = segundosTotales % 60;
-            
-            String tiempoFormateado = String.format("%02d:%02d", minutos, segundos);
-            
-            mensaje.append(String.format("%d. %-12s %-10s Nivel %d\n", 
-                    posicion, 
-                    r.getNombreJugador(), 
-                    tiempoFormateado, 
-                    r.getNivelAlcanzado()));
-            posicion++;
-        }
-    }
+    java.util.List<Record> records = this.recordDAO.obtenerMejores();
 
-    JOptionPane.showMessageDialog(vistaMenu, mensaje.toString(), "Mejores Tiempos", JOptionPane.INFORMATION_MESSAGE);
-    }
+    // ahora usamos la ventana propia con estilo, en vez del JOptionPane simple
+    VistaRecords ventana = new VistaRecords(vistaMenu, records);
+    ventana.setVisible(true);
+}
+
+private void mostrarComoJugar() {
+    // ventana propia con estilo, en vez del JOptionPane simple
+    VistaComoJugar ventana = new VistaComoJugar(vistaMenu);
+    ventana.setVisible(true);
+}
+
+private void mostrarOpciones() {
+    VistaOpciones ventana = new VistaOpciones(vistaMenu, accionSilenciarGlobal);
+    ventana.setVisible(true);
+}
+
 }
