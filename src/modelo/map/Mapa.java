@@ -121,14 +121,12 @@ public class Mapa {
                 x = 1 + random.nextInt(ancho - 2);
                 y = 1 + random.nextInt(alto - 2);
             } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
-                
-
-
-            celdas[y][x].contenido = new Dinero(100 + random.nextInt(400));
+                celdas[y][x].contenido = new Dinero(2999);
+            //celdas[y][x].contenido = new Dinero(100 + random.nextInt(400));
         }
     }
 
-    // NUEVO METODO: Cuenta cuantas monedas quedan en el mapa (tanto visibles como debajo de otros objetos)
+    // cuenta cuantas monedas quedan en el mapa (tanto visibles como debajo de otros objetos)
     public int contarDineroRestante() {
         int contador = 0;
         for (int y = 0; y < alto; y++) {
@@ -163,7 +161,7 @@ public class Mapa {
         }
     }
 
-    // === NUEVO: actualiza las posiciones VISUALES de todos los enemigos ===
+    // actualiza las posiciones VISUALES de todos los enemigos
     // Lo llama el timer de animación del controlador (~60 FPS) para interpolar
     // el movimiento del enemigo entre la celda anterior y la nueva.
     // Cuando agreguemos sprites, este método sigue siendo el encargado de actualizar

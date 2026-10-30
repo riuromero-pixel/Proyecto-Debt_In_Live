@@ -24,16 +24,19 @@ public static Reproductor_audio getInstancia() {
     return silenciado;
 }
 
-    // NUEVO: Método para alternar el silencio
-    public void alternarSilencio() {
+    // método para alternar el silencio
+    public void alternarSilencio(int nivelReanudado) {
     this.silenciado = !this.silenciado;
     if (this.silenciado) {
         detenerSonido(); 
     } else {
-        reproducirSonido(1);   
+        reproducirSonido(nivelReanudado);   
     }
 }
     public void reproducirSonido(int nivel) {
+        if (silenciado){
+            return;
+        }
         detenerSonido(); // Se asegura de cortar la música anterior antes de arrancar otra
 
         String nombreArchivo = "";
@@ -68,7 +71,7 @@ public static Reproductor_audio getInstancia() {
         }
     }
 
-    // Método para frenar el clip actual de forma segura
+    // metodo para frenar el clip actual de forma segura
     public void detenerSonido() {
         if (clipActual != null && clipActual.isRunning()) {
             clipActual.stop();

@@ -47,8 +47,6 @@ public class VistaJuego extends JFrame {
     String paredtemp;
     String pisotemp;
 
-
-
     try {
     imagenDinero = ImageIO.read(new File("images/sprites/dinero.png")); 
 } catch (IOException e) {
@@ -113,7 +111,6 @@ public class VistaJuego extends JFrame {
         e.printStackTrace();
     }
 }
-
     public VistaJuego(Mapa mapa, Personaje jugador, int nivelActual) {
         this.mapa = mapa;
         this.jugador = jugador;
@@ -126,7 +123,7 @@ public class VistaJuego extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setFocusable(true);
-        setFocusTraversalKeysEnabled(false);
+        //setFocusTraversalKeysEnabled(false);
 
         
 
@@ -194,6 +191,10 @@ public class VistaJuego extends JFrame {
 
     //el controlador llama a este metodo para mostrar la ventana
     public void mostrar() {
+         GraphicsDevice gd = GraphicsEnvironment
+        .getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice();
+        gd.setFullScreenWindow(this);
         setVisible(true);
         this.requestFocus();
         this.requestFocusInWindow();

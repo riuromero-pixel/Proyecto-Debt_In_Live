@@ -8,9 +8,7 @@ import javax.swing.*;
 
 public class VistaMenu extends JFrame {
 
-    // BORRADO: La variable "silenciado" se quitó 
-
-    // NUEVO: Variable para guardar la conexión con el Controlador para el botón de silenciar
+    // variable para guardar la conexión con el Controlador para el botón de silenciar
     private ActionListener accionSilenciar;
 
     private JButton btnJugar;
@@ -29,22 +27,22 @@ public class VistaMenu extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
-        // NUEVO: ventana sin decoración para que la imagen llegue a los bordes
+        //ventana sin decoración para que la imagen llegue a los bordes
         setUndecorated(true);
 
-        // NUEVO: pantalla completa real (ocupa toda la pantalla, sin barra de tareas)
+        //  pantalla completa real (ocupa toda la pantalla, sin barra de tareas)
         GraphicsDevice gd = GraphicsEnvironment
                 .getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice();
 
-        // NUEVO: fondo oscuro por si la imagen no carga
+        //fondo oscuro por si la imagen no carga
         getContentPane().setBackground(new Color(30, 30, 40));
 
-        // NUEVO: panel con imagen de fondo que cubre toda la ventana
+        //panel con imagen de fondo que cubre toda la ventana
         panelFondo = new JPanel() {
             private Image imagenFondo;
 
-            // NUEVO: bloque de inicialización para cargar la imagen una sola vez
+            //bloque de inicialización para cargar la imagen una sola vez
             {
                 try {
                     ImageIcon icono = new ImageIcon(RUTA_IMAGEN_FONDO);
@@ -67,7 +65,7 @@ public class VistaMenu extends JFrame {
                 }
             }
         };
-        // NUEVO: layout para poder ubicar el panel de botones en una esquina
+        // layout para poder ubicar el panel de botones en una esquina
         panelFondo.setLayout(new GridBagLayout());
         panelFondo.setOpaque(true);
         panelFondo.setBackground(new Color(30, 30, 40));
@@ -99,7 +97,7 @@ public class VistaMenu extends JFrame {
         panelBotones.add(Box.createVerticalStrut(15));
         panelBotones.add(btnSalir);
 
-        // NUEVO: Configuramos los constraints para que el panel quede en la esquina inferior izquierda
+        //Configuramos los constraints para que el panel quede en la esquina inferior izquierda
         // Así no tapa al doctor, al empleado ni al cartel de la imagen.
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -171,15 +169,12 @@ public class VistaMenu extends JFrame {
     public void setAccionComoJugar(ActionListener listener) {
         btnComoJugar.addActionListener(listener);
     }
-// NUEVO: Listener para el botón silenciar, que delega la acción al controlador
+// Listener para el botón silenciar, que delega la acción al controlador
     public void setAccionSilenciar(ActionListener listener) {
         this.accionSilenciar = listener;
     }
-    // MODIFICADO: Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
+    //  Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
     
-
-    
-
     public void mostrar() {
         GraphicsDevice gd = GraphicsEnvironment
             .getLocalGraphicsEnvironment()

@@ -19,7 +19,8 @@ public class VistaIntro extends JFrame {
         JLabel label = new JLabel(gif);
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.BLACK);
+        panel.setBackground(new Color(30, 30, 40)); 
+        getContentPane().setBackground(new Color(30, 30, 40));
         panel.add(label);
         setContentPane(panel);
 
@@ -27,7 +28,6 @@ public class VistaIntro extends JFrame {
         setLocationRelativeTo(null);
 
         Timer timer = new Timer(5000, e -> {
-            dispose();
             alTerminar.run();
         });
         timer.setRepeats(false);

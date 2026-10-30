@@ -11,7 +11,7 @@ public class SpriteSheet {
     private int anchoFrame;
     private int altoFrame;
 
-    // NUEVO: Guardamos las columnas y filas con las que se inicializó este spritesheet específico
+    // guardamos las columnas y filas con las que se inicializó este spritesheet específico
     private int columnas;
     private int filas;
 
@@ -32,7 +32,7 @@ public class SpriteSheet {
         }
     }
 
-// NUEVO: Getters para que GestorSprites o el Controlador sepan la estructura de este sprite
+// getters para que GestorSprites o el Controlador sepan la estructura de este sprite
     public int getColumnas() { return columnas; }
     public int getFilas() { return filas; }
     public int getTotalFrames() { return columnas * filas; }

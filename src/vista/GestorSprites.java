@@ -13,7 +13,7 @@ public class GestorSprites {
     
     private static GestorSprites instancia;
     
-    // MODIFICADO: Se usan arreglos 2D [Tipo][Direccion].
+    // se usan arreglos 2D [Tipo][Direccion].
     // Indices de Tipo: 0=Estudiante, 1=Adulto, 2=Jubilado
     // Indices de Direccion: 0=Abajo, 1=Arriba, 2=Derecha, 3=Izquierda
     private BufferedImage[][] cacheEstaticos;
@@ -72,7 +72,7 @@ public class GestorSprites {
         }
     }
 
-    // NUEVO: Método privado que carga y guarda en la matriz (caché) el sprite estático
+    // método privado que carga y guarda en la matriz (caché) el sprite estático
     private BufferedImage getSpriteEstatico(int tipoIndex, String tipoStr, int dirIndex, String dirStr) {
         if (cacheEstaticos[tipoIndex][dirIndex] == null) {
             String ruta = "images/sprites/" + tipoStr + "/estatico" + dirStr + tipoStr + ".png";
@@ -85,7 +85,7 @@ public class GestorSprites {
         return cacheEstaticos[tipoIndex][dirIndex];
     }
 
-    // NUEVO: Método privado que define las columnas y filas exactas para cada spritesheet irregular
+    // método privado que define las columnas y filas exactas para cada spritesheet irregular
     private SpriteSheet getSpriteAnimado(int tipoIndex, String tipoStr, int dirIndex, String dirStr) {
         if (cacheAnimados[tipoIndex][dirIndex] == null) {
             String ruta = "images/sprites/" + tipoStr + "/" + dirStr + tipoStr + ".png";

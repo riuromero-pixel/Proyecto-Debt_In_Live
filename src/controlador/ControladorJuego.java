@@ -6,6 +6,7 @@ import javax.swing.*;
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
+import src.vista.VistaCargando;
 import src.vista.VistaJuego;
 import src.modelo.entities.Record;
 
@@ -47,7 +48,7 @@ public class ControladorJuego {
         this.tiempoInicioPartida = tiempoInicioPartida; // guarda el tiempo
         this.recordDAO = recordDAO; // guarda el DAO para guardar el récord luego
         this.nombreJugador = nombreJugador;
-        Reproductor_audio.getInstancia().reproducirSonido(1); // arranca con la música del nivel 1
+        Reproductor_audio.getInstancia().reproducirSonido(1);
 
         // se registra como oyente del teclado a traves de la vista
         this.vista.registrarTeclado(new TecladoListener());
@@ -70,7 +71,7 @@ private void iniciarTimers() {
     });
     timerMovimientoEnemigos.start();
 
-    timerJuego = new Timer(100, e -> { //--------------------------
+    timerJuego = new Timer(100, e -> { 
         if (juegoActivo && teclaPulsada != ' ') {
             moverJugadorConVelocidad();
         }
@@ -96,9 +97,8 @@ private void iniciarTimers() {
                 jugador.ultimoFrameAnimacion = ahora;
             }
         } else {
-            jugador.frameAnimacion = 0; // idle: vuelve al primer frame
+            jugador.frameAnimacion = 0; 
         }
-
             mapa.actualizarPosicionesVisualesEnemigos();
             vista.actualizarCamaraSuave();
             vista.repaint();
@@ -130,7 +130,7 @@ private void iniciarTimers() {
                         iniciarNivel(nivelActual);
                         return;
                     } else {
-                        ganarJuego("¡Bien ahi! Ganaste el juego! Lograste sobrevivir a las deudas de la vida.");
+                        ganarJuego("¡Bien amigo! Ganaste el juego! Lograste sobrevivir a las deudas de la vida.");
                         return;
                     }
             }
@@ -141,36 +141,66 @@ private void iniciarTimers() {
         }
     }
 
-    // prepara todo para el siguiente nivel
     private void iniciarNivel(int nivel) {
-        if (nivel == 2) {
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto.\n A agarrar la pala.");
-        } else if (nivel == 3) {
-            JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado.\n Ahora cagaste.");
-        }
-        // Crear nuevo mapa y generar nivel
-        this.mapa = new Mapa(40, 40);
-        this.mapa.cargarNivel(nivel);
-      Reproductor_audio.getInstancia().reproducirSonido(nivel); // Arranca con la música del Nivel 1
-        this.mapa.generarDinero();
-
-        // crear el personaje correspondiente al nivel
-        this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, mapa);
-
-        // limpiar la celda de inicio por si hay paredes o enemigos de casualidad
-        this.mapa.celdas[5][5].contenido = null; 
-        this.mapa.setPersonaje(this.jugador, 5, 5);
-
-        // actualizar la vista con los nuevos datos
-        this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
-        this.vista.desactivarGameOver();
-
-        // reiniciamos el juego (timers) despues de que el jugador acepte el mensaje.
-        this.juegoActivo = true;
-        iniciarTimers();
-        this.vista.repaint();
-
+    //mensajes de cambio de nivel
+    if (nivel == 2) {
+        JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto.\n  A agarrar la pala.");
+    } else if (nivel == 3) {
+        JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado.\n  Ahora cagaste.");
     }
+
+    //diálogo de carga
+    VistaCargando cargando = new VistaCargando(vista, "Generando nivel " + nivel + "...");
+
+    //genera el nivel en un HILO DE FONDO
+    SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
+        @Override
+        protected Object[] doInBackground() throws Exception {
+           
+            Thread.sleep(700); // simula la carga para que no parpadee el escritorio
+
+            Mapa nuevoMapa = new Mapa(40, 40);
+            nuevoMapa.cargarNivel(nivel);
+            nuevoMapa.generarDinero();
+
+            Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
+            nuevoMapa.celdas[5][5].contenido = null;
+            nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
+
+            return new Object[]{nuevoMapa, nuevoJugador};
+        }
+
+        @Override
+        protected void done() {
+            // === EDT ===
+            try {
+                Object[] modelo = get();
+                mapa = (Mapa) modelo[0];
+                jugador = (Personaje) modelo[1];
+
+                Reproductor_audio.getInstancia().reproducirSonido(nivel);
+                vista.actualizarModelo(mapa, jugador, nivel);
+                vista.desactivarGameOver();
+
+                juegoActivo = true;
+                iniciarTimers();
+                vista.repaint();
+
+                cargando.dispose();
+            } catch (Exception ex) {
+                cargando.dispose();
+                JOptionPane.showMessageDialog(vista,
+                    "Error al cargar el nivel: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    worker.execute();
+    cargando.setVisible(true);
+}
+
 
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
@@ -299,6 +329,7 @@ private void iniciarTimers() {
 
       private void guardarRecordActual(int nivelAlcanzado) {
         if (recordDAO == null) return;
+        if (nivelAlcanzado < 3) return;
         long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
         Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
         recordDAO.guardar(nuevoRecord);

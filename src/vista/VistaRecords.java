@@ -70,7 +70,7 @@ public class VistaRecords extends JDialog {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(new EmptyBorder(0, 0, 18, 0));
 
-        JLabel titulo = new JLabel("   RECORDS   ");
+        JLabel titulo = new JLabel("   RANKING   ");
         titulo.setFont(new Font("Arial", Font.BOLD, 30));
         titulo.setForeground(AMARILLO);
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);

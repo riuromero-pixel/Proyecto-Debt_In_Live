@@ -11,15 +11,12 @@ public class Bonus extends ObjetoEntorno {
     public long duracionMs = 5000; // Duración del bonus en milisegundos
     protected  Image imagenBonus;
 
-    
-
     public Bonus(int bonusVelocidad, int duracionMs, int nivel) {
         super(true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
         this.bonusVelocidad = bonusVelocidad;
         this.duracionMs = duracionMs;
          try {
-        // PROBAMOS CON ESTUDIANTE PERO HAY Q HACER EL CASE O NOSE VEREMOS
-       switch (nivel) {
+         switch (nivel) {
             case 1:
                 imagenBonus = ImageIO.read(new File("images/bonus_estudiante.png"));
                 break;

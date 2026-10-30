@@ -31,9 +31,9 @@ public class RecordDAOSQLite implements RecordDAO {
     public boolean guardar(Record record) {
         String sql = "INSERT INTO records (jugador, tiempo, nivel, fecha) VALUES (?, ?, ?, ?) " +
                      "ON CONFLICT(jugador) DO UPDATE SET " +
-                     "tiempo = MAX(tiempo, excluded.tiempo), " + 
-                     "nivel = CASE WHEN excluded.tiempo > records.tiempo THEN excluded.nivel ELSE records.nivel END, " +
-                     "fecha = CASE WHEN excluded.tiempo > records.tiempo THEN excluded.fecha ELSE records.fecha END";
+                     "tiempo = MIN(tiempo, excluded.tiempo), " + 
+                     "nivel = CASE WHEN excluded.tiempo < records.tiempo THEN excluded.nivel ELSE records.nivel END, " +
+                     "fecha = CASE WHEN excluded.tiempo < records.tiempo THEN excluded.fecha ELSE records.fecha END";
                      
         try (PreparedStatement s = conexion.prepareStatement(sql)) {
             s.setString(1, record.getNombreJugador());
@@ -48,10 +48,10 @@ public class RecordDAOSQLite implements RecordDAO {
     }
 
     @Override
-    public List<Record> obtenerMejores() {
+    public List<Record> obtenerMejores() { //ordenado del que menos tardó al que mas tardó en terminar el juego
         List<Record> lista = new ArrayList<>();
-        // ORDER BY tiempo DESC: El tiempo mayor (más aguantó) sale primero
-        String sql = "SELECT jugador, tiempo, nivel FROM records ORDER BY tiempo DESC LIMIT 10";
+    
+        String sql = "SELECT jugador, tiempo, nivel FROM records " + "WHERE nivel = 3 ORDER BY tiempo ASC LIMIT 10"; 
         
         try (PreparedStatement s = conexion.prepareStatement(sql);
              ResultSet filas = s.executeQuery()) {

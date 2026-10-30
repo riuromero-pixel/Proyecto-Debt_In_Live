@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
 
 import src.modelo.entities.Record;
 import src.vista.VistaRecords;
@@ -21,6 +24,7 @@ import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
 import src.vista.VistaIntro;
+import src.vista.VistaCargando;
 
 
 public class ControladorMenu {
@@ -38,10 +42,10 @@ public class ControladorMenu {
         this.vistaMenu.setAccionComoJugar(e -> mostrarComoJugar());
         this.vistaMenu.setAccionOpciones(e -> mostrarOpciones());
 
-    // NUEVO: Conectamos la acción del botón "Alternar Sonido" de la vista con el controlador.
-        // El controlador es quien realiaz la accion
+    // conecta la acción del botón "Alternar Sonido" de la vista con el controlador.
+        // El controlador es quien realiza la accion
         this.accionSilenciarGlobal = e -> {
-    Reproductor_audio.getInstancia().alternarSilencio(); 
+    Reproductor_audio.getInstancia().alternarSilencio(3); 
 };
 this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
 
@@ -52,66 +56,96 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
         System.out.println("Error al conectar con la base de datos");
     }
     }
-
     public void Iniciar(){
-        new VistaIntro(()->{
-            vistaMenu.mostrar();
-            Reproductor_audio.getInstancia().reproducirSonido(3);
+    VistaIntro[] introRef = new VistaIntro[1];
+    //esta parte es para quitar un poco el pequeño flash que hay entre la intro y el menu de inicio
+    introRef[0] = new VistaIntro(() -> {
+        vistaMenu.mostrar();
+        Reproductor_audio.getInstancia().reproducirSonido(3);
+        // usamos un invokeLater para esperar a que Swing termine de pintar TODOS los componentes del menú en la pantalla.
+        SwingUtilities.invokeLater(() -> {
+            if (introRef[0] != null) {
+                // una vez que el menú está pintado, se saca la intro
+                introRef[0].dispose(); 
+            }
         });
+    });
     }
-
 
     private void iniciarJuego() {
 
-
-        String nombreJugador = (String) JOptionPane.showInputDialog(
+    String inputNombre = (String) JOptionPane.showInputDialog(
         vistaMenu,
         "Ingresa tu nombre:",
         "Nuevo Record",
         JOptionPane.PLAIN_MESSAGE,
-        null,
-        null, 
-        ""    
-         );
-        if (nombreJugador == null) {
-            return; // si cancela, no arranca el juego
+        null, null, ""
+    );
+    if (inputNombre == null) return;
+    final String nombreJugador =
+        inputNombre.trim().isEmpty() ? "Anónimo" : inputNombre;
+        this.tiempoInicioPartida = System.currentTimeMillis();
+    // diálogo de carga
+    final VistaCargando cargando = new VistaCargando(vistaMenu, "Generando nivel 1...");
+
+    SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
+
+        @Override
+        protected Object[] doInBackground() throws Exception {
+            // HILO SECUNDARIO 
+            Thread.sleep(900); // simula carga para evitar el parpadeo del escritorio
+
+            Mapa mapa = new Mapa(40, 40);
+            mapa.cargarNivel(1);
+            mapa.generarDinero();
+
+            Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
+            mapa.celdas[5][5].contenido = null;
+            mapa.setPersonaje(jugador, 5, 5);
+
+            return new Object[]{mapa, jugador};
         }
-        if (nombreJugador.trim().isEmpty()) {
-            nombreJugador = "Anónimo";
+
+        @Override
+        protected void done() {
+            // === EDT ===
+            try {
+                Object[] modelo = get();
+                Mapa mapa = (Mapa) modelo[0];
+                Personaje jugador = (Personaje) modelo[1];
+
+                Reproductor_audio.getInstancia().reproducirSonido(1);
+
+                VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+                ControladorJuego controlador = new ControladorJuego(
+                    vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugador
+                );
+
+                controlador.setAccionVolverMenu(() -> {
+                    VistaMenu nuevoMenu = new VistaMenu();
+                    new ControladorMenu(nuevoMenu);
+                    nuevoMenu.mostrar();
+                    Reproductor_audio.getInstancia().reproducirSonido(3);
+                });
+
+                // orden anti-parpadeo: 
+                cargando.dispose(); //cerrar carga
+                vista.mostrar();//mostrar juego
+                vistaMenu.dispose(); //cerrar menú
+
+            } catch (Exception ex) {
+                cargando.dispose();
+                JOptionPane.showMessageDialog(vistaMenu,
+                    "Error al cargar el nivel: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         }
+    };
 
-        this.tiempoInicioPartida = System.currentTimeMillis(); // guarda el tiempo de inicio
-
-
-        // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
-        Mapa mapa = new Mapa(40 ,40);
-        mapa.cargarNivel(1);
-        mapa.generarDinero();
-        Reproductor_audio.getInstancia().detenerSonido(); //detiene el sonido del menu
-
-        Reproductor_audio.getInstancia().reproducirSonido(1); // Arranca con la música del Nivel 1
-        
-        Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
-
-        // 2) VISTA
-        VistaJuego vista = new VistaJuego(mapa, jugador, 1);
-
-        // 3) CONTROLADOR (El controlador se encarga de la transición de niveles)
-        ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador, this.tiempoInicioPartida, this.recordDAO, nombreJugador);
-
-        controlador.setAccionVolverMenu(() -> {
-            //se vuelve a crear el menu en el caso de querer volver
-            VistaMenu nuevoMenu = new VistaMenu();
-            new ControladorMenu(nuevoMenu);
-            nuevoMenu.mostrar();
-            Reproductor_audio.getInstancia().reproducirSonido(3); 
-
-        });
-
-        // 4) Mostrar
-        vistaMenu.dispose(); 
-        vista.mostrar();
-    }
+    worker.execute();
+    cargando.setVisible(true); 
+}
 
     private void mostrarRecords() {
     if (this.recordDAO == null) {
@@ -121,13 +155,13 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
 
     java.util.List<Record> records = this.recordDAO.obtenerMejores();
 
-    // ahora usamos la ventana propia con estilo, en vez del JOptionPane simple
+    // usamos la ventana propia con un estilo
     VistaRecords ventana = new VistaRecords(vistaMenu, records);
     ventana.setVisible(true);
 }
 
 private void mostrarComoJugar() {
-    // ventana propia con estilo, en vez del JOptionPane simple
+    // ventana propia con un estilo
     VistaComoJugar ventana = new VistaComoJugar(vistaMenu);
     ventana.setVisible(true);
 }
