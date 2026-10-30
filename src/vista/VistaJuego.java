@@ -39,25 +39,66 @@ public class VistaJuego extends JFrame {
     //NACHO SI LEES ESTO ACA ESTAN LAS VARIABLES DE FONDO Y MURO CAMBIALAS SEGUN EL NIVEL
     private Image imagenPARED;
     private Image imagenPISO;
-
+    private Image imagenSilla1, imagenSilla2, imagenSilla3, imagenSilla4; 
+    private Image imagenDinero;
+    private Image[] spritesEnemigos = new Image[5];
 
     public void cargarImagenesNivel() {
     String paredtemp;
     String pisotemp;
 
+
+
+    try {
+    imagenDinero = ImageIO.read(new File("images/sprites/dinero.png")); 
+} catch (IOException e) {
+    System.out.println("Error al cargar la imagen del dinero");
+}
+
     switch (nivelActual) {
         case 1:
             paredtemp = "images/casillero.PNG";
             pisotemp = "images/baldosablanca.PNG";
+            try {
+                imagenSilla1 = ImageIO.read(new File("images/sprites/estudiante/paredes/sillaabajo.png"));
+                imagenSilla2 = ImageIO.read(new File("images/sprites/estudiante/paredes/sillaarriba.png"));
+                imagenSilla3 = ImageIO.read(new File("images/sprites/estudiante/paredes/silladerecha.png"));
+                imagenSilla4 = ImageIO.read(new File("images/sprites/estudiante/paredes/sillaizquierda.png"));
+                
+                // Enemigos nivel 1 (4 variantes)
+                    spritesEnemigos[0] = ImageIO.read(new File("images/sprites/estudiante/enemigos/alfajor.png"));
+                    spritesEnemigos[1] = ImageIO.read(new File("images/sprites/estudiante/enemigos/futbol.png"));
+                    spritesEnemigos[2] = ImageIO.read(new File("images/sprites/estudiante/enemigos/play5.png"));
+                    spritesEnemigos[3] = ImageIO.read(new File("images/sprites/estudiante/enemigos/steam.png"));
+
+            } catch (IOException e) {
+                System.out.println("Error al cargar los sprites del nivel 1");
+            }
             break;
+
         case 2:
-            paredtemp = "images/casillero.PNG";
+            paredtemp = "images/sprites/adulto/paredes/bloqueladrillo.PNG";
             pisotemp = "images/baldosatierra.PNG";
+            try {
+                    // Enemigos nivel 2 (5 variantes)
+                    spritesEnemigos[0] = ImageIO.read(new File("images/sprites/adulto/enemigos/agua.png"));
+                    spritesEnemigos[1] = ImageIO.read(new File("images/sprites/adulto/enemigos/alquiler.png"));
+                    spritesEnemigos[2] = ImageIO.read(new File("images/sprites/adulto/enemigos/asado.png"));
+                    spritesEnemigos[3] = ImageIO.read(new File("images/sprites/adulto/enemigos/bebe.png"));
+                    spritesEnemigos[4] = ImageIO.read(new File("images/sprites/adulto/enemigos/cerveza.png"));
+                } catch (IOException e) { System.out.println("Error al cargar los sprites del nivel 2"); }
             break;
         case 3:
             paredtemp = "images/arbusto.PNG";
             pisotemp = "images/baldosapasto.PNG";
-            break;
+            try {
+                    // Enemigos nivel 3 (4 variantes)
+                    spritesEnemigos[0] = ImageIO.read(new File("images/sprites/jubilado/enemigos/casino.png"));
+                    spritesEnemigos[1] = ImageIO.read(new File("images/sprites/jubilado/enemigos/compras.png"));
+                    spritesEnemigos[2] = ImageIO.read(new File("images/sprites/jubilado/enemigos/luz.png"));
+                    spritesEnemigos[3] = ImageIO.read(new File("images/sprites/jubilado/enemigos/pami.png"));
+                } catch (IOException e) { System.out.println("Error al cargar los sprites del nivel 2"); }
+                break;
         default:
             imagenPARED = null;
             imagenPISO = null;
@@ -68,7 +109,7 @@ public class VistaJuego extends JFrame {
         imagenPARED = ImageIO.read(new File(paredtemp));
         imagenPISO = ImageIO.read(new File(pisotemp));
     } catch (IOException e) {
-        System.out.println("❌ Error al cargar imágenes del nivel " + nivelActual);
+        System.out.println("Error al cargar imágenes del nivel " + nivelActual);
         e.printStackTrace();
     }
 }
@@ -247,8 +288,20 @@ if (mapa.celdas[y][x].contenido != null) {
     
     // 1. SOLO si es Pared, dibujamos la imagen de pared
     if (obj instanceof src.modelo.map.Pared) {
-        if (imagenPARED != null) {
-            g2d.drawImage(imagenPARED, px, py, tamaño, tamaño, null);
+        src.modelo.map.Pared pared = (src.modelo.map.Pared) obj;
+        Image imgDibujar = imagenPARED; // Imagen por defecto (casillero)
+
+        if (nivelActual == 1) {
+            switch(pared.getVariante()) {
+                case 1: if (imagenSilla1 != null) imgDibujar = imagenSilla1; break;
+                case 2: if (imagenSilla2 != null) imgDibujar = imagenSilla2; break;
+                case 3: if (imagenSilla3 != null) imgDibujar = imagenSilla3; break;
+                case 4: if (imagenSilla4 != null) imgDibujar = imagenSilla4; break;
+            }
+        }
+
+        if (imgDibujar != null) {
+            g2d.drawImage(imgDibujar, px, py, tamaño, tamaño, null);
         } else {
             g2d.setColor(Color.BLACK);
             g2d.fillRect(px, py, tamaño, tamaño);
@@ -256,11 +309,15 @@ if (mapa.celdas[y][x].contenido != null) {
     } 
     // 2. Si es Dinero
     else if (obj instanceof Dinero) {
+       if (imagenDinero != null) {
+        // Dibuja la imagen ocupando toda la celda (o podés sumarle un margen si la querés más chica)
+        g2d.drawImage(imagenDinero, px, py, tamaño, tamaño, null);
+    } else {
+        // Fallback: si por algún motivo no carga la imagen, dibuja el círculo amarillo
         g2d.setColor(Color.YELLOW);
-        g2d.fillOval(px + 5, py + 5, tamaño - 10, tamaño - 10);
-        g2d.setColor(Color.BLACK);
-        g2d.drawString("$", px + 10, py + 20);
-    } 
+        g2d.fillOval(px + tamaño/4, py + tamaño/4, tamaño/2, tamaño/2);
+    }
+}
     // 3. Si es un Bonus
     else if (obj instanceof Bonus) {
         Bonus unBonus = (Bonus) obj;
@@ -274,19 +331,17 @@ if (mapa.celdas[y][x].contenido != null) {
             }
         
         }}
-        // dibujar los enemigos con su posicion visual interpolada 
-        // aca es donde, cuando tengamos sprites, se dibujara la imagen del enemigo
         for (int y = 0; y < mapa.alto; y++) {
             for (int x = 0; x < mapa.ancho; x++) {
                 if (mapa.celdas[y][x].contenido instanceof Enemigo) {
                     Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
 
-                    // Culling: dibujar solo si su posición visual cae dentro del viewport ampliado
-                    if (en.posXVisual + 1 < camX || en.posXVisual > camX + VIEW_COLS) continue;
-                    if (en.posYVisual + 1 < camY || en.posYVisual > camY + VIEW_ROWS) continue;
+            if (en.posXVisual + 1 < camX || en.posXVisual > camX + VIEW_COLS) continue;
+            if (en.posYVisual + 1 < camY || en.posYVisual > camY + VIEW_ROWS) continue;
 
                     int ex = (int) ((en.posXVisual - camX) * tamaño) + desplazamientoX;
                     int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
+
                     if (en instanceof EnemigoLetal){
                         //dibujo enemigo letal (por ahora es negro)
                     g2d.setColor(Color.BLACK);
@@ -295,12 +350,22 @@ if (mapa.celdas[y][x].contenido != null) {
                     g2d.drawString("V", ex + 11, ey + 20);
 
                     } else {
-                    // --- placeholder actual: rectángulo rojo con "V" ---
+                    // Dibujamos el sprite real del enemigo
+                     int var = en.getVariante();
+                     Image imgEnemigo = (var >= 1 && var <= spritesEnemigos.length) 
+                        ? spritesEnemigos[var - 1] : null;
+    
+                    if (imgEnemigo != null) {
+                     g2d.drawImage(imgEnemigo, ex, ey, tamaño, tamaño, null);
+                    } else {
+                    // Fallback por si no cargó la imagen
                     g2d.setColor(Color.RED);
                     g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
                     g2d.setColor(Color.WHITE);
                     g2d.drawString("V", ex + 11, ey + 20);
-                    }
+    }
+}
+                    
                 }
             }
         }

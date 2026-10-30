@@ -2,6 +2,7 @@
 
 import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
+import java.util.Random;
 
 public class Enemigo extends ObjetoEntorno {
     public int x;
@@ -15,16 +16,33 @@ public class Enemigo extends ObjetoEntorno {
     public double posYVisual;
     private static final double FACTOR_INTERPOLACION = 0.15;
 
-    public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia) {
+    private int variante;
+
+    public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
         super(true);
         this.x = x;
         this.y = y;
         this.danio = danio;
         this.estrategia = estrategia;
-
         this.posXVisual = x;
         this.posYVisual = y;
+
+        // Generamos la variante aleatoria según el nivel
+        Random rand = new Random();
+        if (nivel == 1) {
+            this.variante = 1 + rand.nextInt(4); // Sortea del 1 al 4
+        } else if (nivel == 2) {
+            this.variante = 1 + rand.nextInt(5); // Sortea del 1 al 5
+        } else if (nivel == 3) {
+            this.variante = 1 + rand.nextInt(4); // Sortea del 1 al 4
+        } else {
+            this.variante = 1; 
+        }
     }
+    public int getVariante() {
+        return this.variante;
+    }
+    
     public void setEstrategia(EstrategiaMovimiento estrategia) {
         this.estrategia = estrategia;
     }

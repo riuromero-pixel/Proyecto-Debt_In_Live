@@ -39,11 +39,11 @@ public class Mapa {
         }
         //paredes bordes
         for (int x = 0; x < ancho; x++) {
-            celdas[0][x].contenido = new Pared();
-            celdas[alto - 1][x].contenido = new Pared();
+            celdas[0][x].contenido = new Pared(0);
+            celdas[alto - 1][x].contenido = new Pared(0);
         }
         for (int y = 0; y < alto; y++) {
-            celdas[y][0].contenido = new Pared();
+            celdas[y][0].contenido = new Pared(0);
             celdas[y][ancho - 1].contenido = new Pared();
         }
 
@@ -77,7 +77,7 @@ public class Mapa {
             EstrategiaMovimiento estrategia = random.nextBoolean() 
             ? new MovimientoPerseguidor() 
             : new MovimientoErrante(); //mezcla al azar entre perseguidor y errante
-            celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2), estrategia);
+            celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel);
         }
         colocados++;
     }
