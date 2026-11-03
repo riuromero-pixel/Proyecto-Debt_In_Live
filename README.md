@@ -334,6 +334,8 @@ case 'c': case 'C':
 Diagrama de Clases UML (Conceptual)
 https://excalidraw.com/#room=06e19fa734b3c8b1a63a,D3CVevWOrU4yFgqbOUNB2Q
 
+<img width="4696" height="3078" alt="diagrama uml debt in live" src="https://github.com/user-attachments/assets/856e080b-062b-4a25-81eb-a4e17f708bd6" />
+
 4. Stack Tecnológico
 Lenguaje: Java 17
 
