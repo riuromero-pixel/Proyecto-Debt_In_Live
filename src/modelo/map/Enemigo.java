@@ -50,6 +50,32 @@ public class Enemigo extends ObjetoEntorno {
         return this.estrategia;
     }
 
+    public void moverEnemigo(Enemigo enemigo, int mejorX, int mejorY, Mapa mapa) {
+            Celda celdaActual = mapa.conseguirCelda(enemigo.x, enemigo.y);
+            Celda celdaNueva = mapa.conseguirCelda(mejorX, mejorY);
+
+            if (celdaActual != null && celdaNueva != null) {
+                
+                // Si el enemigo se va de su celda y había dinero abajo, lo restauramos a visible
+                if (celdaActual.dineroDebajo != null) {
+                    celdaActual.contenido = celdaActual.dineroDebajo;
+                    celdaActual.dineroDebajo = null;
+                } else {
+                    celdaActual.contenido = null;
+                }
+
+                // Si la celda nueva a la que entra tiene dinero, lo resguardamos en 'dineroDebajo'
+                if (celdaNueva.contenido instanceof Dinero) {
+                    celdaNueva.dineroDebajo = (Dinero) celdaNueva.contenido;
+                }
+
+                // Colocamos al enemigo en la celda nueva y actualizamos sus coordenadas
+                celdaNueva.contenido = enemigo;
+                enemigo.x = mejorX;
+                enemigo.y = mejorY;
+            }
+        }
+
     public void actualizarPersecucion(Personaje personaje, Mapa mapa) {
 
         if (estrategia != null) {

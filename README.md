@@ -37,7 +37,7 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 - El jugador perderá la partida en cuanto sus puntos caigan por debajo de 0 y deberá elegir entre reintentar, volver al menú o salir.
 
-- Habrán mejoras (Bonus) que afectan la velocidad y fuerza del personaje según el nivel, y que aparecen repartidas por el mapa. Tienen duración limitada.
+- Habrán mejoras (Bonus) que afectan la velocidad del personaje según el nivel, y que aparecen repartidas por el mapa. Tienen duración limitada.
 
 - Al recolectar $3000 el jugador avanza al siguiente nivel (o gana el juego si estaba en el último).
 

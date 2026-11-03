@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class SpriteSheet {
+public class SpriteSheet { // Clase que representa un sprite sheet, que es una imagen que contiene varios frames de animación en una grilla
     private BufferedImage imagen;
     private int anchoFrame;
     private int altoFrame;

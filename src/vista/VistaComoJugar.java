@@ -11,7 +11,7 @@ import javax.swing.border.EmptyBorder;
 
 // Ventana con estilo propio para explicar como se juega.
 // Mantiene la misma estetica oscura/dorada que la vista de records.
-public class VistaComoJugar extends JDialog {
+public class VistaComoJugar extends JDialog { // Clase que representa la ventana de "Cómo Jugar" y se encarga de mostrar los slides con instrucciones y animaciones
 
     // paleta, igual que en VistaRecords
     private static final Color AMARILLO = new Color(255, 215, 0);

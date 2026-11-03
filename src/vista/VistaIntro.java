@@ -5,7 +5,7 @@ import javax.swing.*;
 
 public class VistaIntro extends JFrame {
 
-    public VistaIntro(Runnable alTerminar) { 
+    public VistaIntro(Runnable alTerminar) { // Constructor que recibe un Runnable para ejecutar al terminar la introducción
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setBackground(Color.WHITE);

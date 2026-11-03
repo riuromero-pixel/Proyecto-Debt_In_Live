@@ -33,9 +33,7 @@ public class ControladorMenu {
     private long tiempoInicioPartida;
     private java.awt.event.ActionListener accionSilenciarGlobal;
 
-
-
-    public ControladorMenu(VistaMenu vistaMenu) {
+    public ControladorMenu(VistaMenu vistaMenu) { // Constructor que recibe la vista del menú y configura las acciones de los botones
         this.vistaMenu = vistaMenu;
         this.vistaMenu.setAccionJugar(e -> iniciarJuego());
         this.vistaMenu.setAccionRecords(e -> mostrarRecords());
@@ -117,6 +115,7 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
                 Reproductor_audio.getInstancia().reproducirSonido(1);
 
                 VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+                vista.setTiempoInicioPartida(tiempoInicioPartida);
                 ControladorJuego controlador = new ControladorJuego(
                     vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugador
                 );

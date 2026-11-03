@@ -31,7 +31,7 @@ public class GestorSprites {
         return instancia;
     }
 
-    // MODIFICADO: Método centralizado limpio y sin código duplicado
+    // Método centralizado limpio y sin código duplicado
     public Image obtenerSpritePersonaje(Personaje jugador) {
         // 1. Identificar el tipo de personaje
         int tipoIndex = 0;
@@ -60,7 +60,7 @@ public class GestorSprites {
             SpriteSheet sheet = getSpriteAnimado(tipoIndex, tipoStr, dirIndex, dirStr);
             if (sheet == null) return null;
             
-            // NUEVO: Obtenemos las columnas y filas reales directamente del SpriteSheet cargado
+            // Obtenemos las columnas y filas reales directamente del SpriteSheet cargado
             int cols = sheet.getColumnas();
             int fils = sheet.getFilas();
             

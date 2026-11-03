@@ -9,7 +9,7 @@ import src.modelo.entities.Record;
 
 // Ventana con estilo propio para mostrar los records de los jugadores.
 // Se ve mucho mas "de juego" que un JOptionPane comun.
-public class VistaRecords extends JDialog {
+public class VistaRecords extends JDialog { // Clase que representa la ventana de records y se encarga de mostrar la lista de records en un formato visual atractivo
 
     // paleta de colores, siguiendo el estilo oscuro del juego
     private static final Color AMARILLO = new Color(255, 215, 0);

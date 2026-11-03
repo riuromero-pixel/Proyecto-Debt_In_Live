@@ -12,7 +12,7 @@ public class VistaCargando extends JDialog {
     private JLabel lblMensaje;
     private JProgressBar barra;
 
-    public VistaCargando(Window padre, String mensaje) {
+    public VistaCargando(Window padre, String mensaje) { // Constructor que recibe la ventana padre y un mensaje a mostrar
         super(padre, "Cargando", Dialog.ModalityType.APPLICATION_MODAL);
         setUndecorated(true);
         setSize(620, 360);

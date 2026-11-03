@@ -12,7 +12,6 @@ public abstract class Personaje{
 protected int x;
 protected int y;
 protected int velocidad;
-protected int fuerza;
 protected int dinero;
 protected boolean bonusActivado = false;
 protected int golpesRestantes;   
@@ -21,64 +20,60 @@ protected Mapa mapa;
 protected Object paredObjetivo;  
 protected String direccionActual; //guarda la ultima direccion del personaje
 protected long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
-// === NUEVO: coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
+
+// coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
 // La lógica del juego sigue usando (x, y). Estas coordenadas se usan SOLO para dibujar
 // y permiten que el sprite se desplace celda a celda de forma fluida en vez de teletransportarse.
-// Cuando agreguemos los sprites, el sprite del personaje se dibujará en
-// (posXVisual, posYVisual) * tamañoDeCelda (ver VistaJuego.paint -> dibujarPersonaje).
+
 protected double posXVisual;
 protected double posYVisual;
 // Factor de interpolación exponencial: qué tan rápido la posición visual alcanza a la lógica.
 // Valores recomendados: 0.1 (lento, más "flotante") a 0.35 (rápido, más responsivo).
-// Si más adelante se cambia por sprites con animación por duración fija, este factor
-// puede reemplazarse por una velocidad en celdas/segundo.
+
 protected static final double FACTOR_INTERPOLACION = 0.2;
 
-// NUEVO: variables para animación de sprites
+//variables para animación de sprites
 public String direccionVisual = "S";
 public int frameAnimacion = 0;
 public long ultimoFrameAnimacion = 0;
 public boolean enMovimiento = false;
-//aa
 public boolean isEnMovimiento() { return enMovimiento; }
 public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
 
-public Personaje(int x, int y, int velocidad, int fuerza, int dinero, boolean bonusActivado, Mapa mapa){
+public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){ // Constructor que inicializa las propiedades del personaje, incluyendo su posición, velocidad, fuerza, dinero, estado de bonus y referencia al mapa
     this.x = x;
     this.y = y;
     this.velocidad = velocidad;
-    this.fuerza = fuerza;
     this.dinero = dinero; 
     this.bonusActivado = bonusActivado;
     this.ultimoGolpe = 0;
     this.mapa = mapa;
     this.direccionActual = null;
 
-    // === NUEVO: inicializar posiciones visuales con la posición lógica inicial ===
+    // inicializar posiciones visuales con la posición lógica inicial ===
     this.posXVisual = x;
     this.posYVisual = y;
 }
-public int getX() { return x; }
+    //getters y setters
+    public int getX() { return x; }
     public int getY() { return y; }
     public int getDinero() { return dinero; }
     public int getVelocidad() { return velocidad; }
-    public int getFuerza() { return fuerza; }
     public boolean isBonusActivado() { return bonusActivado; }
     public Mapa getMapa() { return mapa; }
     public void setX(int x) { this.x = x; }
     public void setY(int y) { this.y = y; }
     public void setDinero(int dinero) { this.dinero = dinero; }
     public void setVelocidad(int velocidad) { this.velocidad = velocidad; }
-    public void setFuerza(int fuerza) { this.fuerza = fuerza; }
     public void setBonusActivado(boolean bonusActivado) { this.bonusActivado = bonusActivado; }
     public void setMapa(Mapa mapa) { this.mapa = mapa; }
     public String getDireccionActual() { return direccionActual; }
 
-    // === NUEVO: getters de las posiciones visuales, usados por la VistaJuego para dibujar ===
+    // getters de las posiciones visuales, usados por la VistaJuego para dibujar ===
     public double getPosXVisual() { return posXVisual; }
     public double getPosYVisual() { return posYVisual; }
 
-    // === NUEVO: interpola suavemente las coordenadas visuales hacia las lógicas ===
+    //  interpola suavemente las coordenadas visuales hacia las lógicas ===
     // Lo llama el timer de animación del controlador (~60 FPS).
     // NOTA: no modifica la lógica del juego; solo la representación visual.
     public void actualizarPosicionVisual() {

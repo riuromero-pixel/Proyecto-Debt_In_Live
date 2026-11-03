@@ -31,7 +31,7 @@ public class VistaOpciones extends JDialog {
     private Timer timerPulso;
     private float fasePulso = 0f;
 
-    public VistaOpciones(Window padre, ActionListener accionSilenciar) {
+    public VistaOpciones(Window padre, ActionListener accionSilenciar) { // Constructor que recibe la ventana padre y un ActionListener para alternar el sonido
         super(padre, "Opciones", Dialog.ModalityType.APPLICATION_MODAL);
         this.accionSilenciar = accionSilenciar;
         setUndecorated(true);

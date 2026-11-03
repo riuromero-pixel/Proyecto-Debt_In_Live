@@ -10,11 +10,12 @@ import src.modelo.entities.Estudiante;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Bonus;
 import src.modelo.map.Dinero;
+import src.modelo.map.Pared;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
 
-public class VistaJuego extends JFrame {
+public class VistaJuego extends JFrame { // Clase que representa la ventana del juego y se encarga de dibujar el mapa, el personaje y los enemigos
     
     private Mapa mapa;
     private Personaje jugador;
@@ -22,6 +23,7 @@ public class VistaJuego extends JFrame {
     private int tamaño = 100;
     private static final int PANEL_ALTO = 60;
     private boolean gameOver = false; //bandera para saber si terminó el juego
+    private long tiempoInicioPartida;
    
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
@@ -156,6 +158,9 @@ public class VistaJuego extends JFrame {
         this.reiniciarCamaraSuave();
         cargarImagenesNivel();
     }
+        public void setTiempoInicioPartida(long tiempoInicio) { // permite al controlador establecer el tiempo de inicio de la partida para calcular el tiempo transcurrido
+        this.tiempoInicioPartida = tiempoInicio;
+    } 
 
     // suaviza el desplazamiento de la camara hacia la posicion objetivo 
     // sigue al jugador usando su posicion VISUAL (no la logica) para que el paneo
@@ -275,24 +280,23 @@ public class VistaJuego extends JFrame {
                 g2d.fillRect(px, py, tamaño, tamaño);
 
                // dibujamos el piso 
-if (imagenPISO != null) {
-    g2d.drawImage(imagenPISO, px, py, tamaño, tamaño, null);
-} else {
-    g2d.setColor(Color.WHITE); // Por si no carga la imagen
-    g2d.fillRect(px, py, tamaño, tamaño);
+            if (imagenPISO != null) {
+                g2d.drawImage(imagenPISO, px, py, tamaño, tamaño, null);
+            } else {
+                g2d.setColor(Color.WHITE); // Por si no carga la imagen
+                g2d.fillRect(px, py, tamaño, tamaño);
+            }
 
-}
-
-// dibujamos el contenido
-if (mapa.celdas[y][x].contenido != null) {
-    Object obj = mapa.celdas[y][x].contenido;
+             // dibujamos el contenido
+            if (mapa.celdas[y][x].contenido != null) {
+               Object obj = mapa.celdas[y][x].contenido;
     
-    // 1. SOLO si es Pared, dibujamos la imagen de pared
-    if (obj instanceof src.modelo.map.Pared) {
-        src.modelo.map.Pared pared = (src.modelo.map.Pared) obj;
-        Image imgDibujar = imagenPARED; // Imagen por defecto (casillero)
+            // 1. SOLO si es Pared, dibujamos la imagen de pared
+            if (obj instanceof src.modelo.map.Pared) {
+            Pared pared = (src.modelo.map.Pared) obj;
+            Image imgDibujar = imagenPARED; // Imagen por defecto (casillero)
 
-        if (nivelActual == 1) {
+            if (nivelActual == 1) {
             switch(pared.getVariante()) {
                 case 1: if (imagenSilla1 != null) imgDibujar = imagenSilla1; break;
                 case 2: if (imagenSilla2 != null) imgDibujar = imagenSilla2; break;
@@ -308,15 +312,15 @@ if (mapa.celdas[y][x].contenido != null) {
             g2d.fillRect(px, py, tamaño, tamaño);
         }
     } 
-    // 2. Si es Dinero
-    else if (obj instanceof Dinero) {
-       if (imagenDinero != null) {
+        // 2. Si es Dinero
+         else if (obj instanceof Dinero) {
+             if (imagenDinero != null) {
         // Dibuja la imagen ocupando toda la celda (o podés sumarle un margen si la querés más chica)
         g2d.drawImage(imagenDinero, px, py, tamaño, tamaño, null);
-    } else {
-        // Fallback: si por algún motivo no carga la imagen, dibuja el círculo amarillo
-        g2d.setColor(Color.YELLOW);
-        g2d.fillOval(px + tamaño/4, py + tamaño/4, tamaño/2, tamaño/2);
+            } else {
+           // Fallback: si por algún motivo no carga la imagen, dibuja el círculo amarillo
+            g2d.setColor(Color.YELLOW);
+            g2d.fillOval(px + tamaño/4, py + tamaño/4, tamaño/2, tamaño/2);
     }
 }
     // 3. Si es un Bonus
@@ -395,10 +399,27 @@ if (mapa.celdas[y][x].contenido != null) {
         String dineroTexto = "💰 Dinero: $" + (jugador != null ? jugador.getDinero() : 0);
         g2d.drawString(dineroTexto, 20, panelY + 35);
 
-        // NUEVO: Mostrar monedas restantes en el mapa (en color cyan para que resalte)
+        // Mostrar monedas restantes en el mapa (en color cyan para que resalte)
         g2d.setColor(Color.CYAN);
         String monedasRestantes = "Monedas restantes: " + (mapa != null ? mapa.contarDineroRestante() : 0);
         g2d.drawString(monedasRestantes, 250, panelY + 35);
+
+
+        // Mostrar tiempo transcurrido
+        if (tiempoInicioPartida > 0) {
+        long tiempoActual = System.currentTimeMillis();
+        long tiempoTranscurrido = tiempoActual - tiempoInicioPartida;
+        // Convercion minutos y segundos
+        long segundosTotales = tiempoTranscurrido / 1000; 
+        long minutos = segundosTotales / 60;
+        long segundos = segundosTotales % 60;
+    
+        // Formateo para que quede como "01:05"
+        String textoTiempo = String.format("Tiempo: %02d:%02d", minutos, segundos);
+    
+        g2d.setColor(Color.GREEN); 
+        g2d.drawString(textoTiempo, 500, panelY + 35);
+        }
 
         //texto de información (blanco)
         g2d.setColor(Color.WHITE);
@@ -408,9 +429,8 @@ if (mapa.celdas[y][x].contenido != null) {
         else if (jugador instanceof Estudiante) tipo = "Estudiante";
         else if (jugador != null) tipo = "Jubilado";
 
-        String infoTexto = String.format("Personaje: %s | Fuerza: %d | Velocidad: %d | Nivel: %d",
+        String infoTexto = String.format("Personaje: %s | Velocidad: %d | Nivel: %d",
                 tipo,
-                jugador != null ? jugador.getFuerza() : 0,
                 jugador != null ? jugador.getVelocidad() : 0,
                 nivelActual);
         g2d.drawString(infoTexto, 20, panelY + 15);
@@ -427,10 +447,10 @@ if (mapa.celdas[y][x].contenido != null) {
         g.drawImage(bufferImagen, 0, 0, this);
     }
         
-         // NUEVO: dibujamos estudiante
+         // dibujamos estudiante
         private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
         
-        // MODIFICADO: Se elimina el if(jugador instanceof Estudiante) y todo el casting engorroso.
+        // Se elimina el if(jugador instanceof Estudiante) y todo el casting engorroso.
         // Ahora le pedimos a GestorSprites que nos dé la imagen correspondiente de manera limpia.
         java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador);
         
@@ -463,7 +483,4 @@ if (mapa.celdas[y][x].contenido != null) {
             g2d.fillOval(px + margen + 2, py + margen + 4, radio * 2, radio * 2);
         }
     }
-
-        
-     
  }

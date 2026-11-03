@@ -10,7 +10,7 @@ import src.vista.VistaCargando;
 import src.vista.VistaJuego;
 import src.modelo.entities.Record;
 
-public class ControladorJuego {
+public class ControladorJuego { // Clase que controla la lógica del juego, incluyendo el movimiento del jugador y los enemigos, la verificación de condiciones de victoria o derrota, y la interacción con la vista del juego
 
     private Mapa mapa;
     private Personaje jugador;
@@ -55,14 +55,14 @@ public class ControladorJuego {
 
         iniciarTimers();
     }
+    
     // ---------- TIMERS ----------
+    private void iniciarTimers() {
+        if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
+        if (timerJuego != null) timerJuego.stop();
+        if (timerAnimacion != null) timerAnimacion.stop();
 
-private void iniciarTimers() {
-    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
-    if (timerJuego != null) timerJuego.stop();
-    if (timerAnimacion != null) timerAnimacion.stop();
-
-    timerMovimientoEnemigos = new Timer(800, e -> {
+    timerMovimientoEnemigos = new Timer(800, e -> { //movimiento de enemigos cada 800ms
         if (juegoActivo) {
             mapa.moverEnemigos(jugador);
             verificarPerdida();
@@ -71,19 +71,19 @@ private void iniciarTimers() {
     });
     timerMovimientoEnemigos.start();
 
-    timerJuego = new Timer(100, e -> { 
+    timerJuego = new Timer(100, e -> {  //mueve al jugador con la velocidad actual cada 100ms
         if (juegoActivo && teclaPulsada != ' ') {
             moverJugadorConVelocidad();
         }
     });
     timerJuego.start();
 
-    timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> {
+    timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> { //actualiza posiciones visuales y camara cada 16ms (~60 FPS)
         if (juegoActivo) {
             jugador.actualizarPosicionVisual();
             jugador.actualizarBonus();
 
-// === Animación del sprite del jugador ===
+    // === Animación del sprite del jugador ===
         boolean moviendo = (teclaPulsada != ' ');
         jugador.setEnMovimiento(moviendo);
 
@@ -105,7 +105,7 @@ private void iniciarTimers() {
         }
     });
     timerAnimacion.start();
-}
+    }
 
     // ---------- LOGICA DE MOVIMIENTO ----------
     private void moverJugadorConVelocidad() {
@@ -124,7 +124,7 @@ private void iniciarTimers() {
             // LOGICA DE NIVELES Y DINERO
             if (juegoActivo && jugador.getDinero() >= 3000) {
                     if (nivelActual < 3) {
-                        // MODIFICADO: Detenemos el juego antes de pasar de nivel.
+                        // Detenemos el juego antes de pasar de nivel.
                         detener();
                         nivelActual++;
                         iniciarNivel(nivelActual);
@@ -180,6 +180,7 @@ private void iniciarTimers() {
 
                 Reproductor_audio.getInstancia().reproducirSonido(nivel);
                 vista.actualizarModelo(mapa, jugador, nivel);
+                vista.setTiempoInicioPartida(tiempoInicioPartida);
                 vista.desactivarGameOver();
 
                 juegoActivo = true;
@@ -212,7 +213,7 @@ private void iniciarTimers() {
 
             String mensaje;
             switch (nivelActual) {
-                case 1: mensaje = "¡PERDISTE! Te quedaste sin plata. Chau play 5:(."; break;
+                case 1: mensaje = "¡PERDISTE! Te quedaste sin plata. Chau play 5 :(."; break;
                 case 2: mensaje = "¡PERDISTE! Te quedaste sin plata. No llegaste a fin de mes. Pinchó mal."; break;
                 case 3: mensaje = "¡PERDISTE! Te quedaste sin plata. Perdiste toda la plata de la jubilación. Cagamo."; break;
                 default: mensaje = "¡PERDISTE! Te quedaste sin plata."; break;

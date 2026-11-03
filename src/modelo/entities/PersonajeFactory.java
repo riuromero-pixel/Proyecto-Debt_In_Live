@@ -2,7 +2,7 @@ package src.modelo.entities;
 
 import src.modelo.map.Mapa;
 
-//Patron factory Method para crear personajes según el nivel
+//Patron simple factory para crear personajes según el nivel
 public class PersonajeFactory {
       public static Personaje crearPersonaje(int nivel, int x, int y, Mapa mapa) {
         switch (nivel) {

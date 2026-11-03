@@ -50,28 +50,7 @@ public class MovimientoErrante implements EstrategiaMovimiento {
         if (opciones.isEmpty()) return;
 
         int[] elegida = opciones.get(random.nextInt(opciones.size()));
-        moverEnemigo(enemigo, elegida[0], elegida[1], mapa);
-    }
-
-    private void moverEnemigo(Enemigo enemigo, int mejorX, int mejorY, Mapa mapa) {
-        Celda celdaActual = mapa.conseguirCelda(enemigo.x, enemigo.y);
-        Celda celdaNueva = mapa.conseguirCelda(mejorX, mejorY);
-        if (celdaActual == null || celdaNueva == null) return;
-
-        if (celdaActual.dineroDebajo != null) {
-            celdaActual.contenido = celdaActual.dineroDebajo;
-            celdaActual.dineroDebajo = null;
-        } else {
-            celdaActual.contenido = null;
-        }
-
-        if (celdaNueva.contenido instanceof Dinero) {
-            celdaNueva.dineroDebajo = (Dinero) celdaNueva.contenido;
-        }
-
-        celdaNueva.contenido = enemigo;
-        enemigo.x = mejorX;
-        enemigo.y = mejorY;
+        enemigo.moverEnemigo(enemigo, elegida[0], elegida[1], mapa);
     }
 }
 

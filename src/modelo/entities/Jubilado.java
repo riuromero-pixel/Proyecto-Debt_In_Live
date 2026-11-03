@@ -9,26 +9,21 @@ import src.modelo.map.Bonus;
 public class Jubilado extends Personaje implements CreadorParedes{
 
 private int velocidadOriginal;
-private int fuerzaOriginal;
 
 public Jubilado(int x, int y, Mapa mapa) {
-super(x, y, 1, 3, 100, false, mapa);
+super(x, y, 1, 100, false, mapa);
    this.velocidad = 1; // velocidad inicial mas baja por ser un jubilado
-   this.fuerza = 1; // fuerza inicial mas baja por ser un jubilado
 }
     public void activarBonus(Bonus bonus) {
         if (!isBonusActivado()) {
             velocidadOriginal = velocidad; // Guardar la velocidad original
-            fuerzaOriginal = fuerza; // Guardar la fuerza original
         }
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 3;
-        this.fuerza +=4; 
     }
     public void desactivarBonus() {
         super.desactivarBonus();
         this.velocidad = velocidadOriginal; 
-        this.fuerza = fuerzaOriginal;
     }
 
 @Override

@@ -1,22 +1,15 @@
 package src.modelo.entities;
 
-
 import src.modelo.map.Bonus;
 import src.modelo.map.Mapa;
-/*import src.vista.SpriteSheet;
-import java.awt.Image;*/
 
 public class Estudiante extends Personaje{
 
     private int velocidadOriginal;
 
-
-
     public Estudiante(int x, int y, Mapa mapa) {
-        super(x, y, 2, 2, 100, false, mapa);
+        super(x, y, 2, 100, false, mapa);
         this.velocidad = 3; // velocidad inicial mas alta por ser un estudiante
-        this.fuerza = 2;
-
     }
     public void activarBonus(Bonus bonus) {
          if (!isBonusActivado()) {

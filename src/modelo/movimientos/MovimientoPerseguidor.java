@@ -2,7 +2,6 @@ package src.modelo.movimientos;
 
 import src.modelo.entities.Personaje;
 import src.modelo.map.Celda;
-import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
 import src.modelo.map.Mapa;
 import src.modelo.map.Pared;
@@ -51,34 +50,6 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
                 }
             }
         } 
-        moverEnemigo(enemigo, mejorX, mejorY, mapa);
-    }   
-
-        
-        private void moverEnemigo(Enemigo enemigo, int mejorX, int mejorY, Mapa mapa) {
-            Celda celdaActual = mapa.conseguirCelda(enemigo.x, enemigo.y);
-            Celda celdaNueva = mapa.conseguirCelda(mejorX, mejorY);
-
-            if (celdaActual != null && celdaNueva != null) {
-                
-                // Si el enemigo se va de su celda y había dinero abajo, lo restauramos a visible
-                if (celdaActual.dineroDebajo != null) {
-                    celdaActual.contenido = celdaActual.dineroDebajo;
-                    celdaActual.dineroDebajo = null;
-                } else {
-                    celdaActual.contenido = null;
-                }
-
-                // Si la celda nueva a la que entra tiene dinero, lo resguardamos en 'dineroDebajo'
-                if (celdaNueva.contenido instanceof Dinero) {
-                    celdaNueva.dineroDebajo = (Dinero) celdaNueva.contenido;
-                }
-
-                // Colocamos al enemigo en la celda nueva y actualizamos sus coordenadas
-                celdaNueva.contenido = enemigo;
-                enemigo.x = mejorX;
-                enemigo.y = mejorY;
-            }
-        }
-    
+        enemigo.moverEnemigo(enemigo, mejorX, mejorY, mapa);
+    }     
 }
