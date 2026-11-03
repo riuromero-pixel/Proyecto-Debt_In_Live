@@ -348,11 +348,50 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                     int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
 
                     if (en instanceof EnemigoLetal){
-                        //dibujo enemigo letal (por ahora es negro)
-                    g2d.setColor(Color.BLACK);
-                    g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
-                    g2d.setColor(Color.RED);
-                    g2d.drawString("V", ex + 11, ey + 20);
+                    String dirMuerte = "abajo";
+                        double difX = en.x - en.posXVisual;
+                        double difY = en.y - en.posYVisual;
+                
+                        if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
+                            
+                            if (Math.abs(difX) > Math.abs(difY)) {
+                                dirMuerte = difX > 0 ? "derecha" : "izquierda";
+                            } else {
+                                dirMuerte = difY > 0 ? "abajo" : "arriba";
+                            }
+                        } else if (jugador != null) {
+                            double distJugadorX = jugador.getX() - en.x;
+                            double distJugadorY = jugador.getY() - en.y;
+                            if (Math.abs(distJugadorX) > Math.abs(distJugadorY)) {
+                                dirMuerte = distJugadorX > 0 ? "derecha" : "izquierda";
+                            } else {
+                                dirMuerte = distJugadorY > 0 ? "abajo" : "arriba";
+                            }
+                        }
+                
+                        Image spriteLetal = GestorSprites.getInstance().obtenerSpriteEnemigoLetal(dirMuerte);
+                
+                        if (spriteLetal != null) {
+                            int anchoOriginal = spriteLetal.getWidth(null);
+                         int altoOriginal  = spriteLetal.getHeight(null);
+
+                         double margen = 1.3;
+                         double escala = (double) tamaño / Math.max(anchoOriginal, altoOriginal) * margen;
+
+                         int anchoDibujo = (int) (anchoOriginal * escala);
+                         int altoDibujo  = (int) (altoOriginal  * escala);
+
+                         int dibujoX = ex + (tamaño - anchoDibujo) / 2;
+                         int dibujoY = ey + (tamaño - altoDibujo);
+
+                         g2d.drawImage(spriteLetal, dibujoX, dibujoY, anchoDibujo, altoDibujo, null);
+
+                         } else {
+                         g2d.setColor(Color.BLACK);
+                         g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
+                         g2d.setColor(Color.RED);
+                         g2d.drawString("V", ex + 11, ey + 20);
+                        }
 
                     } else {
                     // Dibujamos el sprite real del enemigo

@@ -44,7 +44,7 @@ public class Mapa {
         }
         for (int y = 0; y < alto; y++) {
             celdas[y][0].contenido = new Pared(0);
-            celdas[y][ancho - 1].contenido = new Pared();
+            celdas[y][ancho - 1].contenido = new Pared(0);
         }
 
         // esto hace que las paredes o enemigos no ocupen más del 30% del mapa

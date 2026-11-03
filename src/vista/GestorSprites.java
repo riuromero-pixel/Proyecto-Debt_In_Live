@@ -18,7 +18,7 @@ public class GestorSprites {
     // Indices de Direccion: 0=Abajo, 1=Arriba, 2=Derecha, 3=Izquierda
     private BufferedImage[][] cacheEstaticos;
     private SpriteSheet[][] cacheAnimados;
-
+    private SpriteSheet[] cacheLetal = new SpriteSheet[4];
     private GestorSprites() {
         cacheEstaticos = new BufferedImage[3][4];
         cacheAnimados = new SpriteSheet[3][4];
@@ -118,5 +118,43 @@ public class GestorSprites {
             cacheAnimados[tipoIndex][dirIndex] = new SpriteSheet(ruta, columnas, filas);
         }
         return cacheAnimados[tipoIndex][dirIndex];
+    }
+
+    public Image obtenerSpriteEnemigoLetal(String direccion) {
+        int dirIndex = 0;
+        int columnas = 11;
+        int filas = 2;
+
+        switch(direccion) {
+            case "arriba": dirIndex = 1; break;
+            case "derecha": 
+            dirIndex = 2;
+            columnas = 13; 
+            filas = 2; 
+            break;
+            case "izquierda": 
+                dirIndex = 3; 
+                columnas = 5; 
+                filas = 5; 
+                break;
+            case "abajo": default: dirIndex = 0; break;
+        }
+
+        if (cacheLetal[dirIndex] == null) {
+            String ruta = "images/sprites/enemigoLetal/" + direccion + "muerte.png"; 
+            cacheLetal[dirIndex] = new SpriteSheet(ruta, columnas, filas);
+        }
+
+        SpriteSheet sheet = cacheLetal[dirIndex];
+        if (sheet == null) return null;
+
+        int cols = sheet.getColumnas();
+        int fils = sheet.getFilas();
+        int totalFrames = cols * fils;
+        int frameCalculado = (int) ((System.currentTimeMillis() / 100) % totalFrames);
+        int fila = frameCalculado / cols;
+        int columna = frameCalculado % cols;
+
+        return sheet.obtenerFrame(fila, columna);
     }
 }
