@@ -64,9 +64,7 @@ public class VistaDialogoEstilo extends JDialog {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
-    // ==========================================
     // 1) PARA MOSTRAR SOLO UN MENSAJE (Niveles / Ganar)
-    // ==========================================
     public static void mostrarMensaje(Window padre, String titulo, String subtitulo, String mensaje) {
         VistaDialogoEstilo dialogo = new VistaDialogoEstilo(padre, titulo, subtitulo);
         JPanel cont = dialogo.crearPanelMensaje(mensaje);
@@ -86,10 +84,8 @@ public class VistaDialogoEstilo extends JDialog {
         dialogo.setVisible(true);
     }
 
-    // ==========================================
     // 2) PARA MOSTRAR OPCIONES (Pausa / Perder)
     // Devuelve el indice del boton clickeado (0, 1, 2...)
-    // ==========================================
     public static int mostrarOpciones(Window padre, String titulo, String subtitulo, String mensaje, String[] opciones) {
         VistaDialogoEstilo dialogo = new VistaDialogoEstilo(padre, titulo, subtitulo);
         JPanel cont = dialogo.crearPanelMensaje(mensaje);
@@ -123,10 +119,8 @@ public class VistaDialogoEstilo extends JDialog {
         return dialogo.resultadoOpcion;
     }
 
-    // ==========================================
     // 3) PARA PEDIR UN TEXTO (Ingresar Nombre)
     // Devuelve el String ingresado o null si cancela
-    // ==========================================
     public static String pedirTexto(Window padre, String titulo, String subtitulo, String mensaje) {
         VistaDialogoEstilo dialogo = new VistaDialogoEstilo(padre, titulo, subtitulo);
 

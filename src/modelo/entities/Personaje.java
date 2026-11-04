@@ -4,7 +4,6 @@ import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
 import src.modelo.map.Pared;
 import src.modelo.map.Mapa;
-import src.modelo.map.Dinero;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 

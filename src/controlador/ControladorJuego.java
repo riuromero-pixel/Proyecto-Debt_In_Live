@@ -6,11 +6,12 @@ import javax.swing.*;
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
+import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaJuego;
 import src.modelo.entities.Record;
 
-public class ControladorJuego {
+public class ControladorJuego { // Controlador principal del juego, maneja la lógica del juego, los eventos de teclado y la interacción con la vista y el modelo
 
     private Mapa mapa;
     private Personaje jugador;
@@ -58,11 +59,11 @@ public class ControladorJuego {
     // ---------- TIMERS ----------
 
 private void iniciarTimers() {
-    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
+    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop(); 
     if (timerJuego != null) timerJuego.stop();
     if (timerAnimacion != null) timerAnimacion.stop();
 
-    timerMovimientoEnemigos = new Timer(800, e -> {
+    timerMovimientoEnemigos = new Timer(800, e -> { //timer de movimiento de enemigos (cada 800ms) 
         if (juegoActivo) {
             mapa.moverEnemigos(jugador);
             verificarPerdida();
@@ -71,14 +72,14 @@ private void iniciarTimers() {
     });
     timerMovimientoEnemigos.start();
 
-    timerJuego = new Timer(100, e -> { //--------------------------
+    timerJuego = new Timer(100, e -> { // timer del jugador (cada 100ms)
         if (juegoActivo && teclaPulsada != ' ') {
             moverJugadorConVelocidad();
         }
     });
     timerJuego.start();
 
-    timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> {
+    timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> { //timer de animación para interpolación suave (cada 16ms ~ 60fps)
         if (juegoActivo) {
             jugador.actualizarPosicionVisual();
             jugador.actualizarBonus();
@@ -143,35 +144,64 @@ private void iniciarTimers() {
     }
 
     // prepara todo para el siguiente nivel
-    private void iniciarNivel(int nivel) {
+private void iniciarNivel(int nivel) {
         if (nivel == 2) {
             VistaDialogoEstilo.mostrarMensaje(vista, "¡NIVEL 2!", "Ahora sos un Adulto", "A agarrar la pala.");
         } else if (nivel == 3) {
             VistaDialogoEstilo.mostrarMensaje(vista, "¡NIVEL 3!", "Ahora sos un Jubilado", "Ahora cagaste.");
         }
-        // Crear nuevo mapa y generar nivel
-        this.mapa = new Mapa(40, 40);
-        this.mapa.cargarNivel(nivel);
-      Reproductor_audio.getInstancia().reproducirSonido(nivel); // Arranca con la música del Nivel 1
-        this.mapa.generarDinero();
 
-        // crear el personaje correspondiente al nivel
-        this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, mapa);
+    //diálogo de carga
+    VistaCargando cargando = new VistaCargando(vista, "Generando nivel " + nivel + "...");
 
-        // limpiar la celda de inicio por si hay paredes o enemigos de casualidad
-        this.mapa.celdas[5][5].contenido = null; 
-        this.mapa.setPersonaje(this.jugador, 5, 5);
+    //genera el nivel en un HILO DE FONDO
+    SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
+        @Override
+        protected Object[] doInBackground() throws Exception {
+           
+            Thread.sleep(700); // simula la carga para que no parpadee el escritorio
 
-        // actualizar la vista con los nuevos datos
-        this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
-        this.vista.desactivarGameOver();
+            Mapa nuevoMapa = new Mapa(40, 40);
+            nuevoMapa.cargarNivel(nivel);
+            nuevoMapa.generarDinero();
 
-        // reiniciamos el juego (timers) despues de que el jugador acepte el mensaje.
-        this.juegoActivo = true;
-        iniciarTimers();
-        this.vista.repaint();
+            Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
+            nuevoMapa.celdas[5][5].contenido = null;
+            nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
-    }
+            return new Object[]{nuevoMapa, nuevoJugador};
+        }
+
+        @Override
+        protected void done() {
+            // === EDT ===
+            try {
+                Object[] modelo = get();
+                mapa = (Mapa) modelo[0];
+                jugador = (Personaje) modelo[1];
+
+                Reproductor_audio.getInstancia().reproducirSonido(nivel);
+                vista.actualizarModelo(mapa, jugador, nivel);
+                vista.setTiempoInicioPartida(tiempoInicioPartida);
+                vista.desactivarGameOver();
+
+                juegoActivo = true;
+                iniciarTimers();
+                vista.repaint();
+
+                cargando.dispose();
+            } catch (Exception ex) {
+                cargando.dispose();
+                JOptionPane.showMessageDialog(vista,
+                    "Error al cargar el nivel: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        }
+    };
+    worker.execute();
+    cargando.setVisible(true);
+}
 
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
@@ -195,7 +225,7 @@ private void iniciarTimers() {
             "¿Que hacemo?",
             mensaje,
             new String[]{"Reintentar", "Volver al Menú", "Salir"}
-    );
+            );
            
             if (opcion == 0) { //Reintentar
                 // se reinicia el juego desde el nivel 1
@@ -215,7 +245,7 @@ private void iniciarTimers() {
         this.accionVolverMenu = accion;
     }
 
-    private void ganarJuego(String mensaje) {
+private void ganarJuego(String mensaje) {
         juegoActivo = false;
         guardarRecordActual(3); 
         long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;

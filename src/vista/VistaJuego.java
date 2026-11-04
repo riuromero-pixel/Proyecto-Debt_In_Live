@@ -38,7 +38,6 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     //buffer para evitar parpadeo
     private Image bufferImagen;
     private Graphics bufferGraphics;
-    //NACHO SI LEES ESTO ACA ESTAN LAS VARIABLES DE FONDO Y MURO CAMBIALAS SEGUN EL NIVEL
     private Image imagenPARED;
     private Image imagenPISO;
     private Image imagenSilla1, imagenSilla2, imagenSilla3, imagenSilla4; 
@@ -125,16 +124,10 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         setLocationRelativeTo(null);
         setResizable(false);
         setFocusable(true);
-        //setFocusTraversalKeysEnabled(false);
-
-        
 
          // Pantalla completa
          setUndecorated(true);
-         GraphicsDevice gd = GraphicsEnvironment
-          .getLocalGraphicsEnvironment()
-          .getDefaultScreenDevice();
-          gd.setFullScreenWindow(this);
+
          // Fondo oscuro (por si algo queda sin cubrir)
          getContentPane().setBackground(new Color(30, 30, 40));
 
@@ -196,12 +189,13 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
 
     //el controlador llama a este metodo para mostrar la ventana
     public void mostrar() {
+        setUndecorated(true);
          GraphicsDevice gd = GraphicsEnvironment
         .getLocalGraphicsEnvironment()
         .getDefaultScreenDevice();
         gd.setFullScreenWindow(this);
         setVisible(true);
-        this.requestFocus();
+        this.toFront();
         this.requestFocusInWindow();
     }
 
@@ -276,7 +270,6 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                 // Posición en pantalla usando las coordenadas double de la cámara
                 int px = (int) ((x - camX) * tamaño) + desplazamientoX;
                 int py = (int) ((y - camY) * tamaño) + desplazamientoY;
-                //g2d.setColor(Color.WHITE);
                 g2d.fillRect(px, py, tamaño, tamaño);
 
                // dibujamos el piso 
@@ -328,7 +321,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         Bonus unBonus = (Bonus) obj;
         g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
         g2d.setColor(Color.BLACK);
-        g2d.drawString("B", px + 10, py + 20);
+        g2d.drawString("", px + 10, py + 20);
     }
 
                 g2d.setColor(Color.GRAY);
@@ -407,9 +400,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                     g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
                     g2d.setColor(Color.WHITE);
                     g2d.drawString("V", ex + 11, ey + 20);
-    }
-}
-                    
+                    }
+                    }             
                 }
             }
         }
@@ -440,7 +432,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
 
         // Mostrar monedas restantes en el mapa (en color cyan para que resalte)
         g2d.setColor(Color.CYAN);
-        String monedasRestantes = "Monedas restantes: " + (mapa != null ? mapa.contarDineroRestante() : 0);
+        String monedasRestantes = "Fajos de plata restantes: " + (mapa != null ? mapa.contarDineroRestante() : 0);
         g2d.drawString(monedasRestantes, 250, panelY + 35);
 
 
@@ -457,7 +449,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         String textoTiempo = String.format("Tiempo: %02d:%02d", minutos, segundos);
     
         g2d.setColor(Color.GREEN); 
-        g2d.drawString(textoTiempo, 500, panelY + 35);
+        g2d.drawString(textoTiempo, 800, panelY + 35);
         }
 
         //texto de información (blanco)

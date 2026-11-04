@@ -2,15 +2,14 @@ package src.controlador;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.Timer;
 
 import src.modelo.entities.Record;
 import src.vista.VistaRecords;
+import src.vista.VistaCargando;
 import src.vista.VistaComoJugar;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaOpciones;
@@ -25,8 +24,7 @@ import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
 import src.vista.VistaIntro;
-import src.vista.VistaCargando;
-
+import src.vista.VistaDialogoEstilo;
 
 public class ControladorMenu {
     private final VistaMenu vistaMenu;
@@ -71,51 +69,84 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
     });
     }
 
-    private void iniciarJuego() {
-        // MODIFICADO: Usamos nuestra ventana con estilo en vez del JOptionPane
+ private void iniciarJuego() {
+        // Usamos nuestra ventana con estilo en vez del JOptionPane
         String nombreJugador = VistaDialogoEstilo.pedirTexto(
                 vistaMenu, 
                 "Nuevo Record", 
                 "Ingresá tu nombre", 
                 "¿Cómo te llamás?"
         );
-
         if (nombreJugador == null) {
-            return; // si cancela, no arranca el juego
+            return;
         }
         if (nombreJugador.trim().isEmpty()) {
-            nombreJugador = "Anónimo";
+            nombreJugador = "Anonimo";
+        }
+        final String nombreJugadorFinal = nombreJugador; 
+
+        this.tiempoInicioPartida = System.currentTimeMillis();
+    // diálogo de carga
+    final VistaCargando cargando = new VistaCargando(vistaMenu, "Generando nivel 1...");
+
+    SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
+
+        @Override
+        protected Object[] doInBackground() throws Exception {
+            // HILO SECUNDARIO 
+            Thread.sleep(900); // simula carga para evitar el parpadeo del escritorio
+
+            Mapa mapa = new Mapa(40, 40);
+            mapa.cargarNivel(1);
+            mapa.generarDinero();
+
+            Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
+            mapa.celdas[4][4].contenido = null;
+            mapa.setPersonaje(jugador, 4, 4);
+
+            return new Object[]{mapa, jugador};
         }
 
-        this.tiempoInicioPartida = System.currentTimeMillis(); 
+        @Override
+        protected void done() {
+            try {
+                Object[] modelo = get();
+                Mapa mapa = (Mapa) modelo[0];
+                Personaje jugador = (Personaje) modelo[1];
 
-        // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
-        Mapa mapa = new Mapa(40 ,40);
-        mapa.cargarNivel(1);
-        mapa.generarDinero();
-        Reproductor_audio.getInstancia().detenerSonido(); 
+                Reproductor_audio.getInstancia().reproducirSonido(1);
 
-        Reproductor_audio.getInstancia().reproducirSonido(1); 
-        
-        Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
+                VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+                vista.setTiempoInicioPartida(tiempoInicioPartida);
+                ControladorJuego controlador = new ControladorJuego(
+                    vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugadorFinal
+                );
 
-        // 2) VISTA
-        VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+                controlador.setAccionVolverMenu(() -> {
+                    VistaMenu nuevoMenu = new VistaMenu();
+                    new ControladorMenu(nuevoMenu);
+                    nuevoMenu.mostrar();
+                    Reproductor_audio.getInstancia().reproducirSonido(3);
+                });
 
-        // 3) CONTROLADOR 
-        ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador, this.tiempoInicioPartida, this.recordDAO, nombreJugador);
+                // orden anti-parpadeo: 
+                cargando.dispose(); //cerrar carga
+                vista.mostrar();//mostrar juego
+                vistaMenu.dispose(); //cerrar menú
 
-        controlador.setAccionVolverMenu(() -> {
-            VistaMenu nuevoMenu = new VistaMenu();
-            new ControladorMenu(nuevoMenu);
-            nuevoMenu.mostrar();
-            Reproductor_audio.getInstancia().reproducirSonido(3); 
-        });
+            } catch (Exception ex) {
+                cargando.dispose();
+                JOptionPane.showMessageDialog(vistaMenu,
+                    "Error al cargar el nivel: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        }
+    };
+    worker.execute();
+    cargando.setVisible(true); 
+}
 
-        // 4) Mostrar
-        vistaMenu.dispose(); 
-        vista.mostrar();
-    }
 
     private void mostrarRecords() {
     if (this.recordDAO == null) {

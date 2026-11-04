@@ -8,7 +8,6 @@ public class Reproductor_audio {
     private Clip clipActual;
     private boolean silenciado = false;//atributo para controlar el silencio
 
-    
 private Reproductor_audio() {
         // Constructor privado para evitar instanciación externa
     }

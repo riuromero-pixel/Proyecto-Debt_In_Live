@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecordDAOSQLite implements RecordDAO {
+public class RecordDAOSQLite implements RecordDAO { // Implementación de RecordDAO para SQLite
     private final Connection conexion;
 
     public RecordDAOSQLite(Connection conexion) {

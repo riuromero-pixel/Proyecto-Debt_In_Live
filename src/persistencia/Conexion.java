@@ -3,7 +3,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Conexion {
+public class Conexion { // Clase singleton para manejar la conexión a la base de datos SQLite
     private static Conexion instancia;
     private final Connection conexion;
     
