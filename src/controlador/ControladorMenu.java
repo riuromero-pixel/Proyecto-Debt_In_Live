@@ -12,6 +12,7 @@ import javax.swing.Timer;
 import src.modelo.entities.Record;
 import src.vista.VistaRecords;
 import src.vista.VistaComoJugar;
+import src.vista.VistaDialogoEstilo;
 import src.vista.VistaOpciones;
 
 import src.modelo.entities.Personaje;
@@ -71,80 +72,50 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
     }
 
     private void iniciarJuego() {
+        // MODIFICADO: Usamos nuestra ventana con estilo en vez del JOptionPane
+        String nombreJugador = VistaDialogoEstilo.pedirTexto(
+                vistaMenu, 
+                "Nuevo Record", 
+                "Ingresá tu nombre", 
+                "¿Cómo te llamás?"
+        );
 
-    String inputNombre = (String) JOptionPane.showInputDialog(
-        vistaMenu,
-        "Ingresa tu nombre:",
-        "Nuevo Record",
-        JOptionPane.PLAIN_MESSAGE,
-        null, null, ""
-    );
-    if (inputNombre == null) return;
-    final String nombreJugador =
-        inputNombre.trim().isEmpty() ? "Anónimo" : inputNombre;
-        this.tiempoInicioPartida = System.currentTimeMillis();
-    // diálogo de carga
-    final VistaCargando cargando = new VistaCargando(vistaMenu, "Generando nivel 1...");
-
-    SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
-
-        @Override
-        protected Object[] doInBackground() throws Exception {
-            // HILO SECUNDARIO 
-            Thread.sleep(900); // simula carga para evitar el parpadeo del escritorio
-
-            Mapa mapa = new Mapa(40, 40);
-            mapa.cargarNivel(1);
-            mapa.generarDinero();
-
-            Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
-            mapa.celdas[5][5].contenido = null;
-            mapa.setPersonaje(jugador, 5, 5);
-
-            return new Object[]{mapa, jugador};
+        if (nombreJugador == null) {
+            return; // si cancela, no arranca el juego
+        }
+        if (nombreJugador.trim().isEmpty()) {
+            nombreJugador = "Anónimo";
         }
 
-        @Override
-        protected void done() {
-            // === EDT ===
-            try {
-                Object[] modelo = get();
-                Mapa mapa = (Mapa) modelo[0];
-                Personaje jugador = (Personaje) modelo[1];
+        this.tiempoInicioPartida = System.currentTimeMillis(); 
 
-                Reproductor_audio.getInstancia().reproducirSonido(1);
+        // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
+        Mapa mapa = new Mapa(40 ,40);
+        mapa.cargarNivel(1);
+        mapa.generarDinero();
+        Reproductor_audio.getInstancia().detenerSonido(); 
 
-                VistaJuego vista = new VistaJuego(mapa, jugador, 1);
-                vista.setTiempoInicioPartida(tiempoInicioPartida);
-                ControladorJuego controlador = new ControladorJuego(
-                    vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugador
-                );
+        Reproductor_audio.getInstancia().reproducirSonido(1); 
+        
+        Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa);
 
-                controlador.setAccionVolverMenu(() -> {
-                    VistaMenu nuevoMenu = new VistaMenu();
-                    new ControladorMenu(nuevoMenu);
-                    nuevoMenu.mostrar();
-                    Reproductor_audio.getInstancia().reproducirSonido(3);
-                });
+        // 2) VISTA
+        VistaJuego vista = new VistaJuego(mapa, jugador, 1);
 
-                // orden anti-parpadeo: 
-                cargando.dispose(); //cerrar carga
-                vista.mostrar();//mostrar juego
-                vistaMenu.dispose(); //cerrar menú
+        // 3) CONTROLADOR 
+        ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador, this.tiempoInicioPartida, this.recordDAO, nombreJugador);
 
-            } catch (Exception ex) {
-                cargando.dispose();
-                JOptionPane.showMessageDialog(vistaMenu,
-                    "Error al cargar el nivel: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-            }
-        }
-    };
+        controlador.setAccionVolverMenu(() -> {
+            VistaMenu nuevoMenu = new VistaMenu();
+            new ControladorMenu(nuevoMenu);
+            nuevoMenu.mostrar();
+            Reproductor_audio.getInstancia().reproducirSonido(3); 
+        });
 
-    worker.execute();
-    cargando.setVisible(true); 
-}
+        // 4) Mostrar
+        vistaMenu.dispose(); 
+        vista.mostrar();
+    }
 
     private void mostrarRecords() {
     if (this.recordDAO == null) {

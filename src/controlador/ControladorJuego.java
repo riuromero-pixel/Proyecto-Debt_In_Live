@@ -6,11 +6,11 @@ import javax.swing.*;
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
-import src.vista.VistaCargando;
+import src.vista.VistaDialogoEstilo;
 import src.vista.VistaJuego;
 import src.modelo.entities.Record;
 
-public class ControladorJuego { // Clase que controla la lógica del juego, incluyendo el movimiento del jugador y los enemigos, la verificación de condiciones de victoria o derrota, y la interacción con la vista del juego
+public class ControladorJuego {
 
     private Mapa mapa;
     private Personaje jugador;
@@ -48,21 +48,21 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
         this.tiempoInicioPartida = tiempoInicioPartida; // guarda el tiempo
         this.recordDAO = recordDAO; // guarda el DAO para guardar el récord luego
         this.nombreJugador = nombreJugador;
-        Reproductor_audio.getInstancia().reproducirSonido(1);
+        Reproductor_audio.getInstancia().reproducirSonido(1); // arranca con la música del nivel 1
 
         // se registra como oyente del teclado a traves de la vista
         this.vista.registrarTeclado(new TecladoListener());
 
         iniciarTimers();
     }
-    
     // ---------- TIMERS ----------
-    private void iniciarTimers() {
-        if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
-        if (timerJuego != null) timerJuego.stop();
-        if (timerAnimacion != null) timerAnimacion.stop();
 
-    timerMovimientoEnemigos = new Timer(800, e -> { //movimiento de enemigos cada 800ms
+private void iniciarTimers() {
+    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
+    if (timerJuego != null) timerJuego.stop();
+    if (timerAnimacion != null) timerAnimacion.stop();
+
+    timerMovimientoEnemigos = new Timer(800, e -> {
         if (juegoActivo) {
             mapa.moverEnemigos(jugador);
             verificarPerdida();
@@ -71,19 +71,19 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
     });
     timerMovimientoEnemigos.start();
 
-    timerJuego = new Timer(100, e -> {  //mueve al jugador con la velocidad actual cada 100ms
+    timerJuego = new Timer(100, e -> { //--------------------------
         if (juegoActivo && teclaPulsada != ' ') {
             moverJugadorConVelocidad();
         }
     });
     timerJuego.start();
 
-    timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> { //actualiza posiciones visuales y camara cada 16ms (~60 FPS)
+    timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> {
         if (juegoActivo) {
             jugador.actualizarPosicionVisual();
             jugador.actualizarBonus();
 
-    // === Animación del sprite del jugador ===
+// === Animación del sprite del jugador ===
         boolean moviendo = (teclaPulsada != ' ');
         jugador.setEnMovimiento(moviendo);
 
@@ -97,15 +97,16 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
                 jugador.ultimoFrameAnimacion = ahora;
             }
         } else {
-            jugador.frameAnimacion = 0; 
+            jugador.frameAnimacion = 0; // idle: vuelve al primer frame
         }
+
             mapa.actualizarPosicionesVisualesEnemigos();
             vista.actualizarCamaraSuave();
             vista.repaint();
         }
     });
     timerAnimacion.start();
-    }
+}
 
     // ---------- LOGICA DE MOVIMIENTO ----------
     private void moverJugadorConVelocidad() {
@@ -124,13 +125,13 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
             // LOGICA DE NIVELES Y DINERO
             if (juegoActivo && jugador.getDinero() >= 3000) {
                     if (nivelActual < 3) {
-                        // Detenemos el juego antes de pasar de nivel.
+                        // MODIFICADO: Detenemos el juego antes de pasar de nivel.
                         detener();
                         nivelActual++;
                         iniciarNivel(nivelActual);
                         return;
                     } else {
-                        ganarJuego("¡Bien amigo! Ganaste el juego! Lograste sobrevivir a las deudas de la vida.");
+                        ganarJuego("¡Bien ahi! Ganaste el juego! Lograste sobrevivir a las deudas de la vida.");
                         return;
                     }
             }
@@ -141,67 +142,36 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
         }
     }
 
+    // prepara todo para el siguiente nivel
     private void iniciarNivel(int nivel) {
-    //mensajes de cambio de nivel
-    if (nivel == 2) {
-        JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto.\n  A agarrar la pala.");
-    } else if (nivel == 3) {
-        JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado.\n  Ahora cagaste.");
+        if (nivel == 2) {
+            VistaDialogoEstilo.mostrarMensaje(vista, "¡NIVEL 2!", "Ahora sos un Adulto", "A agarrar la pala.");
+        } else if (nivel == 3) {
+            VistaDialogoEstilo.mostrarMensaje(vista, "¡NIVEL 3!", "Ahora sos un Jubilado", "Ahora cagaste.");
+        }
+        // Crear nuevo mapa y generar nivel
+        this.mapa = new Mapa(40, 40);
+        this.mapa.cargarNivel(nivel);
+      Reproductor_audio.getInstancia().reproducirSonido(nivel); // Arranca con la música del Nivel 1
+        this.mapa.generarDinero();
+
+        // crear el personaje correspondiente al nivel
+        this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, mapa);
+
+        // limpiar la celda de inicio por si hay paredes o enemigos de casualidad
+        this.mapa.celdas[5][5].contenido = null; 
+        this.mapa.setPersonaje(this.jugador, 5, 5);
+
+        // actualizar la vista con los nuevos datos
+        this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
+        this.vista.desactivarGameOver();
+
+        // reiniciamos el juego (timers) despues de que el jugador acepte el mensaje.
+        this.juegoActivo = true;
+        iniciarTimers();
+        this.vista.repaint();
+
     }
-
-    //diálogo de carga
-    VistaCargando cargando = new VistaCargando(vista, "Generando nivel " + nivel + "...");
-
-    //genera el nivel en un HILO DE FONDO
-    SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
-        @Override
-        protected Object[] doInBackground() throws Exception {
-           
-            Thread.sleep(700); // simula la carga para que no parpadee el escritorio
-
-            Mapa nuevoMapa = new Mapa(40, 40);
-            nuevoMapa.cargarNivel(nivel);
-            nuevoMapa.generarDinero();
-
-            Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
-            nuevoMapa.celdas[5][5].contenido = null;
-            nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
-
-            return new Object[]{nuevoMapa, nuevoJugador};
-        }
-
-        @Override
-        protected void done() {
-            // === EDT ===
-            try {
-                Object[] modelo = get();
-                mapa = (Mapa) modelo[0];
-                jugador = (Personaje) modelo[1];
-
-                Reproductor_audio.getInstancia().reproducirSonido(nivel);
-                vista.actualizarModelo(mapa, jugador, nivel);
-                vista.setTiempoInicioPartida(tiempoInicioPartida);
-                vista.desactivarGameOver();
-
-                juegoActivo = true;
-                iniciarTimers();
-                vista.repaint();
-
-                cargando.dispose();
-            } catch (Exception ex) {
-                cargando.dispose();
-                JOptionPane.showMessageDialog(vista,
-                    "Error al cargar el nivel: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    worker.execute();
-    cargando.setVisible(true);
-}
-
 
     // ---------- REGLAS DEL JUEGO ----------
     private void verificarPerdida() {
@@ -213,19 +183,19 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
 
             String mensaje;
             switch (nivelActual) {
-                case 1: mensaje = "¡PERDISTE! Te quedaste sin plata. Chau play 5 :(."; break;
+                case 1: mensaje = "¡PERDISTE! Te quedaste sin plata. Chau play 5:(."; break;
                 case 2: mensaje = "¡PERDISTE! Te quedaste sin plata. No llegaste a fin de mes. Pinchó mal."; break;
                 case 3: mensaje = "¡PERDISTE! Te quedaste sin plata. Perdiste toda la plata de la jubilación. Cagamo."; break;
                 default: mensaje = "¡PERDISTE! Te quedaste sin plata."; break;
             }
-            int opcion = JOptionPane.showOptionDialog(
-            vista, mensaje +  "¿Y ahora?", 
+
+            int opcion = VistaDialogoEstilo.mostrarOpciones(
+            vista,
+            "¡PERDISTE!",
             "¿Que hacemo?",
-            JOptionPane.YES_NO_CANCEL_OPTION, 
-            JOptionPane.PLAIN_MESSAGE, 
-            null, 
-            new Object[] {"Reintentar","Volver al Menú","Salir"},
-            "Reintentar");
+            mensaje,
+            new String[]{"Reintentar", "Volver al Menú", "Salir"}
+    );
            
             if (opcion == 0) { //Reintentar
                 // se reinicia el juego desde el nivel 1
@@ -247,14 +217,22 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
 
     private void ganarJuego(String mensaje) {
         juegoActivo = false;
-        guardarRecordActual(3); // Guarda récord de nivel 3
+        guardarRecordActual(3); 
         long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
         long segundosTotal = tiempoTotal/1000;
         long minutos = segundosTotal/60;
         long segundos = segundosTotal % 60;
-        JOptionPane.showMessageDialog(vista, mensaje + "\n\n¡Tu tiempo total fue de: " + minutos + " minutos y " + segundos + "segundos!");
-        vista.dispose(); //se cierra la ventana
-        if (accionVolverMenu != null) { //se vuelve al menu
+        
+        // NUEVO: Mensaje de victoria con estilo
+        VistaDialogoEstilo.mostrarMensaje(
+                vista, 
+                "¡GANASTE!", 
+                "Sobreviviste a las deudas de la vida", 
+                mensaje + "\n\n¡Tu tiempo total fue de: " + minutos + " minutos y " + segundos + " segundos!"
+        );
+        
+        vista.dispose(); 
+        if (accionVolverMenu != null) { 
             accionVolverMenu.run();
         }
     }
@@ -268,30 +246,26 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 juegoActivo = false;
              
-                JLabel mensaje = new JLabel("Juego pausado.");
-                mensaje.setHorizontalAlignment(SwingConstants.CENTER);
-                int opcion = JOptionPane.showOptionDialog(
-                    vista, 
-                    mensaje,
-                    "Pausa",
-                    JOptionPane.YES_NO_CANCEL_OPTION, 
-                    JOptionPane.PLAIN_MESSAGE, 
-                    null, 
-                    new Object[] {"Continuar", "Volver al Menú", "Salir"},
-                    "Continuar");
+                // NUEVO: Menu de pausa con estilo
+                int opcion = VistaDialogoEstilo.mostrarOpciones(
+                        vista,
+                        "Juego pausado",
+                        "Tomate un respiro",
+                        "¿Querés continuar jugando?",
+                        new String[]{"Continuar", "Volver al Menú", "Salir"}
+                );
+
                 if (opcion == 0) { //continuar
                     juegoActivo = true;
-                    vista.requestFocusInWindow(); //le devuelvo el foco a la ventana del juego
-                 
+                    vista.requestFocusInWindow(); 
                 } else if (opcion == 1){ //volver al menu
                     detener();
-                    vista.dispose(); //se cierra la ventana del juego
+                    vista.dispose(); 
                     if(accionVolverMenu != null){
-                    accionVolverMenu.run(); //se ejecuta la accion para volver al menu
-                } 
-                }
-                else {
-                    System.exit(0); //se cierra el juego
+                        accionVolverMenu.run(); 
+                    } 
+                } else {
+                    System.exit(0); 
                 }
                 return;
             }
@@ -330,7 +304,6 @@ public class ControladorJuego { // Clase que controla la lógica del juego, incl
 
       private void guardarRecordActual(int nivelAlcanzado) {
         if (recordDAO == null) return;
-        if (nivelAlcanzado < 3) return;
         long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
         Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
         recordDAO.guardar(nuevoRecord);
