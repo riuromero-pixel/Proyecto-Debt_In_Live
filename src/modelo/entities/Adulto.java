@@ -13,6 +13,8 @@ public class Adulto extends Personaje implements CreadorParedes{ // Clase que re
         super(x, y, 2, 100, false, mapa);
         this.velocidad = 2; // velocidad inicial por ser un adulto
     }
+    @Override 
+
     public void activarBonus(Bonus bonus) {
         if (!isBonusActivado()) {
             velocidadOriginal = velocidad; // Guardar la velocidad original

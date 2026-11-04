@@ -43,6 +43,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     private Image imagenSilla1, imagenSilla2, imagenSilla3, imagenSilla4; 
     private Image imagenDinero;
     private Image[] spritesEnemigos = new Image[5];
+    private Image[] spritesBonus = new Image[3];
+
 
     public void cargarImagenesNivel() {
     String paredtemp;
@@ -52,6 +54,13 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     imagenDinero = ImageIO.read(new File("images/sprites/dinero.png")); 
 } catch (IOException e) {
     System.out.println("Error al cargar la imagen del dinero");
+}
+try {
+    spritesBonus[0] = ImageIO.read(new File("images/bonus_estudiante.png"));
+    spritesBonus[1] = ImageIO.read(new File("images/bonus_adulto.png"));
+    spritesBonus[2] = ImageIO.read(new File("images/bonus_anciano.png"));
+} catch (IOException e) {
+    System.out.println("Error al cargar los sprites del Bonus");
 }
 
     switch (nivelActual) {
@@ -319,9 +328,18 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     // 3. Si es un Bonus
     else if (obj instanceof Bonus) {
         Bonus unBonus = (Bonus) obj;
-        g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
-        g2d.setColor(Color.BLACK);
-        g2d.drawString("", px + 10, py + 20);
+        int nivelBonus = unBonus.nivel;
+        Image imgBonus = (nivelBonus >= 1 && nivelBonus <= 3) ? spritesBonus[nivelBonus - 1] : null;
+
+        if (imgBonus != null) {
+            g2d.drawImage(imgBonus, px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+        } else {
+            // Fallback visual (cuadrado amarillo con un $) por si no encuentra la imagen
+            g2d.setColor(Color.YELLOW);
+            g2d.fillRect(px + 5, py + 5, tamaño - 10, tamaño - 10);
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("$", px + tamaño / 2 - 4, py + tamaño / 2 + 5);
+        }
     }
 
                 g2d.setColor(Color.GRAY);

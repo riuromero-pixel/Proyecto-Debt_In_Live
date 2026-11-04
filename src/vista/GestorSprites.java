@@ -56,7 +56,7 @@ public class GestorSprites {
 
         // 3. Retornar el frame animado o el estático según el estado
         if (jugador.isEnMovimiento()) {
-            // MODIFICADO: Se llama con 4 argumentos para usar la configuración por sprite irregular
+            // Se llama con 4 argumentos para usar la configuración por sprite irregular
             SpriteSheet sheet = getSpriteAnimado(tipoIndex, tipoStr, dirIndex, dirStr);
             if (sheet == null) return null;
             
