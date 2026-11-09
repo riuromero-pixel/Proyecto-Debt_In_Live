@@ -10,6 +10,7 @@ import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaJuego;
 import src.modelo.entities.Record;
+import java.util.concurrent.ExecutionException;
 
 public class ControladorJuego { // Controlador principal del juego, maneja la lógica del juego, los eventos de teclado y la interacción con la vista y el modelo
 
@@ -158,19 +159,17 @@ private void iniciarNivel(int nivel) {
     SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
         @Override
         protected Object[] doInBackground() throws Exception {
-           
-            Thread.sleep(700); // simula la carga para que no parpadee el escritorio
 
-            Mapa nuevoMapa = new Mapa(40, 40);
-            nuevoMapa.cargarNivel(nivel);
-            nuevoMapa.generarDinero();
+    Mapa nuevoMapa = new Mapa(40, 40);
+    nuevoMapa.cargarNivel(nivel);
+    nuevoMapa.generarDinero();
 
-            Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
-            nuevoMapa.celdas[5][5].contenido = null;
-            nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
+    Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
+    nuevoMapa.celdas[5][5].contenido = null;
+    nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
-            return new Object[]{nuevoMapa, nuevoJugador};
-        }
+    return new Object[]{nuevoMapa, nuevoJugador};
+}
 
         @Override
         protected void done() {
@@ -333,11 +332,32 @@ private void ganarJuego(String mensaje) {
     }
 
       private void guardarRecordActual(int nivelAlcanzado) {
-        if (recordDAO == null) return;
-        long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
-        Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
-        recordDAO.guardar(nuevoRecord);
-    }
+    if (recordDAO == null) return;
+
+    long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
+    Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
+
+    new SwingWorker<Boolean, Void>() {
+        @Override
+        protected Boolean doInBackground() {
+            // HILO DE FONDO: guardar en SQLite sin bloquear el EDT.
+            return recordDAO.guardar(nuevoRecord);
+        }
+
+        @Override
+        protected void done() {
+            try {
+                if (!get()) {
+                    System.err.println("No se pudo guardar el récord.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }.execute();
+}
    
     // ---------- CIERRE ----------
     public void detener() {

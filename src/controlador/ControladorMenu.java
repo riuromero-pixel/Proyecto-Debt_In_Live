@@ -24,7 +24,6 @@ import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
 import src.vista.VistaIntro;
-import src.vista.VistaDialogoEstilo;
 
 public class ControladorMenu {
     private final VistaMenu vistaMenu;
@@ -93,19 +92,17 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
 
         @Override
         protected Object[] doInBackground() throws Exception {
-            // HILO SECUNDARIO 
-            Thread.sleep(900); // simula carga para evitar el parpadeo del escritorio
 
-            Mapa mapa = new Mapa(40, 40);
-            mapa.cargarNivel(1);
-            mapa.generarDinero();
+    Mapa mapa = new Mapa(40, 40);
+    mapa.cargarNivel(1);
+    mapa.generarDinero();
 
-            Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
-            mapa.celdas[4][4].contenido = null;
-            mapa.setPersonaje(jugador, 4, 4);
+    Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
+    mapa.celdas[4][4].contenido = null;
+    mapa.setPersonaje(jugador, 4, 4);
 
-            return new Object[]{mapa, jugador};
-        }
+    return new Object[]{mapa, jugador};
+}
 
         @Override
         protected void done() {
@@ -150,15 +147,37 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
 
     private void mostrarRecords() {
     if (this.recordDAO == null) {
-        JOptionPane.showMessageDialog(vistaMenu, "Error: Base de datos no conectada.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(vistaMenu,
+                "Error: Base de datos no conectada.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         return;
     }
 
-    java.util.List<Record> records = this.recordDAO.obtenerMejores();
+    new SwingWorker<java.util.List<Record>, Void>() {
+        @Override
+        protected java.util.List<Record> doInBackground() {
+            // HILO DE FONDO: consulta a SQLite.
+            return recordDAO.obtenerMejores();
+        }
 
-    // usamos la ventana propia con un estilo
-    VistaRecords ventana = new VistaRecords(vistaMenu, records);
-    ventana.setVisible(true);
+        @Override
+        protected void done() {
+            // EDT: crear y mostrar la ventana.
+            try {
+                java.util.List<Record> records = get();
+                VistaRecords ventana = new VistaRecords(vistaMenu, records);
+                ventana.setVisible(true);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (java.util.concurrent.ExecutionException e) {
+                JOptionPane.showMessageDialog(vistaMenu,
+                        "Error al leer los récords.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }.execute();
 }
 
 private void mostrarComoJugar() {

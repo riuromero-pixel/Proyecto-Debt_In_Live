@@ -14,6 +14,7 @@ public Jubilado(int x, int y, Mapa mapa) {
 super(x, y, 1, 100, false, mapa);
    this.velocidad = 1; // velocidad inicial mas baja por ser un jubilado
 }
+@Override
     public void activarBonus(Bonus bonus) {
         if (!isBonusActivado()) {
             velocidadOriginal = velocidad; // Guardar la velocidad original
