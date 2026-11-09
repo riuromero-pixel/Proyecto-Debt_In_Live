@@ -5,7 +5,7 @@ import src.modelo.map.Mapa;
 
 public class Estudiante extends Personaje{
 
-    private int velocidadOriginal;
+
 
     public Estudiante(int x, int y, Mapa mapa) {
         super(x, y, 2, 100, false, mapa);
@@ -14,15 +14,7 @@ public class Estudiante extends Personaje{
     @Override 
 
     public void activarBonus(Bonus bonus) {
-         if (!isBonusActivado()) {
-        velocidadOriginal = velocidad; // Guardar la velocidad original
-        }
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 3;
-    }
-        
-    public void desactivarBonus() {
-        super.desactivarBonus();
-        this.velocidad = velocidadOriginal; 
     }
 }

@@ -11,6 +11,7 @@ public abstract class Personaje{
 protected int x;
 protected int y;
 protected int velocidad;
+protected int velocidadOriginal;
 protected int dinero;
 protected boolean bonusActivado = false;
 protected int golpesRestantes;   
@@ -207,9 +208,11 @@ public void romperParedes() {
 }
 
 public void activarBonus(Bonus bonus) {
+    velocidadOriginal = velocidad; 
     this.bonusActivado = true;
     this.bonusFin = System.currentTimeMillis() + bonus.duracionMs;
 }
+
 public void actualizarBonus() {
     if (bonusActivado && System.currentTimeMillis() >= bonusFin) {
         desactivarBonus();
@@ -217,5 +220,6 @@ public void actualizarBonus() {
 }
 public void desactivarBonus() {
     this.bonusActivado = false;
+     this.velocidad = velocidadOriginal;
 }
 }

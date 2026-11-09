@@ -8,7 +8,6 @@ import src.modelo.map.Bonus;
 
 public class Jubilado extends Personaje implements CreadorParedes{
 
-private int velocidadOriginal;
 
 public Jubilado(int x, int y, Mapa mapa) {
 super(x, y, 1, 100, false, mapa);
@@ -16,15 +15,8 @@ super(x, y, 1, 100, false, mapa);
 }
 @Override 
     public void activarBonus(Bonus bonus) {
-        if (!isBonusActivado()) {
-            velocidadOriginal = velocidad; // Guardar la velocidad original
-        }
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 3;
-    }
-    public void desactivarBonus() {
-        super.desactivarBonus();
-        this.velocidad = velocidadOriginal; 
     }
 
 @Override
