@@ -4,6 +4,11 @@ import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
 import java.util.Random;
 
+//correccion: instanceof no es polimorfismo, porque obliga al codigo externo a conocer las clases concretas de los enemigos. 
+// usé polimorfismo en el método hacerDanio() de la clase Enemigo y EnemigoLetal, 
+// que es llamado desde Personaje.java y MovimientoErrante.java.
+// esto hace que la JVM determine automáticamente qué versión del método ejecutar según el tipo real del objeto.
+
 public class Enemigo extends ObjetoEntorno {
     public int x;
     public int y;
@@ -19,7 +24,7 @@ public class Enemigo extends ObjetoEntorno {
     private int variante;
 
     public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
-        super(true);
+        super(true, false); // El enemigo puede ser pisado pero no recogido
         this.x = x;
         this.y = y;
         this.danio = danio;
@@ -93,7 +98,7 @@ public class Enemigo extends ObjetoEntorno {
         if (Math.abs(posYVisual - y) < 0.01) posYVisual = y;
     }
 
-    public int hacerDanio() {
-        return this.danio;
+    public void hacerDanio(Personaje jugador) {
+        jugador.danioRecibido(this.danio);
     }
 } 

@@ -7,6 +7,7 @@ import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
 import src.modelo.movimientos.MovimientoErrante;
 import src.modelo.movimientos.MovimientoPerseguidor;
+import src.modelo.map.ObjetoEntorno;
 
 public class Mapa {
     
@@ -333,7 +334,7 @@ public class Mapa {
         Celda celdaJugador = conseguirCelda(jugador.getX(), jugador.getY());
         if (celdaJugador != null && celdaJugador.contenido instanceof Enemigo) {
             Enemigo enemigo = (Enemigo) celdaJugador.contenido;
-            jugador.danioRecibido(enemigo.danio);
+            jugador.danioRecibido(enemigo.danio); 
             return true;
         }
         return false;
@@ -355,34 +356,24 @@ public class Mapa {
     public void recolectarDeCelda(Personaje jugador, int x, int y) {
         Celda celda = conseguirCelda(x, y);
         if (celda == null) return;
-        
         //si hay dinero como contenido
-        if (celda.contenido instanceof Dinero) {
-            Dinero dinero = (Dinero) celda.contenido;
-            jugador.recolectarDinero(dinero.cantidad);
-            celda.contenido = null;
+        if (celda.contenido instanceof ObjetoEntorno) {
+            ObjetoEntorno objeto = (ObjetoEntorno) celda.contenido;
+            if (objeto.esRecolectable()) {
+                objeto.recolectar(jugador);
+                celda.contenido = null; // Limpiar la celda después de recolectar
+            }
         }
-        
         //si hay dinero debajo
         if (celda.dineroDebajo != null) {
-            Dinero dinero = celda.dineroDebajo;
-            jugador.recolectarDinero(dinero.cantidad);
+            celda.dineroDebajo.recolectar(jugador);
             celda.dineroDebajo = null;
-        }
-
-        //si hay bonus como contenido
-        if (celda.contenido instanceof Bonus) {
-            Bonus bonus = (Bonus) celda.contenido;
-            jugador.activarBonus(bonus);
-            celda.contenido = null;
         }
         //si hay bonus debajo
          if (celda.bonusDebajo != null) {
-            Bonus bonus = celda.bonusDebajo;
-            jugador.activarBonus(bonus);
+            celda.bonusDebajo.recolectar(jugador);
             celda.bonusDebajo = null;
         }
-
     }
     
     public Celda conseguirCelda(int x, int y) {
