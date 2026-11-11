@@ -227,10 +227,8 @@ public class Mapa {
 
         if (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null) continue;
             if (tipo == Enemigo.class) {
-            EstrategiaMovimiento estrategia = random.nextBoolean() 
-            ? new MovimientoPerseguidor() 
-            : new MovimientoErrante(); //mezcla al azar entre perseguidor y errante
-            celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel);
+            
+            celdas[y][x].contenido = new HacerEnemigo().crearEnemigo(x, y, nivel);
         }
         colocados++;
     }
@@ -249,7 +247,7 @@ public class Mapa {
            && intentos < 100);
 
     if (intentos < 100) {
-        celdas[y][x].contenido = new EnemigoLetal(x, y, 9999);
+        celdas[y][x].contenido = new CreadorEnemigoLetal().crearEnemigo(x, y, 3);
     }
     }
     //generar bonus
