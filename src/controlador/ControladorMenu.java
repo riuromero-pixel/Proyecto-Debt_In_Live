@@ -7,6 +7,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import src.modelo.entities.CreadorPersonaje;
+import src.modelo.entities.CreadorEstudiante;
 import src.modelo.entities.Record;
 import src.vista.VistaRecords;
 import src.vista.VistaCargando;
@@ -100,7 +102,9 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
             mapa.cargarNivel(1);
             mapa.generarDinero();
 
-            Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
+            CreadorPersonaje creador = new CreadorEstudiante();
+            Personaje jugador = creador.crearPersonaje(4, 4, mapa);
+
             mapa.celdas[4][4].contenido = null;
             mapa.setPersonaje(jugador, 4, 4);
 

@@ -165,7 +165,16 @@ private void iniciarNivel(int nivel) {
             nuevoMapa.cargarNivel(nivel);
             nuevoMapa.generarDinero();
 
-            Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
+            CreadorPersonaje creador;
+            if (nivel == 1) {
+                creador = new CreadorEstudiante();
+            } else if (nivel == 2) {
+                creador = new CreadorAdulto();
+            } else {
+                creador = new CreadorJubilado();
+            }
+            Personaje nuevoJugador = creador.crearPersonaje(nivel, 5, 5, nuevoMapa);
+
             nuevoMapa.celdas[5][5].contenido = null;
             nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
