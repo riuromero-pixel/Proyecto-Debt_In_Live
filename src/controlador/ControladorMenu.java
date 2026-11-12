@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-
+import java.util.concurrent.ExecutionException;
 import src.modelo.entities.CreadorPersonaje;
 import src.modelo.entities.CreadorEstudiante;
 import src.modelo.entities.Record;
@@ -17,7 +17,6 @@ import src.vista.VistaDialogoEstilo;
 import src.vista.VistaOpciones;
 
 import src.modelo.entities.Personaje;
-import src.modelo.entities.PersonajeFactory;
 import src.modelo.entities.RecordDAO;
 import src.persistencia.RecordDAOSQLite;
 import src.persistencia.Conexion;
@@ -96,7 +95,6 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
         @Override
         protected Object[] doInBackground() throws Exception {
             // HILO SECUNDARIO 
-            Thread.sleep(900); // simula carga para evitar el parpadeo del escritorio
 
             Mapa mapa = new Mapa(40, 40);
             mapa.cargarNivel(1);
@@ -150,19 +148,30 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
     worker.execute();
     cargando.setVisible(true); 
 }
-
-
     private void mostrarRecords() {
     if (this.recordDAO == null) {
         JOptionPane.showMessageDialog(vistaMenu, "Error: Base de datos no conectada.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
+    new SwingWorker<java.util.List<Record>, Void>() {
+        @Override
+        protected java.util.List<Record> doInBackground()  {
+            return recordDAO.obtenerMejores();
+        }
 
-    java.util.List<Record> records = this.recordDAO.obtenerMejores();
-
-    // usamos la ventana propia con un estilo
-    VistaRecords ventana = new VistaRecords(vistaMenu, records);
-    ventana.setVisible(true);
+        @Override
+        protected void done() {
+            try {
+                java.util.List<Record> records = get();
+                VistaRecords ventana = new VistaRecords(vistaMenu, records);
+                ventana.setVisible(true);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (java.util.concurrent.ExecutionException e) {
+                JOptionPane.showMessageDialog(vistaMenu, "Error al obtener records: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }.execute();
 }
 
 private void mostrarComoJugar() {

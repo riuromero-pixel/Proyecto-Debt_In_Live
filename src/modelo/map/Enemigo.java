@@ -4,7 +4,7 @@ import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
 import java.util.Random;
 
-//correccion: instanceof no es polimorfismo, porque obliga al codigo externo a conocer las clases concretas de los enemigos. 
+// correccion: instanceof no es polimorfismo, porque obliga al codigo externo a conocer las clases concretas de los enemigos. 
 // usé polimorfismo en el método hacerDanio() de la clase Enemigo y EnemigoLetal, 
 // que es llamado desde Personaje.java y MovimientoErrante.java.
 // esto hace que la JVM determine automáticamente qué versión del método ejecutar según el tipo real del objeto.

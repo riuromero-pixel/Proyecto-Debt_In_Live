@@ -2,7 +2,7 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
-
+import java.util.concurrent.ExecutionException;
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
@@ -159,8 +159,6 @@ private void iniciarNivel(int nivel) {
         @Override
         protected Object[] doInBackground() throws Exception {
            
-            Thread.sleep(700); // simula la carga para que no parpadee el escritorio
-
             Mapa nuevoMapa = new Mapa(40, 40);
             nuevoMapa.cargarNivel(nivel);
             nuevoMapa.generarDinero();
@@ -173,7 +171,7 @@ private void iniciarNivel(int nivel) {
             } else {
                 creador = new CreadorJubilado();
             }
-            Personaje nuevoJugador = creador.crearPersonaje(nivel, 5, 5, nuevoMapa);
+            Personaje nuevoJugador = creador.crearPersonaje(5, 5, nuevoMapa);
 
             nuevoMapa.celdas[5][5].contenido = null;
             nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
@@ -340,14 +338,29 @@ private void ganarJuego(String mensaje) {
             }
         }
     }
-
       private void guardarRecordActual(int nivelAlcanzado) {
         if (recordDAO == null) return;
         long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
         Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
-        recordDAO.guardar(nuevoRecord);
+        new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() {
+                return recordDAO.guardar(nuevoRecord);
+            }
+            @Override 
+            protected void done() {
+                try {
+                    if (!get()) {
+                        System.err.println("Error al guardar el récord en la base de datos.");
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
     }
-   
     // ---------- CIERRE ----------
     public void detener() {
         juegoActivo = false;

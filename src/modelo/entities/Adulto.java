@@ -7,26 +7,15 @@ import src.modelo.map.Bonus;
 
 public class Adulto extends Personaje implements CreadorParedes{ // Clase que representa a un personaje adulto en el juego, con habilidades específicas para crear paredes y activar/desactivar bonus
 
-    private int velocidadOriginal;
-
     public Adulto(int x, int y, Mapa mapa) {
         super(x, y, 2, 100, false, mapa);
         this.velocidad = 2; // velocidad inicial por ser un adulto
     }
     @Override 
-
     public void activarBonus(Bonus bonus) {
-        if (!isBonusActivado()) {
-            velocidadOriginal = velocidad; // Guardar la velocidad original
-        }
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 2;
     }
-    public void desactivarBonus() {
-        super.desactivarBonus();
-        this.velocidad = velocidadOriginal; 
-    }
-
      @Override
     public void crearParedes() {
         // El adulto puede llenar su fila entera de paredes a la que apunta
