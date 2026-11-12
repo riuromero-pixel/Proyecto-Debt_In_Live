@@ -15,29 +15,13 @@ private int dinero;
 private boolean bonusActivado = false;
 private int golpesRestantes;   
 private long ultimoGolpe;
-private Mapa mapa;
-private Object paredObjetivo;  
+private final Mapa mapa;
+private String paredObjetivo;  
 private String direccionActual; //guarda la ultima direccion del personaje
 private long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
+private final EstadoVisualPersonaje estadoVisual;
 
-// coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
-// La lógica del juego sigue usando (x, y). Estas coordenadas se usan SOLO para dibujar
-// y permiten que el sprite se desplace celda a celda de forma fluida en vez de teletransportarse.
 
-private double posXVisual;
-private double posYVisual;
-// Factor de interpolación exponencial: qué tan rápido la posición visual alcanza a la lógica.
-// Valores recomendados: 0.1 (lento, más "flotante") a 0.35 (rápido, más responsivo).
-
-private static final double FACTOR_INTERPOLACION = 0.2;
-
-//variables para animación de sprites
-private String direccionVisual = "S";
-private int frameAnimacion = 0;
-private long ultimoFrameAnimacion = 0;
-private boolean enMovimiento = false;
-public boolean isEnMovimiento() { return enMovimiento; }
-public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
 
 public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){ // Constructor que inicializa las propiedades del personaje, incluyendo su posición, velocidad, fuerza, dinero, estado de bonus y referencia al mapa
     this.x = x;
@@ -49,9 +33,7 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     this.mapa = mapa;
     this.direccionActual = null;
 
-    // inicializar posiciones visuales con la posición lógica inicial ===
-    this.posXVisual = x;
-    this.posYVisual = y;
+    this.estadoVisual = new EstadoVisualPersonaje(x, y);
 }
     //getters y setters
     public int getX() { return x; }
@@ -62,40 +44,14 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     public Mapa getMapa() { return mapa; }
     protected  void setVelocidad(int velocidad) { this.velocidad = velocidad; }
     public String getDireccionActual() { return direccionActual; }
-    public String getDireccionVisual() { return direccionVisual; }
-    public int getFrameAnimacion() { return frameAnimacion; }
 
-    // getters de las posiciones visuales, usados por la VistaJuego para dibujar ===
-    public double getPosXVisual() { return posXVisual; }
-    public double getPosYVisual() { return posYVisual; }
+    public double getPosXVisual() { return estadoVisual.getPosXVisual(); }
+public double getPosYVisual() { return estadoVisual.getPosYVisual(); }
+public String getDireccionVisual() { return estadoVisual.getDireccionVisual(); }
+public int getFrameAnimacion() { return estadoVisual.getFrameAnimacion(); }
+public boolean isEnMovimiento() { return estadoVisual.isEnMovimiento(); }
 
-    //  interpola suavemente las coordenadas visuales hacia las lógicas ===
-    // Lo llama el timer de animación del controlador (~60 FPS).
-    // NOTA: no modifica la lógica del juego; solo la representación visual.
-    public void actualizarPosicionVisual() {
-        posXVisual += (x - posXVisual) * FACTOR_INTERPOLACION;
-        posYVisual += (y - posYVisual) * FACTOR_INTERPOLACION;
-
-        // Umbral para evitar oscilaciones infinitas cuando ya está prácticamente encima
-        if (Math.abs(posXVisual - x) < 0.01) posXVisual = x;
-        if (Math.abs(posYVisual - y) < 0.01) posYVisual = y;
-    }
-
-    public void actualizarAnimacion(boolean moviendo) {
-    this.enMovimiento = moviendo;
-    if (moviendo) {
-        long ahora = System.currentTimeMillis();
-        if (ahora - this.ultimoFrameAnimacion > 100) {
-            this.frameAnimacion++;
-            if (this.frameAnimacion >= 22) {
-                this.frameAnimacion = 0;
-            }
-            this.ultimoFrameAnimacion = ahora;
-        }
-    } else {
-        this.frameAnimacion = 0;
-    }
-}
+    
 
 public void moverse(String tecla, int anchoMapa, int altoMapa) {
     char direccion = tecla.toUpperCase().charAt(0);
@@ -107,16 +63,16 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     
     switch (direccion) {
         case 'W':
-            nuevaY = Math.min(altoMapa - 1, this.y - 1); this.direccionVisual = "N";
+            nuevaY = Math.min(altoMapa - 1, this.y - 1); this.estadoVisual.setDireccionVisual("N");;
             break;
         case 'S':
-            nuevaY = Math.max(0, this.y + 1); this.direccionVisual = "S";
+            nuevaY = Math.max(0, this.y + 1); this.estadoVisual.setDireccionVisual("S");;
             break;
         case 'A':
-            nuevaX = Math.max(0, this.x - 1); this.direccionVisual = "O";
+            nuevaX = Math.max(0, this.x - 1); this.estadoVisual.setDireccionVisual("O");;
             break;
         case 'D':
-            nuevaX = Math.min(anchoMapa - 1, this.x + 1); this.direccionVisual = "E";
+            nuevaX = Math.min(anchoMapa - 1, this.x + 1); this.estadoVisual.setDireccionVisual("E");;
             break;
     }
     
@@ -156,6 +112,14 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
             return;
         }
     }
+}
+
+public void actualizarPosicionVisual() {
+    estadoVisual.actualizarPosicionVisual(this.x, this.y);
+}
+
+public void actualizarAnimacion(boolean moviendo) {
+    estadoVisual.actualizarAnimacion(moviendo);
 }
 
 public void recolectarDinero(int cantidad) {
