@@ -3,7 +3,7 @@ package src.modelo.map;
 public class Celda {
     private int x;
     private int y;
-    private Object contenido;
+    private ContenidoCelda contenido;
     private Dinero dineroDebajo; //para guardar dinero que queda debajo de otros objetos
     private Bonus bonusDebajo; //para guardar bonus que queda debajo de otros objetos
     
@@ -18,8 +18,8 @@ public class Celda {
     public int getX() { return x; }
     public int getY() { return y; }
 
-    public Object getContenido() { return contenido; }
-    public void setContenido(Object contenido) { this.contenido = contenido; }
+    public ContenidoCelda getContenido() { return contenido; }
+    public void setContenido(ContenidoCelda contenido) { this.contenido = contenido; }
 
     public Dinero getDineroDebajo() { return dineroDebajo; }
     public void setDineroDebajo(Dinero d) { this.dineroDebajo = d; }

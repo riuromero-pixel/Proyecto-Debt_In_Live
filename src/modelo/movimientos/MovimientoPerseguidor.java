@@ -2,9 +2,9 @@ package src.modelo.movimientos;
 
 import src.modelo.entities.Personaje;
 import src.modelo.map.Celda;
+import src.modelo.map.ContenidoCelda;
 import src.modelo.map.Enemigo;
 import src.modelo.map.Mapa;
-import src.modelo.map.Pared;
 
 public class MovimientoPerseguidor implements EstrategiaMovimiento {
 
@@ -32,14 +32,16 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
             Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
 
             if (celdaDestino != null) {
+                ContenidoCelda contenido = celdaDestino.getContenido();
+
                 // SI LA CELDA TIENE AL PERSONAJE: Colisión directa, le hace daño y termina
-                if (celdaDestino.getContenido() instanceof Personaje) {
-                    personaje.danioRecibido(enemigo.getDanio());
+                if (contenido instanceof Personaje) {
+                    enemigo.aplicarDanio(personaje);
                     return; 
                 }
 
-                // Si la celda está libre (no es pared ni otro enemigo)
-                if (!(celdaDestino.getContenido() instanceof Pared) && !(celdaDestino.getContenido() instanceof Enemigo)) {
+                // Si la celda está libre (no bloquea el paso)
+                if (contenido == null || !contenido.bloqueaPaso()) {
                     int distancia = Math.abs(nuevaX - personaje.getX()) + Math.abs(nuevaY - personaje.getY());
 
                     if (distancia < menorDistancia) {

@@ -19,7 +19,7 @@ public class Enemigo extends ObjetoEntorno {
     private int variante;
 
     public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
-        super(true);
+        super(false);
         this.x = x;
         this.y = y;
         this.danio = danio;
@@ -55,6 +55,11 @@ public double getPosYVisual() { return posYVisual; }
     }
     public EstrategiaMovimiento getEstrategia() {
         return this.estrategia;
+    }
+
+    @Override
+    public void aplicarDanio(Personaje personaje) {
+        personaje.danioRecibido(this.danio);
     }
 
     public void moverEnemigo(Enemigo enemigo, int mejorX, int mejorY, Mapa mapa) {
@@ -103,4 +108,4 @@ public double getPosYVisual() { return posYVisual; }
     public int hacerDanio() {
         return this.danio;
     }
-} 
+}

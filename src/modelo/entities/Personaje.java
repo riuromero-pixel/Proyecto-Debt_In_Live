@@ -4,10 +4,9 @@ import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
 import src.modelo.map.Pared;
 import src.modelo.map.Mapa;
-import src.modelo.map.Enemigo;
-import src.modelo.map.EnemigoLetal;
+import src.modelo.map.ContenidoCelda;
 
-public abstract class Personaje{
+public abstract class Personaje implements ContenidoCelda {
 private int x;
 private int y;
 private int velocidad;
@@ -53,6 +52,15 @@ public boolean isEnMovimiento() { return estadoVisual.isEnMovimiento(); }
 
     
 
+ @Override
+    public boolean bloqueaPaso() {
+        return false;
+    }
+
+    public void morir() {
+        this.dinero = -9999;
+    }
+
 public void moverse(String tecla, int anchoMapa, int altoMapa) {
     char direccion = tecla.toUpperCase().charAt(0);
     int nuevaX = this.x;
@@ -76,17 +84,13 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
             break;
     }
     
-    //verificar si la celda destino tiene una pared (NO se puede pisar)
     Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
-    if (celdaDestino != null && celdaDestino.getContenido() instanceof Pared) {
-        return; // No se puede pisar una pared
-    }
-    
-    //verificar si la celda destino tiene un ENEMIGO o ENEMIGO LETAL (NO se mueve, solo recibe daño)
-    if (celdaDestino != null && celdaDestino.getContenido() instanceof Enemigo && !(celdaDestino.getContenido() instanceof EnemigoLetal)) {
-        Enemigo enemigo = (Enemigo) celdaDestino.getContenido();
-        this.dinero -= enemigo.getDanio();
-        return; // NO nos movemos a la celda del enemigo
+    if (celdaDestino != null) {
+        ContenidoCelda contenidoDestino = celdaDestino.getContenido();
+        if (contenidoDestino != null && contenidoDestino.bloqueaPaso()) {
+            contenidoDestino.aplicarDanio(this);
+            return;
+        }
     }
     
     if (nuevaX != this.x || nuevaY != this.y) {
@@ -106,11 +110,6 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
         
         //colocar al personaje en la nueva celda
         mapa.setPersonaje(this, nuevaX, nuevaY);
-        Celda celdaActual = mapa.conseguirCelda(this.x, this.y);
-        if (celdaActual != null && celdaActual.getContenido() instanceof EnemigoLetal){
-            this.dinero = -9999;
-            return;
-        }
     }
 }
 

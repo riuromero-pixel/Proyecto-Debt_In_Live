@@ -3,12 +3,17 @@ package src.modelo.map;
 // (mediante 'instanceof' o respondiendo a sus propios métodos/atributos heredados
 // como 'pasoLibre'), evitando tener que crear arreglos separados para cada elemento del juego.
 
-public class ObjetoEntorno {
+public class ObjetoEntorno implements ContenidoCelda {
     private boolean pasoLibre;
     
     public ObjetoEntorno(boolean pasoLibre) { //con esta funcion verificamos si el 
     // personaje puede atravezar la celda ocupada por ese objeto
         this.pasoLibre = pasoLibre;
+    }
+
+    @Override
+    public boolean bloqueaPaso() {
+        return !this.pasoLibre;
     }
 
     public boolean isPasoLibre() { return pasoLibre; }

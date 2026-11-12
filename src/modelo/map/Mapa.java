@@ -46,12 +46,12 @@ public class Mapa {
         return x >= 0 && x < ancho && y >= 0 && y < alto;
     }
 
-    public Object getContenido(int x, int y) {
+    public ContenidoCelda getContenido(int x, int y) {
         if (!estaDentro(x, y)) return null;
         return celdas[y][x].getContenido();
     }
 
-    public void setContenido(int x, int y, Object contenido) {
+    public void setContenido(int x, int y, ContenidoCelda contenido) {
         if (!estaDentro(x, y)) return;
         celdas[y][x].setContenido(contenido);
     }
@@ -74,14 +74,15 @@ public class Mapa {
     public void setPersonaje(Personaje personaje, int x, int y) {
         Celda celda = conseguirCelda(x, y);
         if (celda != null) {
-            if (celda.getContenido() instanceof Enemigo) return;
+            ContenidoCelda contenido = celda.getContenido();
+            if (contenido != null && contenido.bloqueaPaso()) return;
             celda.setContenido(personaje);
         }
     }
 
     public Personaje getPersonaje(int x, int y) {
         if (x < 0 || x >= ancho || y < 0 || y >= alto) return null;
-        Object contenido = celdas[y][x].getContenido();
+        ContenidoCelda contenido = celdas[y][x].getContenido();
         if (contenido instanceof Personaje) return (Personaje) contenido;
         return null;
     }

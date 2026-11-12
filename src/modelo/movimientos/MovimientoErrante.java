@@ -6,10 +6,9 @@ import java.util.Random;
 
 import src.modelo.entities.Personaje;
 import src.modelo.map.Celda;
+import src.modelo.map.ContenidoCelda;
 import src.modelo.map.Enemigo;
-import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
-import src.modelo.map.Pared;
 
 public class MovimientoErrante implements EstrategiaMovimiento {
      private final Random random = new Random();
@@ -30,18 +29,15 @@ public class MovimientoErrante implements EstrategiaMovimiento {
             Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
             if (celdaDestino == null) continue;
 
+            ContenidoCelda contenido = celdaDestino.getContenido();
+
             // Si pisa al jugador, le hace daño
-            if (celdaDestino.getContenido() instanceof Personaje) {
-                if (enemigo instanceof EnemigoLetal){
-                    jugador.danioRecibido(jugador.getDinero()+1);
-                } else{
-                jugador.danioRecibido(enemigo.getDanio());
-                }
+            if (contenido instanceof Personaje) {
+                enemigo.aplicarDanio((Personaje) contenido);
                 return;
             }
 
-            if (!(celdaDestino.getContenido() instanceof Pared)
-                && !(celdaDestino.getContenido() instanceof Enemigo)) {
+            if (contenido == null || !contenido.bloqueaPaso()) {
                 opciones.add(new int[]{nuevaX, nuevaY});
             }
         }
@@ -52,7 +48,6 @@ public class MovimientoErrante implements EstrategiaMovimiento {
         enemigo.moverEnemigo(enemigo, elegida[0], elegida[1], mapa);
     }
 }
-
        
     
     
