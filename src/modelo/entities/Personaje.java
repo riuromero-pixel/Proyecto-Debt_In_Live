@@ -10,6 +10,7 @@ public abstract class Personaje implements ContenidoCelda {
 private int x;
 private int y;
 private int velocidad;
+private int velocidadOriginal;
 private int dinero;
 private boolean bonusActivado = false;
 private int golpesRestantes;   
@@ -26,6 +27,7 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     this.x = x;
     this.y = y;
     this.velocidad = velocidad;
+    this.velocidadOriginal = velocidad;
     this.dinero = dinero; 
     this.bonusActivado = bonusActivado;
     this.ultimoGolpe = 0;
@@ -43,6 +45,10 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     public Mapa getMapa() { return mapa; }
     protected  void setVelocidad(int velocidad) { this.velocidad = velocidad; }
     public String getDireccionActual() { return direccionActual; }
+
+    protected int getBonusExtra() {
+        return 0;
+    }
 
     public double getPosXVisual() { return estadoVisual.getPosXVisual(); }
 public double getPosYVisual() { return estadoVisual.getPosYVisual(); }
@@ -181,8 +187,12 @@ public void romperParedes() {
 }
 
 public void activarBonus(Bonus bonus) {
+    if (!this.bonusActivado) {
+        this.velocidadOriginal = this.velocidad;
+    }
     this.bonusActivado = true;
     this.bonusFin = System.currentTimeMillis() + bonus.getDuracionMs();
+    this.velocidad += bonus.getBonusVelocidad() + this.getBonusExtra();
 }
 public void actualizarBonus() {
     if (bonusActivado && System.currentTimeMillis() >= bonusFin) {
@@ -190,6 +200,10 @@ public void actualizarBonus() {
     }
 }
 public void desactivarBonus() {
+    if (!this.bonusActivado) {
+        return;
+    }
     this.bonusActivado = false;
+    this.velocidad = this.velocidadOriginal;
 }
 }
