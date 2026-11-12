@@ -12,31 +12,33 @@ private int velocidadOriginal;
 
 public Jubilado(int x, int y, Mapa mapa) {
 super(x, y, 1, 100, false, mapa);
-   this.velocidad = 1; // velocidad inicial mas baja por ser un jubilado
 }
+
 @Override
     public void activarBonus(Bonus bonus) {
-        if (!isBonusActivado()) {
-            velocidadOriginal = velocidad; // Guardar la velocidad original
+         if (!isBonusActivado()) {
+        velocidadOriginal = getVelocidad(); // Guardar la velocidad original
         }
         super.activarBonus(bonus);
-        this.velocidad += bonus.bonusVelocidad + 3;
+        setVelocidad(getVelocidad() + bonus.getBonusVelocidad() + 3);
     }
+      
+    @Override
     public void desactivarBonus() {
         super.desactivarBonus();
-        this.velocidad = velocidadOriginal; 
+        setVelocidad(velocidadOriginal);
     }
 
 @Override
 public void crearParedes() {
     //el jubilado solo puede poner 1 pared
-    if (direccionActual == null) {
+    if (getDireccionActual() == null) {
         return;
     }
     
-    char dir = direccionActual.charAt(0);
-    int nuevaX = this.x;
-    int nuevaY = this.y;
+    char dir = getDireccionActual().charAt(0);
+    int nuevaX = getX();
+    int nuevaY = getX();
     
     switch (dir) {
         case 'W': nuevaY--; break;
@@ -48,19 +50,19 @@ public void crearParedes() {
     }
     
     // verificar que no sea borde
-    if (nuevaX < 0 || nuevaX >= mapa.getAncho() || nuevaY < 0 || nuevaY >= mapa.getAlto()) {
+    if (nuevaX < 0 || nuevaX >= getMapa().getAncho() || nuevaY < 0 || nuevaY >= getMapa().getAlto()) {
         return;
     }
     
-    Celda celda = mapa.conseguirCelda(nuevaX, nuevaY);
+    Celda celda = getMapa().conseguirCelda(nuevaX, nuevaY);
     if (celda == null) {
         return;
     }
     
-    if (celda.contenido != null) {
+    if (celda.getContenido() != null) {
         return;
     }
     
-    celda.contenido = new Pared();
+    celda.setContenido(new Pared());
 }
 }

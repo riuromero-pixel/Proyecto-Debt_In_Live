@@ -166,8 +166,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         double camYObjetivo = jugador.getPosYVisual() - VIEW_ROWS / 2.0;
 
         // clamp para no salir del mapa
-        camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.ancho - VIEW_COLS));
-        camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.alto - VIEW_ROWS));
+        camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.getAncho() - VIEW_COLS));
+        camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.getAlto() - VIEW_ROWS));
 
         // primera vez: inicializar sin interpolar (evita un "salto" inicial desde 0,0)
         if (camXSuave < 0 || camYSuave < 0) {
@@ -246,8 +246,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         if (camXSuave < 0 || camYSuave < 0) {
             double camXCalc = jugador != null ? jugador.getPosXVisual() - VIEW_COLS / 2.0 : 0;
             double camYCalc = jugador != null ? jugador.getPosYVisual() - VIEW_ROWS / 2.0 : 0;
-            camXCalc = Math.max(0, Math.min(camXCalc, mapa.ancho - VIEW_COLS));
-            camYCalc = Math.max(0, Math.min(camYCalc, mapa.alto - VIEW_ROWS));
+            camXCalc = Math.max(0, Math.min(camXCalc, mapa.getAncho() - VIEW_COLS));
+            camYCalc = Math.max(0, Math.min(camYCalc, mapa.getAlto() - VIEW_ROWS));
             camX = camXCalc;
             camY = camYCalc;
         } else {
@@ -265,7 +265,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         for (int y = inicioY; y <= inicioY + VIEW_ROWS; y++) {
             for (int x = inicioX; x <= inicioX + VIEW_COLS; x++) {
                 // Evitar dibujar fuera de los límites del mapa
-                if (y < 0 || y >= mapa.alto || x < 0 || x >= mapa.ancho) continue;
+                if (y < 0 || y >= mapa.getAlto() || x < 0 || x >= mapa.getAncho()) continue;
 
                 // Posición en pantalla usando las coordenadas double de la cámara
                 int px = (int) ((x - camX) * tamaño) + desplazamientoX;
@@ -281,8 +281,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
             }
 
              // dibujamos el contenido
-            if (mapa.celdas[y][x].contenido != null) {
-               Object obj = mapa.celdas[y][x].contenido;
+            if (mapa.getCeldas()[y][x].getContenido() != null) {
+               Object obj = mapa.getCeldas()[y][x].getContenido();
     
             // 1. SOLO si es Pared, dibujamos la imagen de pared
             if (obj instanceof src.modelo.map.Pared) {
@@ -329,21 +329,21 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
             }
         
         }}
-        for (int y = 0; y < mapa.alto; y++) {
-            for (int x = 0; x < mapa.ancho; x++) {
-                if (mapa.celdas[y][x].contenido instanceof Enemigo) {
-                    Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+        for (int y = 0; y < mapa.getAlto(); y++) {
+            for (int x = 0; x < mapa.getAncho(); x++) {
+                if (mapa.getCeldas()[y][x].getContenido() instanceof Enemigo) {
+                    Enemigo en = (Enemigo) mapa.getCeldas()[y][x].getContenido();
 
-            if (en.posXVisual + 1 < camX || en.posXVisual > camX + VIEW_COLS) continue;
-            if (en.posYVisual + 1 < camY || en.posYVisual > camY + VIEW_ROWS) continue;
+            if (en.getPosXVisual() + 1 < camX || en.getPosXVisual() > camX + VIEW_COLS) continue;
+            if (en.getPosYVisual() + 1 < camY || en.getPosYVisual() > camY + VIEW_ROWS) continue;
 
-                    int ex = (int) ((en.posXVisual - camX) * tamaño) + desplazamientoX;
-                    int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
+                    int ex = (int) ((en.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+                    int ey = (int) ((en.getPosYVisual() - camY) * tamaño) + desplazamientoY;
 
                     if (en instanceof EnemigoLetal){
                     String dirMuerte = "abajo";
-                        double difX = en.x - en.posXVisual;
-                        double difY = en.y - en.posYVisual;
+                        double difX = en.getX() - en.getPosXVisual();
+                        double difY = en.getY() - en.getPosYVisual();
                 
                         if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
                             
@@ -353,8 +353,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                                 dirMuerte = difY > 0 ? "abajo" : "arriba";
                             }
                         } else if (jugador != null) {
-                            double distJugadorX = jugador.getX() - en.x;
-                            double distJugadorY = jugador.getY() - en.y;
+                            double distJugadorX = jugador.getX() - en.getX();
+                            double distJugadorY = jugador.getY() - en.getY();
                             if (Math.abs(distJugadorX) > Math.abs(distJugadorY)) {
                                 dirMuerte = distJugadorX > 0 ? "derecha" : "izquierda";
                             } else {

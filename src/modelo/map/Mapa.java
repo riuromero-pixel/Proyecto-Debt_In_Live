@@ -10,10 +10,10 @@ import src.modelo.movimientos.MovimientoPerseguidor;
 
 public class Mapa {
     
-    public Celda[][] celdas;
-    public int ancho;
-    public int alto;
-    private Random random;
+    private Celda[][] celdas;
+    private final int ancho;
+    private final int alto;
+    private final Random random;
 
     public Mapa(int ancho, int alto) {
         this.ancho = ancho;
@@ -31,9 +31,9 @@ public class Mapa {
         //limpiar mapa
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
-                celdas[y][x].contenido = null;
-                celdas[y][x].dineroDebajo = null;
-                celdas[y][x].bonusDebajo = null;
+                celdas[y][x].setContenido(null);
+                celdas[y][x].setDineroDebajo(null);
+                celdas[y][x].setBonusDebajo(null);
 
             }
         }
@@ -176,9 +176,9 @@ public class Mapa {
                 char caracter = plantilla[y].charAt(x);
 
                 if (caracter == '#') {
-                    celdas[y][x].contenido = new Pared(0); // Pared por defecto del nivel
+                    celdas[y][x].setContenido(new Pared(0)); // Pared por defecto del nivel
                 } else if (caracter == '+') {
-                    celdas[y][x].contenido = new Pared(); // Pared con silla (solo para nivel 1)
+                    celdas[y][x].setContenido(new Pared()); // Pared con silla (solo para nivel 1)
                 }
             }
         }
@@ -187,19 +187,19 @@ public class Mapa {
         //limpiar mapa
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
-                celdas[y][x].contenido = null;
-                celdas[y][x].dineroDebajo = null;
-                celdas[y][x].bonusDebajo = null;
+                celdas[y][x].setContenido(null);
+                celdas[y][x].setDineroDebajo(null);
+                celdas[y][x].setBonusDebajo(null);
             }
         }
         //paredes bordes
         for (int x = 0; x < ancho; x++) {
-            celdas[0][x].contenido = new Pared(0);
-            celdas[alto - 1][x].contenido = new Pared(0);
+            celdas[0][x].setContenido(new Pared(0));
+            celdas[alto - 1][x].setContenido(new Pared(0));
         }
         for (int y = 0; y < alto; y++) {
-            celdas[y][0].contenido = new Pared(0);
-            celdas[y][ancho - 1].contenido = new Pared(0);
+            celdas[y][0].setContenido(new Pared(0));
+            celdas[y][ancho - 1].setContenido(new Pared(0));
         }
         cargarMapaPlantilla(nivel);
 
@@ -225,12 +225,12 @@ public class Mapa {
         int x = 1 + random.nextInt(ancho - 2);
         int y = 1 + random.nextInt(alto - 2);
 
-        if (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null) continue;
+        if (celdas[y][x].getContenido() != null || celdas[y][x].getDineroDebajo() != null) continue;
             if (tipo == Enemigo.class) {
             EstrategiaMovimiento estrategia = random.nextBoolean() 
             ? new MovimientoPerseguidor() 
             : new MovimientoErrante(); //mezcla al azar entre perseguidor y errante
-            celdas[y][x].contenido = new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel);
+            celdas[y][x].setContenido(new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel));
         }
         colocados++;
     }
@@ -244,12 +244,12 @@ public class Mapa {
         x = 1 + random.nextInt(ancho - 2);
         y = 1 + random.nextInt(alto - 2);
         intentos++;
-    } while ((celdas[y][x].contenido != null 
+    } while ((celdas[y][x].getContenido() != null 
            || Math.abs(x - 5) + Math.abs(y - 5) < 8) 
            && intentos < 100);
 
     if (intentos < 100) {
-        celdas[y][x].contenido = new EnemigoLetal(x, y, 9999);
+        celdas[y][x].setContenido(new EnemigoLetal(x, y, 9999));
     }
     }
     //generar bonus
@@ -259,9 +259,9 @@ public class Mapa {
         do {
             x = 1 + random.nextInt(ancho - 2);
             y = 1 + random.nextInt(alto - 2);
-        } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
+        } while (celdas[y][x].getContenido() != null || celdas[y][x].getDineroDebajo() != null);
 
-        celdas[y][x].contenido = new Bonus(2, 5000, nivel);
+        celdas[y][x].setContenido(new Bonus(2, 5000, nivel));
     }
 }
 
@@ -273,8 +273,8 @@ public class Mapa {
             do {
                 x = 1 + random.nextInt(ancho - 2);
                 y = 1 + random.nextInt(alto - 2);
-            } while (celdas[y][x].contenido != null || celdas[y][x].dineroDebajo != null);
-            celdas[y][x].contenido = new Dinero(100 + random.nextInt(400));
+            } while (celdas[y][x].getContenido() != null || celdas[y][x].getDineroDebajo() != null);
+            celdas[y][x].setContenido(new Dinero(100 + random.nextInt(400)));
         }
     }
 
@@ -283,10 +283,10 @@ public class Mapa {
         int contador = 0;
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
-                if (celdas[y][x].contenido instanceof Dinero) {
+                if (celdas[y][x].getContenido() instanceof Dinero) {
                     contador++;
                 }
-                if (celdas[y][x].dineroDebajo != null) {
+                if (celdas[y][x].getDineroDebajo() != null) {
                     contador++;
                 }
             }
@@ -301,8 +301,8 @@ public class Mapa {
         //recolectar todos los enemigos
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
-                if (celdas[y][x].contenido instanceof Enemigo) {
-                    enemigos.add((Enemigo) celdas[y][x].contenido);
+                if (celdas[y][x].getContenido() instanceof Enemigo) {
+                    enemigos.add((Enemigo) celdas[y][x].getContenido());
                 }
             }
         }
@@ -319,8 +319,8 @@ public class Mapa {
     public void actualizarPosicionesVisualesEnemigos() {
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
-                if (celdas[y][x].contenido instanceof Enemigo) {
-                    ((Enemigo) celdas[y][x].contenido).actualizarPosicionVisual();
+                if (celdas[y][x].getContenido() instanceof Enemigo) {
+                    ((Enemigo) celdas[y][x].getContenido()).actualizarPosicionVisual();
                 }
             }
         }
@@ -329,9 +329,9 @@ public class Mapa {
     //verificar si el jugador piso un Enemigo
     public boolean verificarColisionConEnemigo(Personaje jugador) {
         Celda celdaJugador = conseguirCelda(jugador.getX(), jugador.getY());
-        if (celdaJugador != null && celdaJugador.contenido instanceof Enemigo) {
-            Enemigo enemigo = (Enemigo) celdaJugador.contenido;
-            jugador.danioRecibido(enemigo.danio);
+        if (celdaJugador != null && celdaJugador.getContenido() instanceof Enemigo) {
+            Enemigo enemigo = (Enemigo) celdaJugador.getContenido();
+            jugador.danioRecibido(enemigo.getDanio());
             return true;
         }
         return false;
@@ -341,7 +341,7 @@ public class Mapa {
     public boolean noQuedaDinero() {
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
-                if (celdas[y][x].contenido instanceof Dinero || celdas[y][x].dineroDebajo != null) {
+                if (celdas[y][x].getContenido() instanceof Dinero || celdas[y][x].getDineroDebajo() != null) {
                     return false;
                 }
             }
@@ -355,30 +355,30 @@ public class Mapa {
         if (celda == null) return;
         
         //si hay dinero como contenido
-        if (celda.contenido instanceof Dinero) {
-            Dinero dinero = (Dinero) celda.contenido;
-            jugador.recolectarDinero(dinero.cantidad);
-            celda.contenido = null;
+        if (celda.getContenido() instanceof Dinero) {
+            Dinero dinero = (Dinero) celda.getContenido();
+            jugador.recolectarDinero(dinero.getCantidad());
+            celda.setContenido(null);
         }
         
         //si hay dinero debajo
-        if (celda.dineroDebajo != null) {
-            Dinero dinero = celda.dineroDebajo;
-            jugador.recolectarDinero(dinero.cantidad);
-            celda.dineroDebajo = null;
+        if (celda.getDineroDebajo() != null) {
+            Dinero dinero = celda.getDineroDebajo();
+            jugador.recolectarDinero(dinero.getCantidad());
+            celda.setDineroDebajo(null);
         }
 
         //si hay bonus como contenido
-        if (celda.contenido instanceof Bonus) {
-            Bonus bonus = (Bonus) celda.contenido;
+        if (celda.getContenido() instanceof Bonus) {
+            Bonus bonus = (Bonus) celda.getContenido();
             jugador.activarBonus(bonus);
-            celda.contenido = null;
+            celda.setContenido(null);
         }
         //si hay bonus debajo
-         if (celda.bonusDebajo != null) {
-            Bonus bonus = celda.bonusDebajo;
+         if (celda.getBonusDebajo() != null) {
+            Bonus bonus = celda.getBonusDebajo();
             jugador.activarBonus(bonus);
-            celda.bonusDebajo = null;
+            celda.setBonusDebajo(null);
         }
 
     }
@@ -395,17 +395,20 @@ public class Mapa {
     public int getAlto() {
         return alto;
     }
+    public Celda[][] getCeldas() {
+        return celdas;
+    }
     
     public void setPersonaje(Personaje personaje, int x, int y) {
         Celda celda = conseguirCelda(x, y);
         if (celda != null) {
             //si hay enemigo, el personaje NO se mueve a esa celda
-            if (celda.contenido instanceof Enemigo) {
+            if (celda.getContenido() instanceof Enemigo) {
                 return; // No poner personaje encima del enemigo
             }
             //si hay dinero, lo dejamos en contenido (el personaje se pone encima y lo recolecta)
             //el dinero se mantiene visible hasta que el personaje lo recolecte
-            celda.contenido = personaje;
+            celda.setContenido(personaje);
         }
     }
     
@@ -413,7 +416,7 @@ public class Mapa {
         if (x < 0 || x >= ancho || y < 0 || y >= alto) {
             return null;
         }
-        Object contenido = celdas[y][x].contenido;
+        Object contenido = celdas[y][x].getContenido();
         if (contenido instanceof Personaje) {
             return (Personaje) contenido;
         }

@@ -86,21 +86,7 @@ private void iniciarTimers() {
             jugador.actualizarBonus();
 
 // === Animación del sprite del jugador ===
-        boolean moviendo = (teclaPulsada != ' ');
-        jugador.setEnMovimiento(moviendo);
-
-        if (moviendo) {
-            long ahora = System.currentTimeMillis();
-            if (ahora - jugador.ultimoFrameAnimacion > 100) { // 100ms por frame
-                jugador.frameAnimacion++;
-                if (jugador.frameAnimacion >= 22) { // 11 cols x 2 filas
-                    jugador.frameAnimacion = 0;
-                }
-                jugador.ultimoFrameAnimacion = ahora;
-            }
-        } else {
-            jugador.frameAnimacion = 0; // idle: vuelve al primer frame
-        }
+        jugador.actualizarAnimacion(teclaPulsada != ' ');
 
             mapa.actualizarPosicionesVisualesEnemigos();
             vista.actualizarCamaraSuave();
@@ -165,7 +151,7 @@ private void iniciarNivel(int nivel) {
     nuevoMapa.generarDinero();
 
     Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
-    nuevoMapa.celdas[5][5].contenido = null;
+    nuevoMapa.getCeldas()[5][5].setContenido(null);
     nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
     return new Object[]{nuevoMapa, nuevoJugador};

@@ -7,9 +7,9 @@ import javax.imageio.ImageIO;
 
 public class Bonus extends ObjetoEntorno {
 
-    public int bonusVelocidad = 2; // Aumenta la velocidad del personaje
-    public long duracionMs = 5000; // Duración del bonus en milisegundos
-    protected  Image imagenBonus;
+    private int bonusVelocidad = 2; // Aumenta la velocidad del personaje
+    private long duracionMs = 5000; // Duración del bonus en milisegundos
+    private  Image imagenBonus;
 
     public Bonus(int bonusVelocidad, int duracionMs, int nivel) {
         super(true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
@@ -34,7 +34,9 @@ public class Bonus extends ObjetoEntorno {
         System.out.println("No se pudo cargar la imagen del bonus");
     }
     }
-    public Image getImagenBonus() {
-        return imagenBonus;
-    }
+
+    public int getBonusVelocidad() { return bonusVelocidad; }
+    public long getDuracionMs() { return duracionMs; }
+    public Image getImagenBonus() { return imagenBonus; }
+
 }

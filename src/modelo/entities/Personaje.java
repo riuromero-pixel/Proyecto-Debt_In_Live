@@ -8,34 +8,34 @@ import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 
 public abstract class Personaje{
-protected int x;
-protected int y;
-protected int velocidad;
-protected int dinero;
-protected boolean bonusActivado = false;
-protected int golpesRestantes;   
-protected long ultimoGolpe;
-protected Mapa mapa;
-protected Object paredObjetivo;  
-protected String direccionActual; //guarda la ultima direccion del personaje
-protected long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
+private int x;
+private int y;
+private int velocidad;
+private int dinero;
+private boolean bonusActivado = false;
+private int golpesRestantes;   
+private long ultimoGolpe;
+private Mapa mapa;
+private Object paredObjetivo;  
+private String direccionActual; //guarda la ultima direccion del personaje
+private long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
 
 // coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
 // La lógica del juego sigue usando (x, y). Estas coordenadas se usan SOLO para dibujar
 // y permiten que el sprite se desplace celda a celda de forma fluida en vez de teletransportarse.
 
-protected double posXVisual;
-protected double posYVisual;
+private double posXVisual;
+private double posYVisual;
 // Factor de interpolación exponencial: qué tan rápido la posición visual alcanza a la lógica.
 // Valores recomendados: 0.1 (lento, más "flotante") a 0.35 (rápido, más responsivo).
 
-protected static final double FACTOR_INTERPOLACION = 0.2;
+private static final double FACTOR_INTERPOLACION = 0.2;
 
 //variables para animación de sprites
-public String direccionVisual = "S";
-public int frameAnimacion = 0;
-public long ultimoFrameAnimacion = 0;
-public boolean enMovimiento = false;
+private String direccionVisual = "S";
+private int frameAnimacion = 0;
+private long ultimoFrameAnimacion = 0;
+private boolean enMovimiento = false;
 public boolean isEnMovimiento() { return enMovimiento; }
 public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
 
@@ -60,13 +60,10 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     public int getVelocidad() { return velocidad; }
     public boolean isBonusActivado() { return bonusActivado; }
     public Mapa getMapa() { return mapa; }
-    public void setX(int x) { this.x = x; }
-    public void setY(int y) { this.y = y; }
-    public void setDinero(int dinero) { this.dinero = dinero; }
-    public void setVelocidad(int velocidad) { this.velocidad = velocidad; }
-    public void setBonusActivado(boolean bonusActivado) { this.bonusActivado = bonusActivado; }
-    public void setMapa(Mapa mapa) { this.mapa = mapa; }
+    protected  void setVelocidad(int velocidad) { this.velocidad = velocidad; }
     public String getDireccionActual() { return direccionActual; }
+    public String getDireccionVisual() { return direccionVisual; }
+    public int getFrameAnimacion() { return frameAnimacion; }
 
     // getters de las posiciones visuales, usados por la VistaJuego para dibujar ===
     public double getPosXVisual() { return posXVisual; }
@@ -83,6 +80,22 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
         if (Math.abs(posXVisual - x) < 0.01) posXVisual = x;
         if (Math.abs(posYVisual - y) < 0.01) posYVisual = y;
     }
+
+    public void actualizarAnimacion(boolean moviendo) {
+    this.enMovimiento = moviendo;
+    if (moviendo) {
+        long ahora = System.currentTimeMillis();
+        if (ahora - this.ultimoFrameAnimacion > 100) {
+            this.frameAnimacion++;
+            if (this.frameAnimacion >= 22) {
+                this.frameAnimacion = 0;
+            }
+            this.ultimoFrameAnimacion = ahora;
+        }
+    } else {
+        this.frameAnimacion = 0;
+    }
+}
 
 public void moverse(String tecla, int anchoMapa, int altoMapa) {
     char direccion = tecla.toUpperCase().charAt(0);
@@ -109,14 +122,14 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     
     //verificar si la celda destino tiene una pared (NO se puede pisar)
     Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
-    if (celdaDestino != null && celdaDestino.contenido instanceof Pared) {
+    if (celdaDestino != null && celdaDestino.getContenido() instanceof Pared) {
         return; // No se puede pisar una pared
     }
     
     //verificar si la celda destino tiene un ENEMIGO o ENEMIGO LETAL (NO se mueve, solo recibe daño)
-    if (celdaDestino != null && celdaDestino.contenido instanceof Enemigo && !(celdaDestino.contenido instanceof EnemigoLetal)) {
-        Enemigo enemigo = (Enemigo) celdaDestino.contenido;
-        this.dinero -= enemigo.danio;
+    if (celdaDestino != null && celdaDestino.getContenido() instanceof Enemigo && !(celdaDestino.getContenido() instanceof EnemigoLetal)) {
+        Enemigo enemigo = (Enemigo) celdaDestino.getContenido();
+        this.dinero -= enemigo.getDanio();
         return; // NO nos movemos a la celda del enemigo
     }
     
@@ -128,8 +141,8 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
         
         //limpiar la celda anterior
         Celda celdaAnterior = mapa.conseguirCelda(this.x, this.y);
-        if (celdaAnterior != null && celdaAnterior.contenido == this) {
-            celdaAnterior.contenido = null;
+        if (celdaAnterior != null && celdaAnterior.getContenido() == this) {
+            celdaAnterior.setContenido(null);
         }
         
         this.x = nuevaX;
@@ -138,7 +151,7 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
         //colocar al personaje en la nueva celda
         mapa.setPersonaje(this, nuevaX, nuevaY);
         Celda celdaActual = mapa.conseguirCelda(this.x, this.y);
-        if (celdaActual != null && celdaActual.contenido instanceof EnemigoLetal){
+        if (celdaActual != null && celdaActual.getContenido() instanceof EnemigoLetal){
             this.dinero = -9999;
             return;
         }
@@ -163,7 +176,7 @@ private Celda conseguirCelda(int x, int y) { // es un metodo para conseguir la c
     private boolean verificarPared(int x, int y) { //verifica si hay una pared en la celda que recibe por parametro
         Celda celda = conseguirCelda(x, y);
         if (celda == null) return false;
-        return celda.contenido != null && celda.contenido instanceof Pared;
+        return celda.getContenido() != null && celda.getContenido() instanceof Pared;
     }
 public void romperParedes() {
         long tiempoActual = System.currentTimeMillis();
@@ -194,7 +207,7 @@ public void romperParedes() {
                     // Eliminar la pared de la celda
                     Celda celda = conseguirCelda(nx, ny);
                     if (celda != null) {
-                        celda.contenido = null;
+                        celda.setContenido(null);
                     }
                     // Reiniciar contadores
                     golpesRestantes = 2;
@@ -208,7 +221,7 @@ public void romperParedes() {
 
 public void activarBonus(Bonus bonus) {
     this.bonusActivado = true;
-    this.bonusFin = System.currentTimeMillis() + bonus.duracionMs;
+    this.bonusFin = System.currentTimeMillis() + bonus.getDuracionMs();
 }
 public void actualizarBonus() {
     if (bonusActivado && System.currentTimeMillis() >= bonusFin) {

@@ -98,7 +98,7 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
     mapa.generarDinero();
 
     Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
-    mapa.celdas[4][4].contenido = null;
+    mapa.getCeldas()[4][4].setContenido(null);
     mapa.setPersonaje(jugador, 4, 4);
 
     return new Object[]{mapa, jugador};

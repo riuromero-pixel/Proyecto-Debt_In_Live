@@ -45,8 +45,8 @@ public class GestorSprites {
         // 2. Identificar la dirección visual
         int dirIndex = 0;
         String dirStr = "abajo";
-        if (jugador.direccionVisual != null) {
-            switch(jugador.direccionVisual) {
+        if (jugador.getDireccionVisual() != null) {
+            switch(jugador.getDireccionVisual()) {
                 case "N": dirIndex = 1; dirStr = "arriba"; break;
                 case "E": dirIndex = 2; dirStr = "derecha"; break;
                 case "O": dirIndex = 3; dirStr = "izquierda"; break;
@@ -64,8 +64,8 @@ public class GestorSprites {
             int cols = sheet.getColumnas();
             int fils = sheet.getFilas();
             
-            int fila = (jugador.frameAnimacion / cols) % fils; 
-            int columna = jugador.frameAnimacion % cols;
+            int fila = (jugador.getFrameAnimacion() / cols) % fils; 
+            int columna = jugador.getFrameAnimacion() % cols;
             return sheet.obtenerFrame(fila, columna);
         } else {
             return getSpriteEstatico(tipoIndex, tipoStr, dirIndex, dirStr);
