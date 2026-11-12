@@ -144,11 +144,11 @@ public class ControladorJuego {
     public Personaje getJugador() { return jugador; }
     public VistaJuego getVista() { return vista; }
     public boolean isJuegoActivo() { return juegoActivo; }
-    public void setJuegoActivo(boolean juegoActivo) { this.juegoActivo = juegoActivo; }
+    void setJuegoActivo(boolean juegoActivo) { this.juegoActivo = juegoActivo; }
     public int getNivelActual() { return nivelActual; }
-    public void setNivelActual(int nivelActual) { this.nivelActual = nivelActual; }
+    void setNivelActual(int nivelActual) { this.nivelActual = nivelActual; }
     public char getTeclaPulsada() { return teclaPulsada; }
-    public void setTeclaPulsada(char teclaPulsada) { this.teclaPulsada = teclaPulsada; }
+    void setTeclaPulsada(char teclaPulsada) { this.teclaPulsada = teclaPulsada; }
     public long getTiempoInicioPartida() { return tiempoInicioPartida; }
     public RecordDAO getRecordDAO() { return recordDAO; }
     public String getNombreJugador() { return nombreJugador; }

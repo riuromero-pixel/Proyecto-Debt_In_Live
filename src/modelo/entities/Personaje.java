@@ -125,14 +125,12 @@ public void actualizarAnimacion(boolean moviendo) {
 public void recolectarDinero(int cantidad) {
     this.dinero += cantidad;
 }
+
 public boolean danioRecibido(int danio) {
-    this.dinero -= danio; // AHORA USA EL DANIO DEL Enemigo
-    if (this.dinero < 0) {
-        System.out.println("Te quedaste sin plata. Pinchó.");
-        return true;
-    }
-    return false;
+    this.dinero -= danio;
+    return this.dinero < 0;
 }
+
 private Celda conseguirCelda(int x, int y) { // es un metodo para conseguir la celda en la que esta el personaje
         if (mapa == null) return null;
         return mapa.conseguirCelda(x, y); 

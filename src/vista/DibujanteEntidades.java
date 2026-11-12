@@ -12,8 +12,9 @@ public class DibujanteEntidades {
 
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
-                if (mapa.getCeldas()[y][x].getContenido() instanceof Enemigo) {
-                    Enemigo en = (Enemigo) mapa.getCeldas()[y][x].getContenido();
+                Object contenido = mapa.getContenido(x, y);
+                if (contenido instanceof Enemigo) {
+                    Enemigo en = (Enemigo) contenido;
 
                     if (en.getPosXVisual() + 1 < camX || en.getPosXVisual() > camX + CamaraJuego.VIEW_COLS) continue;
                     if (en.getPosYVisual() + 1 < camY || en.getPosYVisual() > camY + CamaraJuego.VIEW_ROWS) continue;

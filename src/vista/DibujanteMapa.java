@@ -15,7 +15,7 @@ public class DibujanteMapa {
         for (int y = inicioY; y <= inicioY + CamaraJuego.VIEW_ROWS; y++) {
             for (int x = inicioX; x <= inicioX + CamaraJuego.VIEW_COLS; x++) {
 
-                if (y < 0 || y >= mapa.getAlto() || x < 0 || x >= mapa.getAncho()) continue;
+                if (!mapa.estaDentro(x, y)) continue;
 
                 int px = (int) ((x - camX) * tamaño) + desplazamientoX;
                 int py = (int) ((y - camY) * tamaño) + desplazamientoY;
@@ -29,8 +29,8 @@ public class DibujanteMapa {
                     g2d.fillRect(px, py, tamaño, tamaño);
                 }
 
-                if (mapa.getCeldas()[y][x].getContenido() != null) {
-                    Object obj = mapa.getCeldas()[y][x].getContenido();
+                Object obj = mapa.getContenido(x, y);
+                if (obj != null) {
 
                     if (obj instanceof Pared) {
                         Pared pared = (Pared) obj;

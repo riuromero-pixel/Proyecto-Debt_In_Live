@@ -42,9 +42,34 @@ public class Mapa {
         return celdas[y][x];
     }
 
+    public boolean estaDentro(int x, int y) {
+        return x >= 0 && x < ancho && y >= 0 && y < alto;
+    }
+
+    public Object getContenido(int x, int y) {
+        if (!estaDentro(x, y)) return null;
+        return celdas[y][x].getContenido();
+    }
+
+    public void setContenido(int x, int y, Object contenido) {
+        if (!estaDentro(x, y)) return;
+        celdas[y][x].setContenido(contenido);
+    }
+
+    public boolean estaLibre(int x, int y) {
+        if (!estaDentro(x, y)) return false;
+        return celdas[y][x].getContenido() == null;
+    }
+
+    public boolean esPared(int x, int y) {
+        if (!estaDentro(x, y)) return false;
+        return celdas[y][x].getContenido() instanceof Pared;
+    }
+
+
     public int getAncho() { return ancho; }
     public int getAlto() { return alto; }
-    public Celda[][] getCeldas() { return celdas; }
+    Celda[][] getCeldas() { return celdas; }
 
     public void setPersonaje(Personaje personaje, int x, int y) {
         Celda celda = conseguirCelda(x, y);
@@ -61,10 +86,3 @@ public class Mapa {
         return null;
     }
 }
-
-
-    
- 
-
-        
-    

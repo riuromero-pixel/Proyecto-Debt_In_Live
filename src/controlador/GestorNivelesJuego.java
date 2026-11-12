@@ -26,7 +26,7 @@ public class GestorNivelesJuego {
                 nuevoMapa.generarDinero();
 
                 Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
-                nuevoMapa.getCeldas()[5][5].setContenido(null);
+                nuevoMapa.setContenido(5, 5, null);
                 nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
                 return new Object[]{nuevoMapa, nuevoJugador};
