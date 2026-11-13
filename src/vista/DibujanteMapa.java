@@ -62,8 +62,9 @@ public class DibujanteMapa {
                         }
 
                     } else if (tipo.equals("BONUS")) {
-                        Bonus unBonus = (Bonus) contenido;
-                        g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+                        if (imagenes.getImagenBonus() != null) {
+                            g2d.drawImage(imagenes.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+                        }
                         g2d.setColor(Color.BLACK);
                         g2d.drawString("", px + 10, py + 20);
                     }

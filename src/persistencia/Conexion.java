@@ -10,7 +10,7 @@ public class Conexion { // Clase singleton para manejar la conexión a la base d
     private Conexion() throws SQLException {//constructor privado
         conexion = DriverManager.getConnection("jdbc:sqlite:debt_in_life.db");
     }
-    public static Conexion getInstancia() throws SQLException {
+    public static synchronized Conexion getInstancia() throws SQLException {
         if (instancia == null || instancia.conexion.isClosed()) {
             instancia = new Conexion();
         }

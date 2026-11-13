@@ -11,6 +11,7 @@ public class CargadorImagenesNivel {
     private Image imagenPISO;
     private Image imagenSilla1, imagenSilla2, imagenSilla3, imagenSilla4;
     private Image imagenDinero;
+    private Image imagenBonus;
     private Image[] spritesEnemigos = new Image[5];
 
     public void cargar(int nivelActual) {
@@ -37,6 +38,8 @@ public class CargadorImagenesNivel {
                     spritesEnemigos[1] = ImageIO.read(new File("images/sprites/estudiante/enemigos/futbol.png"));
                     spritesEnemigos[2] = ImageIO.read(new File("images/sprites/estudiante/enemigos/play5.png"));
                     spritesEnemigos[3] = ImageIO.read(new File("images/sprites/estudiante/enemigos/steam.png"));
+
+                    imagenBonus = ImageIO.read(new File("images/bonus_estudiante.png"));
                 } catch (IOException e) {
                     System.out.println("Error al cargar los sprites del nivel 1");
                 }
@@ -51,6 +54,8 @@ public class CargadorImagenesNivel {
                     spritesEnemigos[2] = ImageIO.read(new File("images/sprites/adulto/enemigos/asado.png"));
                     spritesEnemigos[3] = ImageIO.read(new File("images/sprites/adulto/enemigos/bebe.png"));
                     spritesEnemigos[4] = ImageIO.read(new File("images/sprites/adulto/enemigos/cerveza.png"));
+
+                    imagenBonus = ImageIO.read(new File("images/bonus_adulto.png"));
                 } catch (IOException e) {
                     System.out.println("Error al cargar los sprites del nivel 2");
                 }
@@ -64,6 +69,8 @@ public class CargadorImagenesNivel {
                     spritesEnemigos[1] = ImageIO.read(new File("images/sprites/jubilado/enemigos/compras.png"));
                     spritesEnemigos[2] = ImageIO.read(new File("images/sprites/jubilado/enemigos/luz.png"));
                     spritesEnemigos[3] = ImageIO.read(new File("images/sprites/jubilado/enemigos/pami.png"));
+
+                    imagenBonus = ImageIO.read(new File("images/bonus_anciano.png"));
                 } catch (IOException e) {
                     System.out.println("Error al cargar los sprites del nivel 3");
                 }
@@ -72,6 +79,7 @@ public class CargadorImagenesNivel {
             default:
                 imagenPARED = null;
                 imagenPISO = null;
+                imagenBonus = null;
                 return;
         }
 
@@ -91,5 +99,6 @@ public class CargadorImagenesNivel {
     public Image getImagenSilla3() { return imagenSilla3; }
     public Image getImagenSilla4() { return imagenSilla4; }
     public Image getImagenDinero() { return imagenDinero; }
+    public Image getImagenBonus() { return imagenBonus; }
     public Image[] getSpritesEnemigos() { return spritesEnemigos; }
 }

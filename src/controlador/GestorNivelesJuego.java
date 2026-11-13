@@ -2,7 +2,6 @@ package src.controlador;
 
 import javax.swing.*;
 import src.modelo.entities.*;
-import src.modelo.map.Mapa;
 import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 
@@ -18,28 +17,17 @@ public class GestorNivelesJuego {
 
         VistaCargando cargando = new VistaCargando(controlador.getVista(), "Generando nivel " + nivel + "...");
 
-        SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
+        SwingWorker<NivelCreado, Void> worker = new SwingWorker<NivelCreado, Void>() {
             @Override
-            protected Object[] doInBackground() throws Exception {
-                Mapa nuevoMapa = new Mapa(40, 40);
-                nuevoMapa.cargarNivel(nivel);
-                nuevoMapa.generarDinero();
-
-                Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
-                nuevoMapa.setContenido(5, 5, null);
-                nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
-
-                return new Object[]{nuevoMapa, nuevoJugador};
+            protected NivelCreado doInBackground() throws Exception {
+                return RegistroNiveles.paraNivel(nivel).crearNivel(5, 5);
             }
 
             @Override
             protected void done() {
                 try {
-                    Object[] modelo = get();
-                    Mapa nuevoMapa = (Mapa) modelo[0];
-                    Personaje nuevoJugador = (Personaje) modelo[1];
-
-                    controlador.cambiarNivel(nuevoMapa, nuevoJugador, nivel);
+                    NivelCreado resultado = get();
+                    controlador.cambiarNivel(resultado.mapa(), resultado.jugador(), nivel);
 
                     cargando.dispose();
                 } catch (Exception ex) {

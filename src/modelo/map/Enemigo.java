@@ -49,6 +49,11 @@ public class Enemigo extends ObjetoEntorno {
     }
 
     @Override
+    public Enemigo asEnemigo() {
+        return this;
+    }
+
+    @Override
     public void aplicarDanio(Personaje personaje) {
         personaje.danioRecibido(this.danio);
     }
@@ -83,7 +88,7 @@ public class Enemigo extends ObjetoEntorno {
 
                 // Si la celda nueva a la que entra tiene dinero, lo resguardamos en 'dineroDebajo'
                 if (celdaNueva.getContenido() != null && celdaNueva.getContenido().esDinero()) {
-                    celdaNueva.setDineroDebajo((Dinero) celdaNueva.getContenido());
+                    celdaNueva.setDineroDebajo(celdaNueva.getContenido().asDinero());
                 }
 
                 // Colocamos al enemigo en la celda nueva y actualizamos sus coordenadas

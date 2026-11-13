@@ -24,10 +24,9 @@ public class Mapa {
         }
     }
 
-    public void cargarNivel(int nivel) { generador.cargarNivel(this, nivel); }
-    public void cargarMapaPlantilla(int nivel) { generador.cargarMapaPlantilla(this, nivel); }
+    public void prepararMapa() { generador.prepararMapa(this); }
+    public void generarContenidoAleatorio(int nivel) { generador.generarContenidoAleatorio(this, nivel); }
     public void generarDinero() { generador.generarDinero(this); }
-    public void generarBonus(int cantidad, int nivel) { generador.generarBonus(this, cantidad, nivel); }
 
     public void moverEnemigos(Personaje jugador) { gestorEnemigos.moverEnemigos(this, jugador); }
     public boolean verificarColisionConEnemigo(Personaje jugador) { return gestorEnemigos.verificarColisionConEnemigo(this, jugador); }
@@ -65,7 +64,6 @@ public class Mapa {
         ContenidoCelda contenido = celdas[y][x].getContenido();
         return contenido != null && contenido.esPared();
     }
-
 
     public int getAncho() { return ancho; }
     public int getAlto() { return alto; }

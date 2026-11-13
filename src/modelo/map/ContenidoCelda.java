@@ -17,6 +17,10 @@ public interface ContenidoCelda {
 
     default Personaje asPersonaje() { return null; }
 
+    default Enemigo asEnemigo() { return null; }
+
+    default Dinero asDinero() { return null; }
+
     default boolean esPared() { return false; }
 
     default boolean esDinero() { return false; }

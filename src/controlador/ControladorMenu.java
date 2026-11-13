@@ -14,9 +14,10 @@ import src.vista.VistaComoJugar;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaOpciones;
 
+import src.modelo.entities.NivelCreado;
 import src.modelo.entities.Personaje;
-import src.modelo.entities.PersonajeFactory;
 import src.modelo.entities.RecordDAO;
+import src.modelo.entities.RegistroNiveles;
 import src.persistencia.RecordDAOSQLite;
 import src.persistencia.Conexion;
 import src.modelo.map.Mapa;
@@ -88,28 +89,19 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
     // diálogo de carga
     final VistaCargando cargando = new VistaCargando(vistaMenu, "Generando nivel 1...");
 
-    SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
+    SwingWorker<NivelCreado, Void> worker = new SwingWorker<NivelCreado, Void>() {
 
         @Override
-        protected Object[] doInBackground() throws Exception {
-
-    Mapa mapa = new Mapa(40, 40);
-    mapa.cargarNivel(1);
-    mapa.generarDinero();
-
-    Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
-    mapa.setContenido(4, 4, null);
-    mapa.setPersonaje(jugador, 4, 4);
-
-    return new Object[]{mapa, jugador};
-}
+        protected NivelCreado doInBackground() throws Exception {
+            return RegistroNiveles.paraNivel(1).crearNivel(4, 4);
+        }
 
         @Override
         protected void done() {
             try {
-                Object[] modelo = get();
-                Mapa mapa = (Mapa) modelo[0];
-                Personaje jugador = (Personaje) modelo[1];
+                NivelCreado resultado = get();
+                Mapa mapa = resultado.mapa();
+                Personaje jugador = resultado.jugador();
 
                 Reproductor_audio.getInstancia().reproducirSonido(1);
 
