@@ -2,41 +2,37 @@ package src.modelo.entities;
 
 import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
-import src.modelo.map.Pared;
 import src.modelo.map.Mapa;
 import src.modelo.map.ContenidoCelda;
+import src.modelo.map.Enemigo;
 
 public abstract class Personaje implements ContenidoCelda {
-private int x;
-private int y;
-private int velocidad;
-private int velocidadOriginal;
-private int dinero;
-private boolean bonusActivado = false;
-private int golpesRestantes;   
-private long ultimoGolpe;
-private final Mapa mapa;
-private String paredObjetivo;  
-private String direccionActual; //guarda la ultima direccion del personaje
-private long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
-private final EstadoVisualPersonaje estadoVisual;
+    private int x;
+    private int y;
+    private int velocidad;
+    private int velocidadOriginal;
+    private int dinero;
+    private boolean bonusActivado = false;
+    private long ultimoGolpe;
+    private final Mapa mapa;
+    private String direccionActual;
+    private long bonusFin = 0;
+    private final EstadoVisualPersonaje estadoVisual;
 
+    public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){
+        this.x = x;
+        this.y = y;
+        this.velocidad = velocidad;
+        this.velocidadOriginal = velocidad;
+        this.dinero = dinero; 
+        this.bonusActivado = bonusActivado;
+        this.ultimoGolpe = 0;
+        this.mapa = mapa;
+        this.direccionActual = null;
 
+        this.estadoVisual = new EstadoVisualPersonaje(x, y);
+    }
 
-public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){ // Constructor que inicializa las propiedades del personaje, incluyendo su posición, velocidad, fuerza, dinero, estado de bonus y referencia al mapa
-    this.x = x;
-    this.y = y;
-    this.velocidad = velocidad;
-    this.velocidadOriginal = velocidad;
-    this.dinero = dinero; 
-    this.bonusActivado = bonusActivado;
-    this.ultimoGolpe = 0;
-    this.mapa = mapa;
-    this.direccionActual = null;
-
-    this.estadoVisual = new EstadoVisualPersonaje(x, y);
-}
-    //getters y setters
     public int getX() { return x; }
     public int getY() { return y; }
     public int getDinero() { return dinero; }
@@ -51,101 +47,125 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     }
 
     public double getPosXVisual() { return estadoVisual.getPosXVisual(); }
-public double getPosYVisual() { return estadoVisual.getPosYVisual(); }
-public String getDireccionVisual() { return estadoVisual.getDireccionVisual(); }
-public int getFrameAnimacion() { return estadoVisual.getFrameAnimacion(); }
-public boolean isEnMovimiento() { return estadoVisual.isEnMovimiento(); }
+    public double getPosYVisual() { return estadoVisual.getPosYVisual(); }
+    public String getDireccionVisual() { return estadoVisual.getDireccionVisual(); }
+    public int getFrameAnimacion() { return estadoVisual.getFrameAnimacion(); }
+    public boolean isEnMovimiento() { return estadoVisual.isEnMovimiento(); }
 
-    
-
- @Override
+    @Override
     public boolean bloqueaPaso() {
         return false;
+    }
+
+    @Override
+    public Personaje asPersonaje() {
+        return this;
+    }
+
+    @Override
+    public String getTipoVisual() {
+        return "PERSONAJE";
+    }
+
+    @Override
+    public boolean recibirDanioDe(Enemigo enemigo) {
+        enemigo.aplicarDanio(this);
+        return true;
+    }
+
+    public abstract String getNombreTipo();
+
+    public int getTipoSprite() {
+        return 0;
+    }
+
+    public boolean puedeCrearParedes() {
+        return false;
+    }
+
+    public void crearParedes() {
     }
 
     public void morir() {
         this.dinero = -9999;
     }
 
-public void moverse(String tecla, int anchoMapa, int altoMapa) {
-    char direccion = tecla.toUpperCase().charAt(0);
-    int nuevaX = this.x;
-    int nuevaY = this.y;
-    
-    //guardar la direccion actual
-    this.direccionActual = String.valueOf(direccion);
-    
-    switch (direccion) {
-        case 'W':
-            nuevaY = Math.min(altoMapa - 1, this.y - 1); this.estadoVisual.setDireccionVisual("N");;
-            break;
-        case 'S':
-            nuevaY = Math.max(0, this.y + 1); this.estadoVisual.setDireccionVisual("S");;
-            break;
-        case 'A':
-            nuevaX = Math.max(0, this.x - 1); this.estadoVisual.setDireccionVisual("O");;
-            break;
-        case 'D':
-            nuevaX = Math.min(anchoMapa - 1, this.x + 1); this.estadoVisual.setDireccionVisual("E");;
-            break;
-    }
-    
-    Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
-    if (celdaDestino != null) {
-        ContenidoCelda contenidoDestino = celdaDestino.getContenido();
-        if (contenidoDestino != null && contenidoDestino.bloqueaPaso()) {
-            contenidoDestino.aplicarDanio(this);
-            return;
+    public void moverse(String tecla, int anchoMapa, int altoMapa) {
+        char direccion = tecla.toUpperCase().charAt(0);
+        int nuevaX = this.x;
+        int nuevaY = this.y;
+        
+        this.direccionActual = String.valueOf(direccion);
+        
+        switch (direccion) {
+            case 'W':
+                nuevaY = Math.min(altoMapa - 1, this.y - 1); this.estadoVisual.setDireccionVisual("N");;
+                break;
+            case 'S':
+                nuevaY = Math.max(0, this.y + 1); this.estadoVisual.setDireccionVisual("S");;
+                break;
+            case 'A':
+                nuevaX = Math.max(0, this.x - 1); this.estadoVisual.setDireccionVisual("O");;
+                break;
+            case 'D':
+                nuevaX = Math.min(anchoMapa - 1, this.x + 1); this.estadoVisual.setDireccionVisual("E");;
+                break;
         }
-    }
-    
-    if (nuevaX != this.x || nuevaY != this.y) {
-        //recolectar dinero de la celda destino ANTES de mover al personaje
+        
+        Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
         if (celdaDestino != null) {
-            mapa.recolectarDeCelda(this, nuevaX, nuevaY);
+            ContenidoCelda contenidoDestino = celdaDestino.getContenido();
+            if (contenidoDestino != null && contenidoDestino.bloqueaPaso()) {
+                contenidoDestino.aplicarDanio(this);
+                return;
+            }
         }
         
-        //limpiar la celda anterior
-        Celda celdaAnterior = mapa.conseguirCelda(this.x, this.y);
-        if (celdaAnterior != null && celdaAnterior.getContenido() == this) {
-            celdaAnterior.setContenido(null);
+        if (nuevaX != this.x || nuevaY != this.y) {
+            if (celdaDestino != null) {
+                mapa.recolectarDeCelda(this, nuevaX, nuevaY);
+            }
+            
+            Celda celdaAnterior = mapa.conseguirCelda(this.x, this.y);
+            if (celdaAnterior != null && celdaAnterior.getContenido() == this) {
+                celdaAnterior.setContenido(null);
+            }
+            
+            this.x = nuevaX;
+            this.y = nuevaY;
+            
+            mapa.setPersonaje(this, nuevaX, nuevaY);
         }
-        
-        this.x = nuevaX;
-        this.y = nuevaY;
-        
-        //colocar al personaje en la nueva celda
-        mapa.setPersonaje(this, nuevaX, nuevaY);
     }
-}
 
-public void actualizarPosicionVisual() {
-    estadoVisual.actualizarPosicionVisual(this.x, this.y);
-}
+    public void actualizarPosicionVisual() {
+        estadoVisual.actualizarPosicionVisual(this.x, this.y);
+    }
 
-public void actualizarAnimacion(boolean moviendo) {
-    estadoVisual.actualizarAnimacion(moviendo);
-}
+    public void actualizarAnimacion(boolean moviendo) {
+        estadoVisual.actualizarAnimacion(moviendo);
+    }
 
-public void recolectarDinero(int cantidad) {
-    this.dinero += cantidad;
-}
+    public void recolectarDinero(int cantidad) {
+        this.dinero += cantidad;
+    }
 
-public boolean danioRecibido(int danio) {
-    this.dinero -= danio;
-    return this.dinero < 0;
-}
+    public boolean danioRecibido(int danio) {
+        this.dinero -= danio;
+        return this.dinero < 0;
+    }
 
-private Celda conseguirCelda(int x, int y) { // es un metodo para conseguir la celda en la que esta el personaje
+    private Celda conseguirCelda(int x, int y) {
         if (mapa == null) return null;
         return mapa.conseguirCelda(x, y); 
     }    
-    private boolean verificarPared(int x, int y) { //verifica si hay una pared en la celda que recibe por parametro
+    private boolean verificarPared(int x, int y) {
         Celda celda = conseguirCelda(x, y);
         if (celda == null) return false;
-        return celda.getContenido() != null && celda.getContenido() instanceof Pared;
+        ContenidoCelda contenido = celda.getContenido();
+        return contenido != null && contenido.esPared();
     }
-public void romperParedes() {
+    public void romperParedes() {
         long tiempoActual = System.currentTimeMillis();
         if (tiempoActual - ultimoGolpe < 400) {
             return;
@@ -162,48 +182,40 @@ public void romperParedes() {
             
             if (hayPared) {
                 //si es una nueva pared o cambiamos de objetivo, reiniciar golpes
-                if (paredObjetivo == null || !paredObjetivo.equals(nx + "," + ny)) {
-                    paredObjetivo = nx + "," + ny;
-                    golpesRestantes = 2;
-                }
-                golpesRestantes--;
-                ultimoGolpe = tiempoActual;
-                
-                // si los golpes llegan a 0, se rompe la pared
-                if (golpesRestantes <= 0) {
-                    // Eliminar la pared de la celda
-                    Celda celda = conseguirCelda(nx, ny);
-                    if (celda != null) {
+                Celda celda = conseguirCelda(nx, ny);
+                if (celda != null && celda.getContenido() != null) {
+                    ContenidoCelda contenido = celda.getContenido();
+                    // si los golpes llegan a 0, se rompe la pared
+                    if (contenido.recibirGolpe()) {
+                        // Eliminar la pared de la celda
                         celda.setContenido(null);
                     }
-                    // Reiniciar contadores
-                    golpesRestantes = 2;
-                    paredObjetivo = null;
-                }      
+                }
+                ultimoGolpe = tiempoActual;
                 encontroPared = true;
                 break;
             }
         }    
-}
+    }
 
-public void activarBonus(Bonus bonus) {
-    if (!this.bonusActivado) {
-        this.velocidadOriginal = this.velocidad;
+    public void activarBonus(Bonus bonus) {
+        if (!this.bonusActivado) {
+            this.velocidadOriginal = this.velocidad;
+        }
+        this.bonusActivado = true;
+        this.bonusFin = System.currentTimeMillis() + bonus.getDuracionMs();
+        this.velocidad += bonus.getBonusVelocidad() + this.getBonusExtra();
     }
-    this.bonusActivado = true;
-    this.bonusFin = System.currentTimeMillis() + bonus.getDuracionMs();
-    this.velocidad += bonus.getBonusVelocidad() + this.getBonusExtra();
-}
-public void actualizarBonus() {
-    if (bonusActivado && System.currentTimeMillis() >= bonusFin) {
-        desactivarBonus();
+    public void actualizarBonus() {
+        if (bonusActivado && System.currentTimeMillis() >= bonusFin) {
+            desactivarBonus();
+        }
     }
-}
-public void desactivarBonus() {
-    if (!this.bonusActivado) {
-        return;
+    public void desactivarBonus() {
+        if (!this.bonusActivado) {
+            return;
+        }
+        this.bonusActivado = false;
+        this.velocidad = this.velocidadOriginal;
     }
-    this.bonusActivado = false;
-    this.velocidad = this.velocidadOriginal;
-}
 }

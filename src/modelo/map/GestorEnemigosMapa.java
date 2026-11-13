@@ -11,8 +11,9 @@ public class GestorEnemigosMapa {
 
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
-                if (mapa.getCeldas()[y][x].getContenido() instanceof Enemigo) {
-                    enemigos.add((Enemigo) mapa.getCeldas()[y][x].getContenido());
+                ContenidoCelda contenido = mapa.getCeldas()[y][x].getContenido();
+                if (contenido != null && contenido.esEnemigo()) {
+                    enemigos.add((Enemigo) contenido);
                 }
             }
         }
@@ -25,8 +26,9 @@ public class GestorEnemigosMapa {
     public void actualizarPosicionesVisualesEnemigos(Mapa mapa) {
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
-                if (mapa.getCeldas()[y][x].getContenido() instanceof Enemigo) {
-                    ((Enemigo) mapa.getCeldas()[y][x].getContenido()).actualizarPosicionVisual();
+                ContenidoCelda contenido = mapa.getCeldas()[y][x].getContenido();
+                if (contenido != null && contenido.esEnemigo()) {
+                    ((Enemigo) contenido).actualizarPosicionVisual();
                 }
             }
         }
@@ -34,7 +36,7 @@ public class GestorEnemigosMapa {
 
     public boolean verificarColisionConEnemigo(Mapa mapa, Personaje jugador) {
         Celda celdaJugador = mapa.conseguirCelda(jugador.getX(), jugador.getY());
-        if (celdaJugador != null && celdaJugador.getContenido() instanceof Enemigo) {
+        if (celdaJugador != null && celdaJugador.getContenido() != null && celdaJugador.getContenido().esEnemigo()) {
             Enemigo enemigo = (Enemigo) celdaJugador.getContenido();
             jugador.danioRecibido(enemigo.getDanio());
             return true;

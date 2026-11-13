@@ -13,4 +13,14 @@ public class EnemigoLetal extends Enemigo {
     public void aplicarDanio(Personaje personaje) {
         personaje.morir();
     }
+
+    @Override
+    public String getTipoVisual() {
+        return "ENEMIGO_LETAL";
+    }
+
+    @Override
+    public boolean esLetal() {
+        return true;
+    }
 }

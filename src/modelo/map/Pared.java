@@ -3,11 +3,12 @@ import java.util.Random;
 
 public class Pared extends ObjetoEntorno {
     private int variante;
+    private int golpesRestantes = 2;
 
     public Pared() {
-        super(false); // llama al constructor de la clase padre (ObjetoEntorno) y envia false osea que no se puede pisar en esa celda
+        super(false);
         Random rand = new Random();
-        this.variante = 1 + rand.nextInt(4); // Sortea del 1 al 4 para la variante de la pared
+        this.variante = 1 + rand.nextInt(4);
     }
 
     public Pared(int varianteElegida) {
@@ -16,5 +17,21 @@ public class Pared extends ObjetoEntorno {
     }
     public int getVariante() {
         return variante;
+    }
+
+    @Override
+    public boolean recibirGolpe() {
+        golpesRestantes--;
+        return golpesRestantes <= 0;
+    }
+
+    @Override
+    public boolean esPared() {
+        return true;
+    }
+
+    @Override
+    public String getTipoVisual() {
+        return "PARED";
     }
 }

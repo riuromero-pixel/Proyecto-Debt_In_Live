@@ -1,18 +1,18 @@
 package src.modelo.map;
-//imports para la imagen del bonus
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import src.modelo.entities.Personaje;
 
 public class Bonus extends ObjetoEntorno {
 
-    private int bonusVelocidad = 2; // Aumenta la velocidad del personaje
-    private long duracionMs = 5000; // Duración del bonus en milisegundos
+    private int bonusVelocidad = 2;
+    private long duracionMs = 5000;
     private  Image imagenBonus;
 
     public Bonus(int bonusVelocidad, int duracionMs, int nivel) {
-        super(true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
+        super(true);
         this.bonusVelocidad = bonusVelocidad;
         this.duracionMs = duracionMs;
          try {
@@ -39,4 +39,14 @@ public class Bonus extends ObjetoEntorno {
     public long getDuracionMs() { return duracionMs; }
     public Image getImagenBonus() { return imagenBonus; }
 
+    @Override
+    public boolean recolectar(Personaje personaje) {
+        personaje.activarBonus(this);
+        return true;
+    }
+
+    @Override
+    public String getTipoVisual() {
+        return "BONUS";
+    }
 }

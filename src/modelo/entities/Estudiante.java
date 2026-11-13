@@ -12,4 +12,14 @@ public class Estudiante extends Personaje{
     protected int getBonusExtra() {
         return 3;
     }
+
+    @Override
+    public String getNombreTipo() {
+        return "Estudiante";
+    }
+
+    @Override
+    public int getTipoSprite() {
+        return 0;
+    }
 }

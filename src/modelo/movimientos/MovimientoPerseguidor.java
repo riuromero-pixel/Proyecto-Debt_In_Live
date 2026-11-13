@@ -35,8 +35,7 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
                 ContenidoCelda contenido = celdaDestino.getContenido();
 
                 // SI LA CELDA TIENE AL PERSONAJE: Colisión directa, le hace daño y termina
-                if (contenido instanceof Personaje) {
-                    enemigo.aplicarDanio(personaje);
+                if (contenido != null && contenido.recibirDanioDe(enemigo)) {
                     return; 
                 }
 

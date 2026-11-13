@@ -29,11 +29,12 @@ public class DibujanteMapa {
                     g2d.fillRect(px, py, tamaño, tamaño);
                 }
 
-                Object obj = mapa.getContenido(x, y);
-                if (obj != null) {
+                ContenidoCelda contenido = mapa.getContenido(x, y);
+                if (contenido != null) {
+                    String tipo = contenido.getTipoVisual();
 
-                    if (obj instanceof Pared) {
-                        Pared pared = (Pared) obj;
+                    if (tipo.equals("PARED")) {
+                        Pared pared = (Pared) contenido;
                         Image imgDibujar = imagenes.getImagenPARED();
 
                         if (nivelActual == 1) {
@@ -52,7 +53,7 @@ public class DibujanteMapa {
                             g2d.fillRect(px, py, tamaño, tamaño);
                         }
 
-                    } else if (obj instanceof Dinero) {
+                    } else if (tipo.equals("DINERO")) {
                         if (imagenes.getImagenDinero() != null) {
                             g2d.drawImage(imagenes.getImagenDinero(), px, py, tamaño, tamaño, null);
                         } else {
@@ -60,8 +61,8 @@ public class DibujanteMapa {
                             g2d.fillOval(px + tamaño / 4, py + tamaño / 4, tamaño / 2, tamaño / 2);
                         }
 
-                    } else if (obj instanceof Bonus) {
-                        Bonus unBonus = (Bonus) obj;
+                    } else if (tipo.equals("BONUS")) {
+                        Bonus unBonus = (Bonus) contenido;
                         g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
                         g2d.setColor(Color.BLACK);
                         g2d.drawString("", px + 10, py + 20);

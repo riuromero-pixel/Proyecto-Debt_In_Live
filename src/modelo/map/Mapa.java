@@ -63,7 +63,8 @@ public class Mapa {
 
     public boolean esPared(int x, int y) {
         if (!estaDentro(x, y)) return false;
-        return celdas[y][x].getContenido() instanceof Pared;
+        ContenidoCelda contenido = celdas[y][x].getContenido();
+        return contenido != null && contenido.esPared();
     }
 
 
@@ -81,9 +82,8 @@ public class Mapa {
     }
 
     public Personaje getPersonaje(int x, int y) {
-        if (x < 0 || x >= ancho || y < 0 || y >= alto) return null;
+        if (!estaDentro(x, y)) return null;
         ContenidoCelda contenido = celdas[y][x].getContenido();
-        if (contenido instanceof Personaje) return (Personaje) contenido;
-        return null;
+        return contenido != null ? contenido.asPersonaje() : null;
     }
 }

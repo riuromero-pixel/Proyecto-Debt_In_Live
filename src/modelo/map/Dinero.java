@@ -1,5 +1,7 @@
 package src.modelo.map;
 
+import src.modelo.entities.Personaje;
+
 public class Dinero extends ObjetoEntorno {
     private int cantidad;
     
@@ -13,4 +15,19 @@ public class Dinero extends ObjetoEntorno {
 
     public int getCantidad() { return cantidad; }
 
+    @Override
+    public boolean recolectar(Personaje personaje) {
+        personaje.recolectarDinero(this.cantidad);
+        return true;
+    }
+
+    @Override
+    public String getTipoVisual() {
+        return "DINERO";
+    }
+
+    @Override
+    public boolean esDinero() {
+        return true;
+    }
 }

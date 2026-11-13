@@ -1,7 +1,7 @@
 package src.modelo.map;
-// este es un ejemplo de la aplicacion de polimorfismo ya q En la ejecución, el programa reconoce la forma específica de cada objeto 
-// (mediante 'instanceof' o respondiendo a sus propios métodos/atributos heredados
-// como 'pasoLibre'), evitando tener que crear arreglos separados para cada elemento del juego.
+// el polimorfismo se aplica en el metodo bloqueaPaso(), que cada subclase puede sobrescribir
+// para indicar si el objeto bloquea el paso, asi el personaje puede preguntar a cualquier
+// ContenidoCelda si bloquea el paso sin conocer su tipo concreto.
 
 public class ObjetoEntorno implements ContenidoCelda {
     private boolean pasoLibre;

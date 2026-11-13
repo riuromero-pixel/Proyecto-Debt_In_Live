@@ -2,7 +2,6 @@ package src.controlador;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import src.modelo.entities.CreadorParedes;
 
 public class EntradaTecladoJuego extends KeyAdapter {
 
@@ -34,9 +33,8 @@ public class EntradaTecladoJuego extends KeyAdapter {
                 break;
 
             case 'c': case 'C':
-                if (controlador.getJugador() instanceof CreadorParedes) {
-                    CreadorParedes creador = (CreadorParedes) controlador.getJugador();
-                    creador.crearParedes();
+                if (controlador.getJugador().puedeCrearParedes()) {
+                    controlador.getJugador().crearParedes();
                     controlador.getVista().repaint();
                 }
                 break;

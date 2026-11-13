@@ -8,7 +8,8 @@ public class GestorObjetosMapa {
         int contador = 0;
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
-                if (mapa.getCeldas()[y][x].getContenido() instanceof Dinero) {
+                ContenidoCelda contenido = mapa.getCeldas()[y][x].getContenido();
+                if (contenido != null && contenido.esDinero()) {
                     contador++;
                 }
                 if (mapa.getCeldas()[y][x].getDineroDebajo() != null) {
@@ -22,7 +23,8 @@ public class GestorObjetosMapa {
     public boolean noQuedaDinero(Mapa mapa) {
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
-                if (mapa.getCeldas()[y][x].getContenido() instanceof Dinero
+                ContenidoCelda contenido = mapa.getCeldas()[y][x].getContenido();
+                if (contenido != null && contenido.esDinero()
                         || mapa.getCeldas()[y][x].getDineroDebajo() != null) {
                     return false;
                 }
@@ -35,28 +37,22 @@ public class GestorObjetosMapa {
         Celda celda = mapa.conseguirCelda(x, y);
         if (celda == null) return;
 
-        if (celda.getContenido() instanceof Dinero) {
-            Dinero dinero = (Dinero) celda.getContenido();
-            jugador.recolectarDinero(dinero.getCantidad());
-            celda.setContenido(null);
+        if (celda.getContenido() != null) {
+            if (celda.getContenido().recolectar(jugador)) {
+                celda.setContenido(null);
+            }
         }
 
         if (celda.getDineroDebajo() != null) {
-            Dinero dinero = celda.getDineroDebajo();
-            jugador.recolectarDinero(dinero.getCantidad());
-            celda.setDineroDebajo(null);
-        }
-
-        if (celda.getContenido() instanceof Bonus) {
-            Bonus bonus = (Bonus) celda.getContenido();
-            jugador.activarBonus(bonus);
-            celda.setContenido(null);
+            if (celda.getDineroDebajo().recolectar(jugador)) {
+                celda.setDineroDebajo(null);
+            }
         }
 
         if (celda.getBonusDebajo() != null) {
-            Bonus bonus = celda.getBonusDebajo();
-            jugador.activarBonus(bonus);
-            celda.setBonusDebajo(null);
+            if (celda.getBonusDebajo().recolectar(jugador)) {
+                celda.setBonusDebajo(null);
+            }
         }
     }
 }

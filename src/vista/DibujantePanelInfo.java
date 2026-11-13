@@ -42,9 +42,9 @@ public class DibujantePanelInfo {
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
 
         String tipo = "";
-        if (jugador instanceof Adulto) tipo = "Adulto";
-        else if (jugador instanceof Estudiante) tipo = "Estudiante";
-        else if (jugador != null) tipo = "Jubilado";
+        if (jugador != null) {
+            tipo = jugador.getNombreTipo();
+        }
 
         String infoTexto = String.format("Personaje: %s | Velocidad: %d | Nivel: %d",
                 tipo,

@@ -32,8 +32,7 @@ public class MovimientoErrante implements EstrategiaMovimiento {
             ContenidoCelda contenido = celdaDestino.getContenido();
 
             // Si pisa al jugador, le hace daño
-            if (contenido instanceof Personaje) {
-                enemigo.aplicarDanio((Personaje) contenido);
+            if (contenido != null && contenido.recibirDanioDe(enemigo)) {
                 return;
             }
 
@@ -48,7 +47,3 @@ public class MovimientoErrante implements EstrategiaMovimiento {
         enemigo.moverEnemigo(enemigo, elegida[0], elegida[1], mapa);
     }
 }
-       
-    
-    
-

@@ -12,8 +12,8 @@ public class DibujanteEntidades {
 
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
-                Object contenido = mapa.getContenido(x, y);
-                if (contenido instanceof Enemigo) {
+                ContenidoCelda contenido = mapa.getContenido(x, y);
+                if (contenido != null && contenido.esEnemigo()) {
                     Enemigo en = (Enemigo) contenido;
 
                     if (en.getPosXVisual() + 1 < camX || en.getPosXVisual() > camX + CamaraJuego.VIEW_COLS) continue;
@@ -22,7 +22,7 @@ public class DibujanteEntidades {
                     int ex = (int) ((en.getPosXVisual() - camX) * tamaño) + desplazamientoX;
                     int ey = (int) ((en.getPosYVisual() - camY) * tamaño) + desplazamientoY;
 
-                    if (en instanceof EnemigoLetal) {
+                    if (en.esLetal()) {
                         String dirMuerte = "abajo";
                         double difX = en.getX() - en.getPosXVisual();
                         double difY = en.getY() - en.getPosYVisual();

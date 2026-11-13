@@ -1,4 +1,4 @@
- package src.modelo.map;
+package src.modelo.map;
 
 import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
@@ -62,6 +62,20 @@ public double getPosYVisual() { return posYVisual; }
         personaje.danioRecibido(this.danio);
     }
 
+    @Override
+    public String getTipoVisual() {
+        return "ENEMIGO";
+    }
+
+    @Override
+    public boolean esEnemigo() {
+        return true;
+    }
+
+    public boolean esLetal() {
+        return false;
+    }
+
     public void moverEnemigo(Enemigo enemigo, int mejorX, int mejorY, Mapa mapa) {
             Celda celdaActual = mapa.conseguirCelda(enemigo.x, enemigo.y);
             Celda celdaNueva = mapa.conseguirCelda(mejorX, mejorY);
@@ -77,7 +91,7 @@ public double getPosYVisual() { return posYVisual; }
                 }
 
                 // Si la celda nueva a la que entra tiene dinero, lo resguardamos en 'dineroDebajo'
-                if (celdaNueva.getContenido() instanceof Dinero) {
+                if (celdaNueva.getContenido() != null && celdaNueva.getContenido().esDinero()) {
                     celdaNueva.setDineroDebajo((Dinero) celdaNueva.getContenido());
                 }
 
