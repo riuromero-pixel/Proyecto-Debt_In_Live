@@ -5,9 +5,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.BooleanSupplier;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import src.modelo.map.Reproductor_audio;
 
 // Ventana de opciones del juego. Mantiene la misma estetica oscura/dorada
 // que las vistas de records y "como jugar".
@@ -21,6 +21,7 @@ public class VistaOpciones extends JDialog {
     private static final Color ROJO = new Color(220, 80, 80);
 
     private final ActionListener accionSilenciar;
+    private final BooleanSupplier estadoSonido;
 
     // componentes que se actualizan segun el estado
     private JPanel panelIcono;
@@ -31,9 +32,10 @@ public class VistaOpciones extends JDialog {
     private Timer timerPulso;
     private float fasePulso = 0f;
 
-    public VistaOpciones(Window padre, ActionListener accionSilenciar) { // Constructor que recibe la ventana padre y un ActionListener para alternar el sonido
+    public VistaOpciones(Window padre, ActionListener accionSilenciar, BooleanSupplier estadoSonido) { // Constructor que recibe la ventana padre y un ActionListener para alternar el sonido
         super(padre, "Opciones", Dialog.ModalityType.APPLICATION_MODAL);
         this.accionSilenciar = accionSilenciar;
+        this.estadoSonido = estadoSonido;
         setUndecorated(true);
         setSize(620, 620);
         setLocationRelativeTo(padre);
@@ -301,7 +303,7 @@ public class VistaOpciones extends JDialog {
     // ---------- ESTADO Y ANIMACION ----------
     // lee el estado actual directamente del reproductor
     private boolean estaSilenciado() {
-        return Reproductor_audio.getInstancia().isSilenciado();
+        return estadoSonido.getAsBoolean();
     }
 
     // actualiza el texto y color del estado segun corresponda

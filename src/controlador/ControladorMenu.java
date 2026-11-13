@@ -3,7 +3,6 @@ package src.controlador;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
@@ -28,12 +27,14 @@ import src.vista.VistaIntro;
 
 public class ControladorMenu {
     private final VistaMenu vistaMenu;
+    private final Reproductor_audio reproductorAudio;
     private RecordDAO recordDAO;
     private long tiempoInicioPartida;
     private java.awt.event.ActionListener accionSilenciarGlobal;
 
-    public ControladorMenu(VistaMenu vistaMenu) { // Constructor que recibe la vista del menú y configura las acciones de los botones
+    public ControladorMenu(VistaMenu vistaMenu, Reproductor_audio reproductorAudio) { // Constructor que recibe la vista del menú y configura las acciones de los botones
         this.vistaMenu = vistaMenu;
+        this.reproductorAudio = reproductorAudio;
         this.vistaMenu.setAccionJugar(e -> iniciarJuego());
         this.vistaMenu.setAccionRecords(e -> mostrarRecords());
         this.vistaMenu.setAccionComoJugar(e -> mostrarComoJugar());
@@ -42,7 +43,7 @@ public class ControladorMenu {
     // conecta la acción del botón "Alternar Sonido" de la vista con el controlador.
         // El controlador es quien realiza la accion
         this.accionSilenciarGlobal = e -> {
-    Reproductor_audio.getInstancia().alternarSilencio(3); 
+    this.reproductorAudio.alternarSilencio(3); 
 };
 
         try {
@@ -57,7 +58,7 @@ public class ControladorMenu {
     //esta parte es para quitar un poco el pequeño flash que hay entre la intro y el menu de inicio
     introRef[0] = new VistaIntro(() -> {
         vistaMenu.mostrar();
-        Reproductor_audio.getInstancia().reproducirSonido(3);
+        this.reproductorAudio.reproducirSonido(3);
         // usamos un invokeLater para esperar a que Swing termine de pintar TODOS los componentes del menú en la pantalla.
         SwingUtilities.invokeLater(() -> {
             if (introRef[0] != null) {
@@ -102,19 +103,20 @@ public class ControladorMenu {
                 Mapa mapa = resultado.mapa();
                 Personaje jugador = resultado.jugador();
 
-                Reproductor_audio.getInstancia().reproducirSonido(1);
+                reproductorAudio.reproducirSonido(1);
 
                 VistaJuego vista = new VistaJuego(mapa, jugador, 1);
                 vista.setTiempoInicioPartida(tiempoInicioPartida);
                 ControladorJuego controlador = new ControladorJuego(
-                    vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugadorFinal
+                    vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugadorFinal,
+                    reproductorAudio
                 );
 
                 controlador.setAccionVolverMenu(() -> {
                     VistaMenu nuevoMenu = new VistaMenu();
-                    new ControladorMenu(nuevoMenu);
+                    new ControladorMenu(nuevoMenu, reproductorAudio);
                     nuevoMenu.mostrar();
-                    Reproductor_audio.getInstancia().reproducirSonido(3);
+                    reproductorAudio.reproducirSonido(3);
                 });
 
                 // orden anti-parpadeo: 
@@ -124,9 +126,7 @@ public class ControladorMenu {
 
             } catch (Exception ex) {
                 cargando.dispose();
-                JOptionPane.showMessageDialog(vistaMenu,
-                    "Error al cargar el nivel: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                VistaDialogoEstilo.mostrarMensaje(vistaMenu, "Error", "", "Error al cargar el nivel: " + ex.getMessage());
                 ex.printStackTrace();
             }
         }
@@ -138,10 +138,7 @@ public class ControladorMenu {
 
     private void mostrarRecords() {
     if (this.recordDAO == null) {
-        JOptionPane.showMessageDialog(vistaMenu,
-                "Error: Base de datos no conectada.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+        VistaDialogoEstilo.mostrarMensaje(vistaMenu, "Error", "", "Error: Base de datos no conectada.");
         return;
     }
 
@@ -162,10 +159,7 @@ public class ControladorMenu {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (java.util.concurrent.ExecutionException e) {
-                JOptionPane.showMessageDialog(vistaMenu,
-                        "Error al leer los récords.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                VistaDialogoEstilo.mostrarMensaje(vistaMenu, "Error", "", "Error al leer los récords.");
             }
         }
     }.execute();
@@ -178,7 +172,11 @@ private void mostrarComoJugar() {
 }
 
 private void mostrarOpciones() {
-    VistaOpciones ventana = new VistaOpciones(vistaMenu, accionSilenciarGlobal);
+    VistaOpciones ventana = new VistaOpciones(
+        vistaMenu, 
+        accionSilenciarGlobal,
+        () -> this.reproductorAudio.isSilenciado()
+    );
     ventana.setVisible(true);
 }
 

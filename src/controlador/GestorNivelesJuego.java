@@ -32,9 +32,7 @@ public class GestorNivelesJuego {
                     cargando.dispose();
                 } catch (Exception ex) {
                     cargando.dispose();
-                    JOptionPane.showMessageDialog(controlador.getVista(),
-                        "Error al cargar el nivel: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                    VistaDialogoEstilo.mostrarMensaje(controlador.getVista(), "Error", "", "Error al cargar el nivel: " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }

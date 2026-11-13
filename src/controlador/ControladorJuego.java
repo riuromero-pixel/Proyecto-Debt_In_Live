@@ -10,6 +10,7 @@ public class ControladorJuego {
     private Mapa mapa;
     private Personaje jugador;
     private final VistaJuego vista;
+    private final Reproductor_audio reproductorAudio;
 
     private final GestorTimersJuego gestorTimers = new GestorTimersJuego();
     private final GestorNivelesJuego gestorNiveles = new GestorNivelesJuego();
@@ -26,15 +27,17 @@ public class ControladorJuego {
     private String nombreJugador;
 
     public ControladorJuego(VistaJuego vista, Mapa mapa, Personaje jugador,
-                            long tiempoInicioPartida, RecordDAO recordDAO, String nombreJugador) {
+                            long tiempoInicioPartida, RecordDAO recordDAO, String nombreJugador,
+                            Reproductor_audio reproductorAudio) {
         this.vista = vista;
         this.mapa = mapa;
         this.jugador = jugador;
         this.tiempoInicioPartida = tiempoInicioPartida;
         this.recordDAO = recordDAO;
         this.nombreJugador = nombreJugador;
+        this.reproductorAudio = reproductorAudio;
 
-        Reproductor_audio.getInstancia().reproducirSonido(1);
+        this.reproductorAudio.reproducirSonido(1);
 
         this.vista.registrarTeclado(new EntradaTecladoJuego(this));
         iniciarTimers();
@@ -46,7 +49,7 @@ public class ControladorJuego {
 
     public void detener() {
         juegoActivo = false;
-        Reproductor_audio.getInstancia().detenerSonido();
+        this.reproductorAudio.detenerSonido();
         gestorTimers.detener();
     }
 
@@ -110,7 +113,7 @@ public class ControladorJuego {
         this.jugador = nuevoJugador;
         this.nivelActual = nivel;
 
-        Reproductor_audio.getInstancia().reproducirSonido(nivel);
+        this.reproductorAudio.reproducirSonido(nivel);
         vista.actualizarModelo(mapa, jugador, nivel);
         vista.setTiempoInicioPartida(tiempoInicioPartida);
         vista.desactivarGameOver();
