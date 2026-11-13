@@ -13,8 +13,7 @@ public class GeneradorNivelMapa {
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
                 mapa.getCeldas()[y][x].setContenido(null);
-                mapa.getCeldas()[y][x].setDineroDebajo(null);
-                mapa.getCeldas()[y][x].setBonusDebajo(null);
+                mapa.getCeldas()[y][x].setContenidoDebajo(null);
             }
         }
 
@@ -51,7 +50,7 @@ public class GeneradorNivelMapa {
             int y = 1 + random.nextInt(mapa.getAlto() - 2);
 
             if (mapa.getCeldas()[y][x].getContenido() != null
-                    || mapa.getCeldas()[y][x].getDineroDebajo() != null) continue;
+                    || mapa.getCeldas()[y][x].getContenidoDebajo() != null) continue;
 
             EstrategiaMovimiento estrategia = random.nextBoolean()
                     ? new MovimientoPerseguidor()
@@ -86,7 +85,7 @@ public class GeneradorNivelMapa {
                 x = 1 + random.nextInt(mapa.getAncho() - 2);
                 y = 1 + random.nextInt(mapa.getAlto() - 2);
             } while (mapa.getCeldas()[y][x].getContenido() != null
-                    || mapa.getCeldas()[y][x].getDineroDebajo() != null);
+                    || mapa.getCeldas()[y][x].getContenidoDebajo() != null);
 
             mapa.getCeldas()[y][x].setContenido(new Bonus(2, 5000));
         }
@@ -100,7 +99,7 @@ public class GeneradorNivelMapa {
                 x = 1 + random.nextInt(mapa.getAncho() - 2);
                 y = 1 + random.nextInt(mapa.getAlto() - 2);
             } while (mapa.getCeldas()[y][x].getContenido() != null
-                    || mapa.getCeldas()[y][x].getDineroDebajo() != null);
+                    || mapa.getCeldas()[y][x].getContenidoDebajo() != null);
             mapa.getCeldas()[y][x].setContenido(new Dinero(100 + random.nextInt(400)));
         }
     }

@@ -26,7 +26,7 @@ public class Pared extends ObjetoEntorno {
     }
 
     @Override
-    public boolean esPared() {
+    public boolean esGolpeable() {
         return true;
     }
 

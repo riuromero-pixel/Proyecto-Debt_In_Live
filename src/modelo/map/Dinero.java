@@ -16,11 +16,6 @@ public class Dinero extends ObjetoEntorno {
     public int getCantidad() { return cantidad; }
 
     @Override
-    public Dinero asDinero() {
-        return this;
-    }
-
-    @Override
     public boolean recolectar(Personaje personaje) {
         personaje.recolectarDinero(this.cantidad);
         return true;
@@ -32,7 +27,7 @@ public class Dinero extends ObjetoEntorno {
     }
 
     @Override
-    public boolean esDinero() {
-        return true;
+    public int contarComoDinero() {
+        return 1;
     }
 }

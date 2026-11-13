@@ -54,8 +54,9 @@ public class Enemigo extends ObjetoEntorno {
     }
 
     @Override
-    public void aplicarDanio(Personaje personaje) {
+    public boolean aplicarDanio(Personaje personaje) {
         personaje.danioRecibido(this.danio);
+        return true;
     }
 
     @Override
@@ -64,8 +65,11 @@ public class Enemigo extends ObjetoEntorno {
     }
 
     @Override
-    public boolean esEnemigo() {
-        return true;
+    public boolean puedeMoverse() { return true; }
+
+    @Override
+    public void actualizarMovimiento(Mapa mapa, Personaje jugador) {
+        actualizarPersecucion(jugador, mapa);
     }
 
     public boolean esLetal() {
@@ -78,17 +82,17 @@ public class Enemigo extends ObjetoEntorno {
 
             if (celdaActual != null && celdaNueva != null) {
                 
-                // Si el enemigo se va de su celda y había dinero abajo, lo restauramos a visible
-                if (celdaActual.getDineroDebajo() != null) {
-                    celdaActual.setContenido(celdaActual.getDineroDebajo());
-                    celdaActual.setDineroDebajo(null);
+                // Si el enemigo se va de su celda y había contenido abajo, lo restauramos a visible
+                if (celdaActual.getContenidoDebajo() != null) {
+                    celdaActual.setContenido(celdaActual.getContenidoDebajo());
+                    celdaActual.setContenidoDebajo(null);
                 } else {
                     celdaActual.setContenido(null);
                 }
 
-                // Si la celda nueva a la que entra tiene dinero, lo resguardamos en 'dineroDebajo'
-                if (celdaNueva.getContenido() != null && celdaNueva.getContenido().esDinero()) {
-                    celdaNueva.setDineroDebajo(celdaNueva.getContenido().asDinero());
+                // Si la celda nueva a la que entra tiene contenido, lo resguardamos en 'contenidoDebajo'
+                if (celdaNueva.getContenido() != null && !celdaNueva.getContenido().bloqueaPaso()) {
+                    celdaNueva.setContenidoDebajo(celdaNueva.getContenido());
                 }
 
                 // Colocamos al enemigo en la celda nueva y actualizamos sus coordenadas

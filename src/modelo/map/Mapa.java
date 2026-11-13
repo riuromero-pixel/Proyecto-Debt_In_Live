@@ -62,7 +62,7 @@ public class Mapa {
     public boolean esPared(int x, int y) {
         if (!estaDentro(x, y)) return false;
         ContenidoCelda contenido = celdas[y][x].getContenido();
-        return contenido != null && contenido.esPared();
+        return contenido != null && contenido.esGolpeable();
     }
 
     public int getAncho() { return ancho; }

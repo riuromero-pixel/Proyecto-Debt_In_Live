@@ -5,7 +5,7 @@ import src.modelo.entities.Personaje;
 public interface ContenidoCelda {
     boolean bloqueaPaso();
 
-    default void aplicarDanio(Personaje personaje) { }
+    default boolean aplicarDanio(Personaje personaje) { return false; }
 
     default boolean recibirDanioDe(Enemigo enemigo) { return false; }
 
@@ -15,15 +15,15 @@ public interface ContenidoCelda {
 
     default String getTipoVisual() { return "DESCONOCIDO"; }
 
+    default boolean esGolpeable() { return false; }
+
+    default int contarComoDinero() { return 0; }
+
+    default boolean puedeMoverse() { return false; }
+
+    default void actualizarMovimiento(Mapa mapa, Personaje jugador) { }
+
     default Personaje asPersonaje() { return null; }
 
     default Enemigo asEnemigo() { return null; }
-
-    default Dinero asDinero() { return null; }
-
-    default boolean esPared() { return false; }
-
-    default boolean esDinero() { return false; }
-
-    default boolean esEnemigo() { return false; }
 }

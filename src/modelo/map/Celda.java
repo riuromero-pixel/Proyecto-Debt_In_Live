@@ -1,18 +1,18 @@
 package src.modelo.map;
 
+import src.modelo.entities.Personaje;
+
 public class Celda {
     private int x;
     private int y;
     private ContenidoCelda contenido;
-    private Dinero dineroDebajo; //para guardar dinero que queda debajo de otros objetos
-    private Bonus bonusDebajo; //para guardar bonus que queda debajo de otros objetos
+    private ContenidoCelda contenidoDebajo; //para guardar contenido que queda debajo de otros objetos
     
     public Celda(int x, int y) {
         this.x = x;
         this.y = y;
         this.contenido = null;
-        this.dineroDebajo = null;
-        this.bonusDebajo = null;
+        this.contenidoDebajo = null;
     }
 
     public int getX() { return x; }
@@ -21,10 +21,22 @@ public class Celda {
     public ContenidoCelda getContenido() { return contenido; }
     public void setContenido(ContenidoCelda contenido) { this.contenido = contenido; }
 
-    public Dinero getDineroDebajo() { return dineroDebajo; }
-    public void setDineroDebajo(Dinero d) { this.dineroDebajo = d; }
+    public ContenidoCelda getContenidoDebajo() { return contenidoDebajo; }
+    public void setContenidoDebajo(ContenidoCelda contenidoDebajo) { this.contenidoDebajo = contenidoDebajo; }
 
-    public Bonus getBonusDebajo() { return bonusDebajo; }
-    public void setBonusDebajo(Bonus b) { this.bonusDebajo = b; }
+    public void recolectar(Personaje jugador) {
+        if (contenido != null && contenido.recolectar(jugador)) {
+            contenido = null;
+        }
+        if (contenidoDebajo != null && contenidoDebajo.recolectar(jugador)) {
+            contenidoDebajo = null;
+        }
+    }
 
+    public int contarComoDinero() {
+        int total = 0;
+        if (contenido != null) total += contenido.contarComoDinero();
+        if (contenidoDebajo != null) total += contenidoDebajo.contarComoDinero();
+        return total;
+    }
 }

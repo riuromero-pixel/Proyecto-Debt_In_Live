@@ -142,12 +142,7 @@ public abstract class Personaje implements ContenidoCelda {
         if (mapa == null) return null;
         return mapa.conseguirCelda(x, y); 
     }    
-    private boolean verificarPared(int x, int y) {
-        Celda celda = conseguirCelda(x, y);
-        if (celda == null) return false;
-        ContenidoCelda contenido = celda.getContenido();
-        return contenido != null && contenido.esPared();
-    }
+    
     public void romperParedes() {
         long tiempoActual = System.currentTimeMillis();
         if (tiempoActual - ultimoGolpe < 400) {
@@ -159,19 +154,17 @@ public abstract class Personaje implements ContenidoCelda {
             int nx = x + dir[0];
             int ny = y + dir[1];
             
-            //verificar si hay una pared en la posición (nx, ny)
-            boolean hayPared = verificarPared(nx, ny);
+            Celda celda = conseguirCelda(nx, ny);
+            if (celda == null || celda.getContenido() == null) {
+                continue;
+            }
             
-            if (hayPared) {
-                //si es una nueva pared o cambiamos de objetivo, reiniciar golpes
-                Celda celda = conseguirCelda(nx, ny);
-                if (celda != null && celda.getContenido() != null) {
-                    ContenidoCelda contenido = celda.getContenido();
-                    // si los golpes llegan a 0, se rompe la pared
-                    if (contenido.recibirGolpe()) {
-                        // Eliminar la pared de la celda
-                        celda.setContenido(null);
-                    }
+            ContenidoCelda contenido = celda.getContenido();
+            if (contenido.esGolpeable()) {
+                // si los golpes llegan a 0, se rompe la pared
+                if (contenido.recibirGolpe()) {
+                    // Eliminar la pared de la celda
+                    celda.setContenido(null);
                 }
                 ultimoGolpe = tiempoActual;
                 break;

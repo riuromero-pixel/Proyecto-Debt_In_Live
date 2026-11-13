@@ -10,8 +10,9 @@ public class EnemigoLetal extends Enemigo {
     }
 
     @Override
-    public void aplicarDanio(Personaje personaje) {
+    public boolean aplicarDanio(Personaje personaje) {
         personaje.morir();
+        return true;
     }
 
     @Override
