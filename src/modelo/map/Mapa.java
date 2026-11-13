@@ -30,7 +30,6 @@ public class Mapa {
     public void generarBonus(int cantidad, int nivel) { generador.generarBonus(this, cantidad, nivel); }
 
     public void moverEnemigos(Personaje jugador) { gestorEnemigos.moverEnemigos(this, jugador); }
-    public void actualizarPosicionesVisualesEnemigos() { gestorEnemigos.actualizarPosicionesVisualesEnemigos(this); }
     public boolean verificarColisionConEnemigo(Personaje jugador) { return gestorEnemigos.verificarColisionConEnemigo(this, jugador); }
 
     public int contarDineroRestante() { return gestorObjetos.contarDineroRestante(this); }

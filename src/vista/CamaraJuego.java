@@ -12,11 +12,14 @@ public class CamaraJuego {
     private double camYSuave = -1;
     private static final double SUAVIDAD_CAMARA = 0.15;
 
-    public void actualizar(Personaje jugador, Mapa mapa) {
+    public void actualizar(Personaje jugador, Mapa mapa, EstadoVisualPersonaje estado) {
         if (jugador == null || mapa == null) return;
 
-        double camXObjetivo = jugador.getPosXVisual() - VIEW_COLS / 2.0;
-        double camYObjetivo = jugador.getPosYVisual() - VIEW_ROWS / 2.0;
+        double posX = estado != null ? estado.getPosXVisual() : jugador.getX();
+        double posY = estado != null ? estado.getPosYVisual() : jugador.getY();
+
+        double camXObjetivo = posX - VIEW_COLS / 2.0;
+        double camYObjetivo = posY - VIEW_ROWS / 2.0;
 
         camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.getAncho() - VIEW_COLS));
         camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.getAlto() - VIEW_ROWS));
@@ -36,15 +39,17 @@ public class CamaraJuego {
         camYSuave = -1;
     }
 
-    public double getCamX(Personaje jugador, Mapa mapa) {
+    public double getCamX(Personaje jugador, Mapa mapa, EstadoVisualPersonaje estado) {
         if (camXSuave >= 0) return camXSuave;
-        double camXCalc = jugador != null ? jugador.getPosXVisual() - VIEW_COLS / 2.0 : 0;
+        double posX = estado != null ? estado.getPosXVisual() : (jugador != null ? jugador.getX() : 0);
+        double camXCalc = posX - VIEW_COLS / 2.0;
         return Math.max(0, Math.min(camXCalc, mapa.getAncho() - VIEW_COLS));
     }
 
-    public double getCamY(Personaje jugador, Mapa mapa) {
+    public double getCamY(Personaje jugador, Mapa mapa, EstadoVisualPersonaje estado) {
         if (camYSuave >= 0) return camYSuave;
-        double camYCalc = jugador != null ? jugador.getPosYVisual() - VIEW_ROWS / 2.0 : 0;
+        double posY = estado != null ? estado.getPosYVisual() : (jugador != null ? jugador.getY() : 0);
+        double camYCalc = posY - VIEW_ROWS / 2.0;
         return Math.max(0, Math.min(camYCalc, mapa.getAlto() - VIEW_ROWS));
     }
 }

@@ -8,24 +8,27 @@ public class DibujanteEntidades {
 
     public void dibujarEnemigos(Graphics2D g2d, Mapa mapa, double camX, double camY,
                                 int tamaño, int desplazamientoX, int desplazamientoY,
-                                CargadorImagenesNivel imagenes, Personaje jugador) {
+                                CargadorImagenesNivel imagenes, Personaje jugador, VistaJuego vista) {
 
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
                 ContenidoCelda contenido = mapa.getContenido(x, y);
                 if (contenido != null && contenido.esEnemigo()) {
                     Enemigo en = (Enemigo) contenido;
+                    EstadoVisualPersonaje estado = vista.getEstadoVisual(en);
+                    double posX = estado != null ? estado.getPosXVisual() : en.getX();
+                    double posY = estado != null ? estado.getPosYVisual() : en.getY();
 
-                    if (en.getPosXVisual() + 1 < camX || en.getPosXVisual() > camX + CamaraJuego.VIEW_COLS) continue;
-                    if (en.getPosYVisual() + 1 < camY || en.getPosYVisual() > camY + CamaraJuego.VIEW_ROWS) continue;
+                    if (posX + 1 < camX || posX > camX + CamaraJuego.VIEW_COLS) continue;
+                    if (posY + 1 < camY || posY > camY + CamaraJuego.VIEW_ROWS) continue;
 
-                    int ex = (int) ((en.getPosXVisual() - camX) * tamaño) + desplazamientoX;
-                    int ey = (int) ((en.getPosYVisual() - camY) * tamaño) + desplazamientoY;
+                    int ex = (int) ((posX - camX) * tamaño) + desplazamientoX;
+                    int ey = (int) ((posY - camY) * tamaño) + desplazamientoY;
 
                     if (en.esLetal()) {
                         String dirMuerte = "abajo";
-                        double difX = en.getX() - en.getPosXVisual();
-                        double difY = en.getY() - en.getPosYVisual();
+                        double difX = en.getX() - posX;
+                        double difY = en.getY() - posY;
 
                         if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
                             if (Math.abs(difX) > Math.abs(difY)) {
@@ -82,14 +85,18 @@ public class DibujanteEntidades {
     }
 
     public void dibujarJugador(Graphics2D g2d, Personaje jugador, double camX, double camY,
-                               int tamaño, int desplazamientoX, int desplazamientoY) {
+                               int tamaño, int desplazamientoX, int desplazamientoY, VistaJuego vista) {
 
         if (jugador == null) return;
 
-        int px = (int) ((jugador.getPosXVisual() - camX) * tamaño) + desplazamientoX;
-        int py = (int) ((jugador.getPosYVisual() - camY) * tamaño) + desplazamientoY;
+        EstadoVisualPersonaje estado = vista.getEstadoVisual(jugador);
+        double posX = estado != null ? estado.getPosXVisual() : jugador.getX();
+        double posY = estado != null ? estado.getPosYVisual() : jugador.getY();
 
-        Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador);
+        int px = (int) ((posX - camX) * tamaño) + desplazamientoX;
+        int py = (int) ((posY - camY) * tamaño) + desplazamientoY;
+
+        Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador, estado);
 
         if (sprite != null) {
             int anchoOriginal = sprite.getWidth(null);

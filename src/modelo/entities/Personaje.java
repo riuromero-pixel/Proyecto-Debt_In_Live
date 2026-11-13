@@ -17,7 +17,6 @@ public abstract class Personaje implements ContenidoCelda {
     private final Mapa mapa;
     private String direccionActual;
     private long bonusFin = 0;
-    private final EstadoVisualPersonaje estadoVisual;
 
     public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){
         this.x = x;
@@ -29,8 +28,6 @@ public abstract class Personaje implements ContenidoCelda {
         this.ultimoGolpe = 0;
         this.mapa = mapa;
         this.direccionActual = null;
-
-        this.estadoVisual = new EstadoVisualPersonaje(x, y);
     }
 
     public int getX() { return x; }
@@ -45,12 +42,6 @@ public abstract class Personaje implements ContenidoCelda {
     protected int getBonusExtra() {
         return 0;
     }
-
-    public double getPosXVisual() { return estadoVisual.getPosXVisual(); }
-    public double getPosYVisual() { return estadoVisual.getPosYVisual(); }
-    public String getDireccionVisual() { return estadoVisual.getDireccionVisual(); }
-    public int getFrameAnimacion() { return estadoVisual.getFrameAnimacion(); }
-    public boolean isEnMovimiento() { return estadoVisual.isEnMovimiento(); }
 
     @Override
     public boolean bloqueaPaso() {
@@ -99,16 +90,16 @@ public abstract class Personaje implements ContenidoCelda {
         
         switch (direccion) {
             case 'W':
-                nuevaY = Math.min(altoMapa - 1, this.y - 1); this.estadoVisual.setDireccionVisual("N");;
+                nuevaY = Math.min(altoMapa - 1, this.y - 1);
                 break;
             case 'S':
-                nuevaY = Math.max(0, this.y + 1); this.estadoVisual.setDireccionVisual("S");;
+                nuevaY = Math.max(0, this.y + 1);
                 break;
             case 'A':
-                nuevaX = Math.max(0, this.x - 1); this.estadoVisual.setDireccionVisual("O");;
+                nuevaX = Math.max(0, this.x - 1);
                 break;
             case 'D':
-                nuevaX = Math.min(anchoMapa - 1, this.x + 1); this.estadoVisual.setDireccionVisual("E");;
+                nuevaX = Math.min(anchoMapa - 1, this.x + 1);
                 break;
         }
         
@@ -136,14 +127,6 @@ public abstract class Personaje implements ContenidoCelda {
             
             mapa.setPersonaje(this, nuevaX, nuevaY);
         }
-    }
-
-    public void actualizarPosicionVisual() {
-        estadoVisual.actualizarPosicionVisual(this.x, this.y);
-    }
-
-    public void actualizarAnimacion(boolean moviendo) {
-        estadoVisual.actualizarAnimacion(moviendo);
     }
 
     public void recolectarDinero(int cantidad) {

@@ -60,10 +60,8 @@ public class ControladorJuego {
 
     void animar() {
         if (juegoActivo) {
-            jugador.actualizarPosicionVisual();
             jugador.actualizarBonus();
-            jugador.actualizarAnimacion(teclaPulsada != ' ');
-            mapa.actualizarPosicionesVisualesEnemigos();
+            vista.actualizarEstadoVisual(mapa, jugador, teclaPulsada != ' ');
             vista.actualizarCamaraSuave();
             vista.repaint();
         }

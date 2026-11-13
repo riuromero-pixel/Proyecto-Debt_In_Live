@@ -1,4 +1,4 @@
-package src.modelo.entities;
+package src.vista;
 
 public class EstadoVisualPersonaje {
 

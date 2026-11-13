@@ -23,17 +23,6 @@ public class GestorEnemigosMapa {
         }
     }
 
-    public void actualizarPosicionesVisualesEnemigos(Mapa mapa) {
-        for (int y = 0; y < mapa.getAlto(); y++) {
-            for (int x = 0; x < mapa.getAncho(); x++) {
-                ContenidoCelda contenido = mapa.getCeldas()[y][x].getContenido();
-                if (contenido != null && contenido.esEnemigo()) {
-                    ((Enemigo) contenido).actualizarPosicionVisual();
-                }
-            }
-        }
-    }
-
     public boolean verificarColisionConEnemigo(Mapa mapa, Personaje jugador) {
         Celda celdaJugador = mapa.conseguirCelda(jugador.getX(), jugador.getY());
         if (celdaJugador != null && celdaJugador.getContenido() != null && celdaJugador.getContenido().esEnemigo()) {
