@@ -13,8 +13,8 @@ public class DibujanteEntidades {
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
                 ContenidoCelda contenido = mapa.getContenido(x, y);
-                if (contenido != null && contenido.esEnemigo()) {
-                    Enemigo en = (Enemigo) contenido;
+                Enemigo en = contenido != null ? contenido.asEnemigo() : null;
+                if (en != null) {
                     EstadoVisualPersonaje estado = vista.getEstadoVisual(en);
                     double posX = estado != null ? estado.getPosXVisual() : en.getX();
                     double posY = estado != null ? estado.getPosYVisual() : en.getY();

@@ -114,8 +114,8 @@ private final DibujantePanelInfo dibujantePanelInfo = new DibujantePanelInfo();
             for (int y = 0; y < mapa.getAlto(); y++) {
                 for (int x = 0; x < mapa.getAncho(); x++) {
                     ContenidoCelda contenido = mapa.getContenido(x, y);
-                    if (contenido != null && contenido.esEnemigo()) {
-                        Enemigo enemigo = (Enemigo) contenido;
+                    Enemigo enemigo = contenido != null ? contenido.asEnemigo() : null;
+                    if (enemigo != null) {
                         EstadoVisualPersonaje estado = estadosEnemigos.get(enemigo);
                         if (estado == null) {
                             estado = new EstadoVisualPersonaje(enemigo.getX(), enemigo.getY());
@@ -143,7 +143,6 @@ private final DibujantePanelInfo dibujantePanelInfo = new DibujantePanelInfo();
 
     //el controlador llama a este metodo para mostrar la ventana
     public void mostrar() {
-        setUndecorated(true);
          GraphicsDevice gd = GraphicsEnvironment
         .getLocalGraphicsEnvironment()
         .getDefaultScreenDevice();

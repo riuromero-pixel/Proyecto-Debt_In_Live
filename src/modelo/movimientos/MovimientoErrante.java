@@ -44,6 +44,6 @@ public class MovimientoErrante implements EstrategiaMovimiento {
         if (opciones.isEmpty()) return;
 
         int[] elegida = opciones.get(random.nextInt(opciones.size()));
-        enemigo.moverEnemigo(enemigo, elegida[0], elegida[1], mapa);
+        enemigo.moverEnemigo(elegida[0], elegida[1], mapa);
     }
 }

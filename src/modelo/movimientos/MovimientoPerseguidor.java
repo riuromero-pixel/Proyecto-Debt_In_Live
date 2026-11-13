@@ -51,6 +51,6 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
                 }
             }
         } 
-        enemigo.moverEnemigo(enemigo, mejorX, mejorY, mapa);
+        enemigo.moverEnemigo(mejorX, mejorY, mapa);
     }     
 }

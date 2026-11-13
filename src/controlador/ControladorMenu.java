@@ -44,7 +44,6 @@ public class ControladorMenu {
         this.accionSilenciarGlobal = e -> {
     Reproductor_audio.getInstancia().alternarSilencio(3); 
 };
-this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
 
         try {
         Connection conexion = Conexion.getInstancia().get();

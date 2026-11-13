@@ -72,8 +72,8 @@ public class Enemigo extends ObjetoEntorno {
         return false;
     }
 
-    public void moverEnemigo(Enemigo enemigo, int mejorX, int mejorY, Mapa mapa) {
-            Celda celdaActual = mapa.conseguirCelda(enemigo.x, enemigo.y);
+    public void moverEnemigo(int mejorX, int mejorY, Mapa mapa) {
+            Celda celdaActual = mapa.conseguirCelda(this.x, this.y);
             Celda celdaNueva = mapa.conseguirCelda(mejorX, mejorY);
 
             if (celdaActual != null && celdaNueva != null) {
@@ -92,9 +92,9 @@ public class Enemigo extends ObjetoEntorno {
                 }
 
                 // Colocamos al enemigo en la celda nueva y actualizamos sus coordenadas
-                celdaNueva.setContenido(enemigo);
-                enemigo.x = mejorX;
-                enemigo.y = mejorY;
+                celdaNueva.setContenido(this);
+                this.x = mejorX;
+                this.y = mejorY;
             }
         }
 
@@ -104,8 +104,4 @@ public class Enemigo extends ObjetoEntorno {
             estrategia.mover(this, personaje, mapa);
         }
     } 
-
-    public int hacerDanio() {
-        return this.danio;
-    }
 }

@@ -154,8 +154,7 @@ public abstract class Personaje implements ContenidoCelda {
             return;
         }
         // Direcciones: ARRIBA, ABAJO, DERECHA, IZQUIERDA
-        int[][] direcciones = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-        boolean encontroPared = false;      
+        int[][] direcciones = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};  
         for (int[] dir : direcciones) {
             int nx = x + dir[0];
             int ny = y + dir[1];
@@ -175,7 +174,6 @@ public abstract class Personaje implements ContenidoCelda {
                     }
                 }
                 ultimoGolpe = tiempoActual;
-                encontroPared = true;
                 break;
             }
         }    

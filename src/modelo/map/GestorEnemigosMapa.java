@@ -12,8 +12,9 @@ public class GestorEnemigosMapa {
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
                 ContenidoCelda contenido = mapa.getCeldas()[y][x].getContenido();
-                if (contenido != null && contenido.esEnemigo()) {
-                    enemigos.add(contenido.asEnemigo());
+                Enemigo enemigo = contenido != null ? contenido.asEnemigo() : null;
+                if (enemigo != null) {
+                    enemigos.add(enemigo);
                 }
             }
         }
@@ -25,8 +26,8 @@ public class GestorEnemigosMapa {
 
     public boolean verificarColisionConEnemigo(Mapa mapa, Personaje jugador) {
         Celda celdaJugador = mapa.conseguirCelda(jugador.getX(), jugador.getY());
-        if (celdaJugador != null && celdaJugador.getContenido() != null && celdaJugador.getContenido().esEnemigo()) {
-            Enemigo enemigo = celdaJugador.getContenido().asEnemigo();
+        Enemigo enemigo = celdaJugador != null && celdaJugador.getContenido() != null ? celdaJugador.getContenido().asEnemigo() : null;
+        if (enemigo != null) {
             jugador.danioRecibido(enemigo.getDanio());
             return true;
         }
