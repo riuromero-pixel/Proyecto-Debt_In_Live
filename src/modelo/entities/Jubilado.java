@@ -2,8 +2,6 @@ package src.modelo.entities;
 
 
 import src.modelo.map.Mapa;
-import src.modelo.map.Celda;
-import src.modelo.map.Pared;
 
 public class Jubilado extends Personaje {
 
@@ -55,16 +53,6 @@ public class Jubilado extends Personaje {
         if (nuevaX < 0 || nuevaX >= getMapa().getAncho() || nuevaY < 0 || nuevaY >= getMapa().getAlto()) {
             return;
         }
-        
-        Celda celda = getMapa().conseguirCelda(nuevaX, nuevaY);
-        if (celda == null) {
-            return;
-        }
-        
-        if (celda.getContenido() != null) {
-            return;
-        }
-        
-        celda.setContenido(new Pared());
+        getMapa().ponerPared(nuevaX, nuevaY);
     }
 }

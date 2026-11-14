@@ -19,10 +19,10 @@ public class Celda {
     public int getY() { return y; }
 
     public ContenidoCelda getContenido() { return contenido; }
-    public void setContenido(ContenidoCelda contenido) { this.contenido = contenido; }
+    void setContenido(ContenidoCelda contenido) { this.contenido = contenido; }
 
     public ContenidoCelda getContenidoDebajo() { return contenidoDebajo; }
-    public void setContenidoDebajo(ContenidoCelda contenidoDebajo) { this.contenidoDebajo = contenidoDebajo; }
+    void setContenidoDebajo(ContenidoCelda contenidoDebajo) { this.contenidoDebajo = contenidoDebajo; }
 
     public void recolectar(Personaje jugador) {
         if (contenido != null && contenido.recolectar(jugador)) {

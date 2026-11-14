@@ -117,10 +117,7 @@ public abstract class Personaje implements ContenidoCelda {
                 mapa.recolectarDeCelda(this, nuevaX, nuevaY);
             }
             
-            Celda celdaAnterior = mapa.conseguirCelda(this.x, this.y);
-            if (celdaAnterior != null && celdaAnterior.getContenido() == this) {
-                celdaAnterior.setContenido(null);
-            }
+            mapa.limpiarCeldaDe(this);
             
             this.x = nuevaX;
             this.y = nuevaY;
@@ -164,7 +161,7 @@ public abstract class Personaje implements ContenidoCelda {
                 // si los golpes llegan a 0, se rompe la pared
                 if (contenido.recibirGolpe()) {
                     // Eliminar la pared de la celda
-                    celda.setContenido(null);
+                    mapa.limpiarCelda(nx, ny);
                 }
                 ultimoGolpe = tiempoActual;
                 break;

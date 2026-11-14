@@ -1,8 +1,6 @@
 package src.modelo.entities;
 
-import src.modelo.map.Celda;
 import src.modelo.map.Mapa;
-import src.modelo.map.Pared;
 
 public class Adulto extends Personaje {
 
@@ -51,10 +49,7 @@ public class Adulto extends Personaje {
 
         while (nx >= 0 && nx < getMapa().getAncho()
             && ny >= 0 && ny < getMapa().getAlto()) {
-            Celda celda = getMapa().conseguirCelda(nx, ny);
-            if (celda != null && celda.getContenido() == null) {     
-                celda.setContenido(new Pared());                
-            }
+            getMapa().ponerPared(nx, ny);
             nx += dx;
             ny += dy;
         }

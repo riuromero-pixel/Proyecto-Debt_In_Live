@@ -1,21 +1,13 @@
 package src.modelo.entities;
 
-import java.util.List;
-
 public class RegistroNiveles {
 
-    private static final List<CreadorNivel> CREADORES = List.of(
-        new CreadorNivel1(),
-        new CreadorNivel2(),
-        new CreadorNivel3()
-    );
-
     public static CreadorNivel paraNivel(int nivel) {
-        for (CreadorNivel creador : CREADORES) {
-            if (creador.getNivel() == nivel) {
-                return creador;
-            }
+        switch (nivel) {
+            case 1: return new CreadorNivel1();
+            case 2: return new CreadorNivel2();
+            case 3: return new CreadorNivel3();
+            default: throw new IllegalArgumentException("Nivel desconocido: " + nivel);
         }
-        throw new IllegalArgumentException("Nivel desconocido: " + nivel);
     }
 }

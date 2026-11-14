@@ -54,6 +54,29 @@ public class Mapa {
         celdas[y][x].setContenido(contenido);
     }
 
+    public boolean ponerPared(int x, int y) {
+        Celda c = conseguirCelda(x, y);
+        if (c == null || c.getContenido() != null) return false;
+        c.setContenido(new Pared());
+        return true;
+    }
+
+    public void limpiarCelda(int x, int y) {
+        Celda c = conseguirCelda(x, y);
+        if (c != null) c.setContenido(null);
+    }
+
+    public void limpiarCeldaDe(Personaje personaje) {
+        Celda c = conseguirCelda(personaje.getX(), personaje.getY());
+        if (c == null) return;
+        if (c.getContenido() == personaje) {
+            c.setContenido(null);
+        }
+        if (c.getContenidoDebajo() == personaje) {
+            c.setContenidoDebajo(null);
+        }
+    }
+
     public boolean estaLibre(int x, int y) {
         if (!estaDentro(x, y)) return false;
         return celdas[y][x].getContenido() == null;
