@@ -92,7 +92,7 @@ private void iniciarTimers() {
 
 
             // 5. Actualizar posiciones visuales de los enemigos (esto lo vemos más adelante)
-            mapa.actualizarPosicionesVisualesEnemigos();
+            vista.actualizarEstadoVisualEnemigos(mapa);
             
             // 6. Actualizar la cámara y repintar
             vista.actualizarCamaraSuave();

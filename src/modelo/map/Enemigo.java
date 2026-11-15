@@ -11,10 +11,7 @@ public class Enemigo extends ObjetoEntorno {
 
     private EstrategiaMovimiento estrategia;
 
-    // Coordenadas VISUALES para interpolación suave
-    public double posXVisual;
-    public double posYVisual;
-    private static final double FACTOR_INTERPOLACION = 0.15;
+    // eliminadas las coordenadas visuales para interpolacion suave
 
     private int variante;
 
@@ -24,8 +21,6 @@ public class Enemigo extends ObjetoEntorno {
         this.y = y;
         this.danio = danio;
         this.estrategia = estrategia;
-        this.posXVisual = x;
-        this.posYVisual = y;
 
         // Generamos la variante aleatoria según el nivel
         Random rand = new Random();
@@ -83,16 +78,7 @@ public class Enemigo extends ObjetoEntorno {
         }
     } 
 
-    // Interpola suavemente las coordenadas visuales hacia las lógicas
-    public void actualizarPosicionVisual() {
-        posXVisual += (x - posXVisual) * FACTOR_INTERPOLACION;
-        posYVisual += (y - posYVisual) * FACTOR_INTERPOLACION;
-
-        // Umbral para no oscilar indefinidamente
-        if (Math.abs(posXVisual - x) < 0.01) posXVisual = x;
-        if (Math.abs(posYVisual - y) < 0.01) posYVisual = y;
-    }
-
+    // borrado el metodo actualizarPosicionVisual
     public int hacerDanio() {
         return this.danio;
     }

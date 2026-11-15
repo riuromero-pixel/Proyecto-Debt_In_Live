@@ -31,7 +31,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     private static final int VIEW_ROWS = 10;
 
     private Map<Personaje, EstadoVisualPersonaje> estadosVisualesPersonajes = new HashMap<>();
-
+    private Map<Enemigo, EstadoVisualEnemigo> estadosVisualesEnemigos = new HashMap<>();
     // coordenadas suavizadas de la camara (double para permitir subpixel) 
     // se actualizan cada frame en actualizarCamaraSuave() y se usan en paint().
     // -1 significa "todavia sin inicializar".
@@ -156,6 +156,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         this.reiniciarCamaraSuave();
         this.estadosVisualesPersonajes.clear();
         this.estadosVisualesPersonajes.put(jugador, new EstadoVisualPersonaje(jugador.getX(), jugador.getY()));
+        this.estadosVisualesEnemigos.clear();
+
         cargarImagenesNivel();
     }
         public void setTiempoInicioPartida(long tiempoInicio) { // permite al controlador establecer el tiempo de inicio de la partida para calcular el tiempo transcurrido
@@ -346,17 +348,23 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
             for (int x = 0; x < mapa.ancho; x++) {
                 if (mapa.celdas[y][x].contenido instanceof Enemigo) {
                     Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+                    // Buscamos el estado visual del enemigo
+                    EstadoVisualEnemigo evEn = estadosVisualesEnemigos.get(en);
 
-            if (en.posXVisual + 1 < camX || en.posXVisual > camX + VIEW_COLS) continue;
-            if (en.posYVisual + 1 < camY || en.posYVisual > camY + VIEW_ROWS) continue;
+                    // Si no existe, lo salteamos
+                    if (evEn == null) continue;
+                    
+                    // Usamos las coordenadas VISUALES del estado, no las del modelo
+                     if (evEn.getPosXVisual() + 1 < camX || evEn.getPosXVisual() > camX + VIEW_COLS) continue;
+                     if (evEn.getPosYVisual() + 1 < camY || evEn.getPosYVisual() > camY + VIEW_ROWS) continue;
 
-                    int ex = (int) ((en.posXVisual - camX) * tamaño) + desplazamientoX;
-                    int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
-
+                     int ex = (int) ((evEn.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+                     int ey = (int) ((evEn.getPosYVisual() - camY) * tamaño) + desplazamientoY;
+            
                     if (en instanceof EnemigoLetal){
                     String dirMuerte = "abajo";
-                        double difX = en.x - en.posXVisual;
-                        double difY = en.y - en.posYVisual;
+                        double difX = en.x - evEn.getPosXVisual();
+                        double difY = en.y - evEn.getPosYVisual();
                 
                         if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
                             
@@ -548,4 +556,25 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
             }
         }
     }
+
+    // Metodo que usa el Controlador para actualizar la posición de todos los enemigos
+public void actualizarEstadoVisualEnemigos(Mapa mapa) {
+    // Recorremos todo el mapa buscando enemigos
+    for (int y = 0; y < mapa.alto; y++) {
+        for (int x = 0; x < mapa.ancho; x++) {
+            if (mapa.celdas[y][x].contenido instanceof Enemigo) {
+                Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+                
+                // Si el enemigo no tiene un estado visual todavía, se lo creamos
+                if (!estadosVisualesEnemigos.containsKey(en)) {
+                    estadosVisualesEnemigos.put(en, new EstadoVisualEnemigo(en.x, en.y));
+                }
+                
+                // Le decimos al estado visual que se actualice con la posición lógica del enemigo
+                estadosVisualesEnemigos.get(en).actualizarPosicionVisual(en.x, en.y);
+            }
+        }
+    }
+}
+
  }
