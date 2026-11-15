@@ -14,6 +14,8 @@ import src.modelo.map.Pared;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VistaJuego extends JFrame { // Clase que representa la ventana del juego y se encarga de dibujar el mapa, el personaje y los enemigos
     
@@ -27,6 +29,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
    
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
+
+    private Map<Personaje, EstadoVisualPersonaje> estadosVisualesPersonajes = new HashMap<>();
 
     // coordenadas suavizadas de la camara (double para permitir subpixel) 
     // se actualizan cada frame en actualizarCamaraSuave() y se usan en paint().
@@ -118,6 +122,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         this.nivelActual = nivelActual;
       
         cargarImagenesNivel();
+        this.estadosVisualesPersonajes.put(jugador, new EstadoVisualPersonaje(jugador.getX(), jugador.getY()));
         setTitle("Juego");
         setSize(15 * tamaño + 45, 10 * tamaño + 120);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,6 +154,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         this.bufferImagen = null; //reiniciar buffer para evitar problemas de renderizado al cambiar de nivel
         //reiniciar la cámara suave para que arranque centrada en el nuevo nivel ===
         this.reiniciarCamaraSuave();
+        this.estadosVisualesPersonajes.clear();
+        this.estadosVisualesPersonajes.put(jugador, new EstadoVisualPersonaje(jugador.getX(), jugador.getY()));
         cargarImagenesNivel();
     }
         public void setTiempoInicioPartida(long tiempoInicio) { // permite al controlador establecer el tiempo de inicio de la partida para calcular el tiempo transcurrido
@@ -161,9 +168,12 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     public void actualizarCamaraSuave() {
         if (jugador == null || mapa == null) return;
 
+        EstadoVisualPersonaje ev = getEstadoVisual(jugador);
+        if (ev == null) return;
+        
         // Objetivo: centrar al jugador en el viewport
-        double camXObjetivo = jugador.getPosXVisual() - VIEW_COLS / 2.0;
-        double camYObjetivo = jugador.getPosYVisual() - VIEW_ROWS / 2.0;
+        double camXObjetivo = ev.getPosXVisual() - VIEW_COLS / 2.0;
+        double camYObjetivo = ev.getPosYVisual() - VIEW_ROWS / 2.0;
 
         // clamp para no salir del mapa
         camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.ancho - VIEW_COLS));
@@ -243,17 +253,20 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         // si todavia no se llamo a actualizarCamaraSuave() (por ej primer paint)
         // se calcula directamente como respaldo a partir de la posición visual del jugador.
         double camX, camY;
-        if (camXSuave < 0 || camYSuave < 0) {
-            double camXCalc = jugador != null ? jugador.getPosXVisual() - VIEW_COLS / 2.0 : 0;
-            double camYCalc = jugador != null ? jugador.getPosYVisual() - VIEW_ROWS / 2.0 : 0;
-            camXCalc = Math.max(0, Math.min(camXCalc, mapa.ancho - VIEW_COLS));
-            camYCalc = Math.max(0, Math.min(camYCalc, mapa.alto - VIEW_ROWS));
-            camX = camXCalc;
-            camY = camYCalc;
-        } else {
-            camX = camXSuave;
-            camY = camYSuave;
+        if (camXSuave == -1 || camYSuave == -1) {
+            EstadoVisualPersonaje evJugador = getEstadoVisual(jugador);
+             if (evJugador != null) {
+                camXSuave = evJugador.getPosXVisual() - VIEW_COLS / 2.0;
+                camYSuave = evJugador.getPosYVisual() - VIEW_ROWS / 2.0;
+                camXSuave = Math.max(0, Math.min(camXSuave, mapa.ancho - VIEW_COLS));
+                camYSuave = Math.max(0, Math.min(camYSuave, mapa.alto - VIEW_ROWS));
+            } else {
+                camXSuave = 0;
+                camYSuave = 0;
+            }
         }
+        camX = camXSuave;
+        camY = camYSuave;
 
         // rango de celdas a dibujar considerando desplazamiento subpixel 
         // se agrega 1 celda extra a cada borde para no dejar huecos cuando la cámara
@@ -408,12 +421,12 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
 
         //dibujar el personaje
         if (jugador != null) {
-            // se usa la posicion visual (double) del jugador para que se mueva suave 
-            // Cuando agreguemos sprites, aqui se dibujara la imagen del personaje:
-            // g2d.drawImage(spriteJugador, px, py, tamaño, tamaño, null);
-            int px = (int) ((jugador.getPosXVisual() - camX) * tamaño) + desplazamientoX;
-            int py = (int) ((jugador.getPosYVisual() - camY) * tamaño) + desplazamientoY;
-            dibujarPersonaje(g2d, px, py);
+            EstadoVisualPersonaje ev = getEstadoVisual(jugador);
+            if (ev != null) {
+            int px = (int) ((ev.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+            int py = (int) ((ev.getPosYVisual() - camY) * tamaño) + desplazamientoY;
+            dibujarPersonaje(g2d, px, py, ev);
+            }
         }
 
         // === DIBUJAR PANEL DE INFORMACIÓN ABAJO ===
@@ -479,12 +492,12 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     }
         
          // dibujamos estudiante
-        private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
+        private void dibujarPersonaje(Graphics2D g2d, int px, int py, EstadoVisualPersonaje estadoVisual) {
         
         // Se elimina el if(jugador instanceof Estudiante) y todo el casting engorroso.
         // Ahora le pedimos a GestorSprites que nos dé la imagen correspondiente de manera limpia.
-        java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador);
-        
+        java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador, estadoVisual);
+
         if (sprite != null) {
             // Obtenemos el ancho y alto original de la imagen
             int anchoOriginal = sprite.getWidth(null);
@@ -512,6 +525,27 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
             
             g2d.setColor(new Color(0, 0, 0, 60));
             g2d.fillOval(px + margen + 2, py + margen + 4, radio * 2, radio * 2);
+        }
+    }
+    //Getter para el controlador
+     public EstadoVisualPersonaje getEstadoVisual(Personaje personaje) {
+        return estadosVisualesPersonajes.get(personaje);
+    }
+    
+     // Método que usa el Controlador para decirle a la vista que actualice la animación
+    public void actualizarEstadoVisualJugador(Personaje p, boolean moviendo, char tecla) {
+        EstadoVisualPersonaje ev = getEstadoVisual(p);
+        if (ev != null) {
+            // Actualizamos las coordenadas suaves en base a la posición lógica del modelo
+            ev.actualizarPosicionVisual(p.getX(), p.getY());
+            
+            // Actualizamos el frame de animación y el estado de movimiento
+            ev.actualizarAnimacion(moviendo);
+            
+            // Si se está moviendo, actualizamos hacia dónde mira
+            if (moviendo) {
+                ev.actualizarDireccionDesdeTecla(tecla);
+            }
         }
     }
  }

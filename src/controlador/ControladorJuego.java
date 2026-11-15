@@ -6,6 +6,7 @@ import javax.swing.*;
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
+import src.vista.EstadoVisualPersonaje;
 import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaJuego;
@@ -81,31 +82,24 @@ private void iniciarTimers() {
 
     timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> { //timer de animación para interpolación suave (cada 16ms ~ 60fps)
         if (juegoActivo) {
-            jugador.actualizarPosicionVisual();
+
             jugador.actualizarBonus();
+            
+            boolean moviendo = (teclaPulsada != ' ');
 
-// === Animación del sprite del jugador ===
-        boolean moviendo = (teclaPulsada != ' ');
-        jugador.setEnMovimiento(moviendo);
+            vista.actualizarEstadoVisualJugador(jugador, moviendo, teclaPulsada);
 
-        if (moviendo) {
-            long ahora = System.currentTimeMillis();
-            if (ahora - jugador.ultimoFrameAnimacion > 100) { // 100ms por frame
-                jugador.frameAnimacion++;
-                if (jugador.frameAnimacion >= 22) { // 11 cols x 2 filas
-                    jugador.frameAnimacion = 0;
-                }
-                jugador.ultimoFrameAnimacion = ahora;
-            }
-        } else {
-            jugador.frameAnimacion = 0; // idle: vuelve al primer frame
-        }
 
+
+            // 5. Actualizar posiciones visuales de los enemigos (esto lo vemos más adelante)
             mapa.actualizarPosicionesVisualesEnemigos();
+            
+            // 6. Actualizar la cámara y repintar
             vista.actualizarCamaraSuave();
             vista.repaint();
         }
     });
+
     timerAnimacion.start();
 }
 
