@@ -19,7 +19,7 @@ public class Enemigo extends ObjetoEntorno {
     private int variante;
 
     public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
-        super(true);
+        super(true, false);
         this.x = x;
         this.y = y;
         this.danio = danio;
@@ -96,4 +96,8 @@ public class Enemigo extends ObjetoEntorno {
     public int hacerDanio() {
         return this.danio;
     }
+    public void hacerDanio(Personaje jugador) {
+        jugador.danioRecibido(this.danio);}
+
+
 } 

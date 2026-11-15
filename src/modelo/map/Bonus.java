@@ -1,4 +1,5 @@
 package src.modelo.map;
+import src.modelo.entities.Personaje;
 
 public class Bonus extends ObjetoEntorno {
 
@@ -7,9 +8,13 @@ public class Bonus extends ObjetoEntorno {
     public int nivel = 1;
 
     public Bonus(int bonusVelocidad, int duracionMs, int nivel) {
-        super(true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
+        super(true, true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
         this.bonusVelocidad = bonusVelocidad;
         this.duracionMs = duracionMs;
         this.nivel = nivel;
+    }
+    @Override
+    public void recolectar(Personaje personaje) {
+        personaje.activarBonus(this);
     }
 }

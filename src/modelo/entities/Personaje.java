@@ -4,6 +4,7 @@ import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
 import src.modelo.map.Pared;
 import src.modelo.map.Mapa;
+import src.modelo.map.ObjetoEntorno;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 
@@ -110,8 +111,11 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     
     //verificar si la celda destino tiene una pared (NO se puede pisar)
     Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
-    if (celdaDestino != null && celdaDestino.contenido instanceof Pared) {
-        return; // No se puede pisar una pared
+    if (celdaDestino != null && celdaDestino.contenido instanceof ObjetoEntorno) {
+        ObjetoEntorno objeto = (ObjetoEntorno) celdaDestino.contenido;
+        if (!objeto.pasoLibre) {
+            return; // No se puede pisar una pared
+        }
     }
     
     //verificar si la celda destino tiene un ENEMIGO o ENEMIGO LETAL (NO se mueve, solo recibe daño)
