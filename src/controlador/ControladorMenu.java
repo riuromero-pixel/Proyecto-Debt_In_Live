@@ -88,7 +88,7 @@ public class ControladorMenu {
         this.tiempoInicioPartida = System.currentTimeMillis();
     // diálogo de carga
     final VistaCargando cargando = new VistaCargando(vistaMenu, "Generando nivel 1...");
-    final int nivelInicial = 3;
+    final int nivelInicial = 1;
     SwingWorker<NivelCreado, Void> worker = new SwingWorker<NivelCreado, Void>() {
 
         @Override
