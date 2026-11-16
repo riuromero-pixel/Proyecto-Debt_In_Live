@@ -7,7 +7,6 @@ import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
 import src.modelo.movimientos.MovimientoErrante;
 import src.modelo.movimientos.MovimientoPerseguidor;
-import src.modelo.map.ObjetoEntorno;
 
 public class Mapa {
     

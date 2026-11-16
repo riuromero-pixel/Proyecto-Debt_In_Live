@@ -5,7 +5,7 @@ import src.modelo.map.Mapa;
 import src.modelo.map.Pared;
 import src.modelo.map.Bonus;
 
-public class Adulto extends Personaje implements CreadorParedes{ // Clase que representa a un personaje adulto en el juego, con habilidades específicas para crear paredes y activar/desactivar bonus
+public class Adulto extends Personaje implements CreadorParedes, RompeParedes{ // Clase que representa a un personaje adulto en el juego, con habilidades específicas para crear paredes y activar/desactivar bonus
 
     public Adulto(int x, int y, Mapa mapa) {
         super(x, y, 2, 100, false, mapa);
@@ -16,8 +16,8 @@ public class Adulto extends Personaje implements CreadorParedes{ // Clase que re
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 2;
     }
-     @Override
-    public void crearParedes() {
+    @Override 
+     public void crearParedes() {
         // El adulto puede llenar su fila entera de paredes a la que apunta
         if (direccionActual == null) {
         return;
@@ -46,5 +46,28 @@ public class Adulto extends Personaje implements CreadorParedes{ // Clase que re
            nx += dx;
            ny += dy;
         }   
+    }
+    public void romperParedes() {
+        long tiempoActual = System.currentTimeMillis();
+        if (tiempoActual - ultimoGolpe < 400) {
+            return;
+        }
+        // Direcciones: ARRIBA, ABAJO, DERECHA, IZQUIERDA
+        int[][] direcciones = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int[] dir : direcciones) {
+            int nx = x + dir[0];
+            int ny = y + dir[1];
+            
+            //verificar si hay una pared en la posición (nx, ny)
+            boolean hayPared = verificarPared(nx, ny); 
+            if (hayPared) {
+                Celda celda = conseguirCelda(nx, ny);
+                if (celda != null && celda.contenido instanceof Pared) {
+                    celda.contenido = null; // Romper la pared
+                    ultimoGolpe = tiempoActual; 
+                    break; // Romper solo una pared por acción
+                }
+            }
+        }
     }
 }

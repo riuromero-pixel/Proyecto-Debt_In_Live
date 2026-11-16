@@ -315,16 +315,19 @@ private void ganarJuego(String mensaje) {
                 case 'a': case 'A': teclaPulsada = 'A'; break;
                 case 'd': case 'D': teclaPulsada = 'D'; break;
                 case 'r': case 'R':
-                    jugador.romperParedes();
+                    if (jugador instanceof RompeParedes) {
+                    RompeParedes rompedor = (RompeParedes) jugador;
+                    rompedor.romperParedes();
                     vista.repaint();
                     break;
+                }
                 case 'c': case 'C':
                     if (jugador instanceof CreadorParedes){
-                        CreadorParedes creador = (CreadorParedes) jugador;
+                    CreadorParedes creador = (CreadorParedes) jugador;
                     creador.crearParedes();
                     vista.repaint();
                 }
-                
+            
                     break;
                     
             }

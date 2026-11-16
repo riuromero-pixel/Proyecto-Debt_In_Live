@@ -79,6 +79,8 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
                 "¿Cómo te llamás?"
         );
         if (nombreJugador == null) {
+            vistaMenu.toFront();
+            vistaMenu.requestFocusInWindow();
             return;
         }
         if (nombreJugador.trim().isEmpty()) {
@@ -178,11 +180,14 @@ private void mostrarComoJugar() {
     // ventana propia con un estilo
     VistaComoJugar ventana = new VistaComoJugar(vistaMenu);
     ventana.setVisible(true);
+    vistaMenu.toFront();
+    vistaMenu.requestFocusInWindow();
 }
 
 private void mostrarOpciones() {
     VistaOpciones ventana = new VistaOpciones(vistaMenu, accionSilenciarGlobal);
     ventana.setVisible(true);
+    vistaMenu.toFront();
+    vistaMenu.requestFocusInWindow();
 }
-
 }

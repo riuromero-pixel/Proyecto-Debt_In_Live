@@ -44,6 +44,10 @@ public class Enemigo extends ObjetoEntorno {
             this.variante = 1; 
         }
     }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
     public int getVariante() {
         return this.variante;
     }
@@ -82,7 +86,6 @@ public class Enemigo extends ObjetoEntorno {
         }
 
     public void actualizarPersecucion(Personaje personaje, Mapa mapa) {
-
         if (estrategia != null) {
             estrategia.mover(this, personaje, mapa);
         }

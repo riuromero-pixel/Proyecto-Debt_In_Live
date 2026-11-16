@@ -199,10 +199,7 @@ try {
     //el controlador llama a este metodo para mostrar la ventana
     public void mostrar() {
         setUndecorated(true);
-         GraphicsDevice gd = GraphicsEnvironment
-        .getLocalGraphicsEnvironment()
-        .getDefaultScreenDevice();
-        gd.setFullScreenWindow(this);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
         this.toFront();
         this.requestFocusInWindow();

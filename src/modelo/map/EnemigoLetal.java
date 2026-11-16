@@ -12,4 +12,22 @@ public class EnemigoLetal extends Enemigo{
     public void hacerDanio(Personaje jugador) {
         jugador.danioRecibido(jugador.getDinero() + 1);
     }
+    @Override 
+    public void actualizarPersecucion(Personaje jugador, Mapa mapa) { // Persecucion con un 20% de probabilidad de teletransportarse a una celda cerca del jugador
+        if (Math.random() < 0.2){
+            int nuevaX = jugador.getX() + (Math.random() > 0.5 ? 3 : -3);
+            int nuevaY = jugador.getY() + (Math.random() > 0.5 ? 3 : -3);
+
+            Celda celda = mapa.conseguirCelda(nuevaX, nuevaY);
+            if (celda != null && celda.contenido == null) {
+                mapa.conseguirCelda(this.getX(), this.getY()).contenido = null;
+                celda.contenido = this;
+                this.setX(nuevaX);
+                this.setY(nuevaY);
+                return;
+
+            }
+        }
+        super.actualizarPersecucion(jugador, mapa);
+    }
 }
