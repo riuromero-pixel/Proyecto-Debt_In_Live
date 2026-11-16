@@ -15,18 +15,15 @@ public class Dinero extends ObjetoEntorno {
 
     public int getCantidad() { return cantidad; }
 
-    @Override
-    public boolean recolectar(Personaje personaje) {
-        personaje.recolectarDinero(this.cantidad);
-        return true;
-    }
+    @Override 
+    public boolean bloqueaPaso() { return false; }
 
     @Override
-    public String getTipoVisual() {
-        return "DINERO";
-    }
+    public boolean interactuar(Personaje p) {
+    p.recolectarDinero(cantidad);
+    return true;
+}
 
-    @Override
     public int contarComoDinero() {
         return 1;
     }

@@ -3,7 +3,7 @@ package src.modelo.map;
 // para indicar si el objeto bloquea el paso, asi el personaje puede preguntar a cualquier
 // ContenidoCelda si bloquea el paso sin conocer su tipo concreto.
 
-public class ObjetoEntorno implements ContenidoCelda {
+public abstract class ObjetoEntorno implements ContenidoCelda {
     private boolean pasoLibre;
     
     public ObjetoEntorno(boolean pasoLibre) { //con esta funcion verificamos si el 
@@ -12,9 +12,7 @@ public class ObjetoEntorno implements ContenidoCelda {
     }
 
     @Override
-    public boolean bloqueaPaso() {
-        return !this.pasoLibre;
-    }
+    public boolean bloqueaPaso() { return !pasoLibre; }
 
     public boolean isPasoLibre() { return pasoLibre; }
 

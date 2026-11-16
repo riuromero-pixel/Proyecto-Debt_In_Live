@@ -4,7 +4,7 @@ import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
 import src.modelo.map.Mapa;
 import src.modelo.map.ContenidoCelda;
-import src.modelo.map.Enemigo;
+import src.modelo.map.Golpeable;
 
 public abstract class Personaje implements ContenidoCelda {
     private int x;
@@ -48,34 +48,10 @@ public abstract class Personaje implements ContenidoCelda {
         return false;
     }
 
-    @Override
-    public Personaje asPersonaje() {
-        return this;
-    }
-
-    @Override
-    public String getTipoVisual() {
-        return "PERSONAJE";
-    }
-
-    @Override
-    public boolean recibirDanioDe(Enemigo enemigo) {
-        enemigo.aplicarDanio(this);
-        return true;
-    }
-
     public abstract String getNombreTipo();
 
     public int getTipoSprite() {
         return 0;
-    }
-
-    public boolean puedeCrearParedes() {
-        return false;
-    }
-
-    public boolean puedeSaltar() {
-    return false;
     }
 
     public void saltar() {
@@ -97,43 +73,32 @@ public abstract class Personaje implements ContenidoCelda {
         char direccion = tecla.toUpperCase().charAt(0);
         int nuevaX = this.x;
         int nuevaY = this.y;
-        
+
         this.direccionActual = String.valueOf(direccion);
-        
+
         switch (direccion) {
-            case 'W':
-                nuevaY = Math.min(altoMapa - 1, this.y - 1);
-                break;
-            case 'S':
-                nuevaY = Math.max(0, this.y + 1);
-                break;
-            case 'A':
-                nuevaX = Math.max(0, this.x - 1);
-                break;
-            case 'D':
-                nuevaX = Math.min(anchoMapa - 1, this.x + 1);
-                break;
+            case 'W': nuevaY = Math.min(altoMapa - 1, this.y - 1); break;
+            case 'S': nuevaY = Math.max(0, this.y + 1); break;
+            case 'A': nuevaX = Math.max(0, this.x - 1); break;
+            case 'D': nuevaX = Math.min(anchoMapa - 1, this.x + 1); break;
         }
-        
+
         Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
-        if (celdaDestino != null) {
-            ContenidoCelda contenidoDestino = celdaDestino.getContenido();
-            if (contenidoDestino != null && contenidoDestino.bloqueaPaso()) {
-                contenidoDestino.aplicarDanio(this);
-                return;
-            }
+        if (celdaDestino == null) return;
+
+        // Si la celda bloquea, el personaje "choca" (le pega al enemigo/pared) y no entra.
+        ContenidoCelda contenidoDestino = celdaDestino.getContenido();
+        if (contenidoDestino != null && contenidoDestino.bloqueaPaso()) {
+            contenidoDestino.interactuar(this);   // despacho dinámico
+            return;
         }
-        
+
+        // Si no bloquea, el personaje entra y la celda resuelve lo que haya.
         if (nuevaX != this.x || nuevaY != this.y) {
-            if (celdaDestino != null) {
-                mapa.recolectarDeCelda(this, nuevaX, nuevaY);
-            }
-            
+            mapa.recolectarDeCelda(this, nuevaX, nuevaY); // interactúa con contenido y contenidoDebajo
             mapa.limpiarCeldaDe(this);
-            
             this.x = nuevaX;
             this.y = nuevaY;
-            
             mapa.setPersonaje(this, nuevaX, nuevaY);
         }
     }
@@ -154,31 +119,24 @@ public abstract class Personaje implements ContenidoCelda {
     
     public void romperParedes() {
         long tiempoActual = System.currentTimeMillis();
-        if (tiempoActual - ultimoGolpe < 400) {
-            return;
-        }
-        // Direcciones: ARRIBA, ABAJO, DERECHA, IZQUIERDA
-        int[][] direcciones = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};  
+        if (tiempoActual - ultimoGolpe < 400) return;
+
+        int[][] direcciones = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         for (int[] dir : direcciones) {
             int nx = x + dir[0];
             int ny = y + dir[1];
-            
             Celda celda = conseguirCelda(nx, ny);
-            if (celda == null || celda.getContenido() == null) {
-                continue;
-            }
-            
+            if (celda == null || celda.getContenido() == null) continue;
+
             ContenidoCelda contenido = celda.getContenido();
-            if (contenido.esGolpeable()) {
-                // si los golpes llegan a 0, se rompe la pared
-                if (contenido.recibirGolpe()) {
-                    // Eliminar la pared de la celda
+            if (contenido instanceof Golpeable golpeable) {
+                if (golpeable.recibirGolpe()) {
                     mapa.limpiarCelda(nx, ny);
                 }
                 ultimoGolpe = tiempoActual;
                 break;
             }
-        }    
+        }
     }
 
     public void activarBonus(Bonus bonus) {

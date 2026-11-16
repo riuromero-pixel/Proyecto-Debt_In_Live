@@ -1,7 +1,7 @@
 package src.modelo.map;
 import java.util.Random;
 
-public class Pared extends ObjetoEntorno {
+public class Pared extends ObjetoEntorno implements Golpeable {
     private int variante;
     private int golpesRestantes = 2;
 
@@ -19,19 +19,12 @@ public class Pared extends ObjetoEntorno {
         return variante;
     }
 
+    @Override 
+    public boolean bloqueaPaso() { return true; }
+
     @Override
     public boolean recibirGolpe() {
         golpesRestantes--;
         return golpesRestantes <= 0;
-    }
-
-    @Override
-    public boolean esGolpeable() {
-        return true;
-    }
-
-    @Override
-    public String getTipoVisual() {
-        return "PARED";
     }
 }

@@ -33,17 +33,13 @@ public class EntradaTecladoJuego extends KeyAdapter {
                 break;
 
             case 'c': case 'C':
-                if (controlador.getJugador().puedeCrearParedes()) {
-                    controlador.getJugador().crearParedes();
-                    controlador.getVista().repaint();
-                }
+                controlador.getJugador().crearParedes();  // no-op si no puede
+                controlador.getVista().repaint();
                 break;
             case 'f': case 'F':
-                if (controlador.getJugador().puedeSaltar()) {
-                    controlador.getJugador().saltar();
-                    controlador.getVista().repaint();
-                }
-                break;    
+                controlador.getJugador().saltar();         // no-op si no puede
+                controlador.getVista().repaint();
+                break;   
         }
     }
 

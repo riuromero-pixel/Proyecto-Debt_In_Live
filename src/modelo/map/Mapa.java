@@ -1,5 +1,8 @@
 package src.modelo.map;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import src.modelo.entities.Personaje;
 
 public class Mapa {
@@ -7,6 +10,8 @@ public class Mapa {
     private Celda[][] celdas;
     private final int ancho;
     private final int alto;
+
+    private final List<Enemigo> enemigos = new ArrayList<>();
 
     private final GeneradorNivelMapa generador = new GeneradorNivelMapa();
     private final GestorEnemigosMapa gestorEnemigos = new GestorEnemigosMapa();
@@ -27,6 +32,9 @@ public class Mapa {
     public void prepararMapa() { generador.prepararMapa(this); }
     public void generarContenidoAleatorio(int nivel) { generador.generarContenidoAleatorio(this, nivel); }
     public void generarDinero() { generador.generarDinero(this); }
+
+    public void registrarEnemigo(Enemigo e) { enemigos.add(e); }
+    public List<Enemigo> getEnemigos() { return enemigos; }
 
     public void moverEnemigos(Personaje jugador) { gestorEnemigos.moverEnemigos(this, jugador); }
     public boolean verificarColisionConEnemigo(Personaje jugador) { return gestorEnemigos.verificarColisionConEnemigo(this, jugador); }
@@ -84,8 +92,7 @@ public class Mapa {
 
     public boolean esPared(int x, int y) {
         if (!estaDentro(x, y)) return false;
-        ContenidoCelda contenido = celdas[y][x].getContenido();
-        return contenido != null && contenido.esGolpeable();
+        return celdas[y][x].getContenido() instanceof Golpeable;
     }
 
     public int getAncho() { return ancho; }
@@ -94,16 +101,15 @@ public class Mapa {
 
     public void setPersonaje(Personaje personaje, int x, int y) {
         Celda celda = conseguirCelda(x, y);
-        if (celda != null) {
-            ContenidoCelda contenido = celda.getContenido();
-            if (contenido != null && contenido.bloqueaPaso()) return;
-            celda.setContenido(personaje);
-        }
+        if (celda == null) return;
+        ContenidoCelda contenido = celda.getContenido();
+        if (contenido != null && contenido.bloqueaPaso()) return;
+        celda.setContenido(personaje);
     }
 
     public Personaje getPersonaje(int x, int y) {
         if (!estaDentro(x, y)) return null;
         ContenidoCelda contenido = celdas[y][x].getContenido();
-        return contenido != null ? contenido.asPersonaje() : null;
+        return contenido instanceof Personaje p ? p : null;
     }
 }

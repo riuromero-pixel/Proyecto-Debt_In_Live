@@ -11,8 +11,6 @@ public class Celda {
     public Celda(int x, int y) {
         this.x = x;
         this.y = y;
-        this.contenido = null;
-        this.contenidoDebajo = null;
     }
 
     public int getX() { return x; }
@@ -25,10 +23,10 @@ public class Celda {
     void setContenidoDebajo(ContenidoCelda contenidoDebajo) { this.contenidoDebajo = contenidoDebajo; }
 
     public void recolectar(Personaje jugador) {
-        if (contenido != null && contenido.recolectar(jugador)) {
+        if (contenido != null && contenido.interactuar(jugador)) {
             contenido = null;
         }
-        if (contenidoDebajo != null && contenidoDebajo.recolectar(jugador)) {
+        if (contenidoDebajo != null && contenidoDebajo.interactuar(jugador)) {
             contenidoDebajo = null;
         }
     }

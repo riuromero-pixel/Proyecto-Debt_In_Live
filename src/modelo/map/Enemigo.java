@@ -41,35 +41,26 @@ public class Enemigo extends ObjetoEntorno {
         return this.variante;
     }
     
-    public void setEstrategia(EstrategiaMovimiento estrategia) {
-        this.estrategia = estrategia;
-    }
+    public void setEstrategia(EstrategiaMovimiento e) { this.estrategia = e; }
+
     public EstrategiaMovimiento getEstrategia() {
         return this.estrategia;
     }
 
-    @Override
-    public Enemigo asEnemigo() {
-        return this;
+    @Override 
+    public boolean interactuar(Personaje p) {
+        aplicarDanio(p);
+        return false;
     }
 
-    @Override
-    public boolean aplicarDanio(Personaje personaje) {
-        personaje.danioRecibido(this.danio);
-        return true;
+    public void aplicarDanio(Personaje p) {
+        p.danioRecibido(danio);
     }
 
-    @Override
-    public String getTipoVisual() {
-        return "ENEMIGO";
-    }
-
-    @Override
-    public boolean puedeMoverse() { return true; }
-
-    @Override
     public void actualizarMovimiento(Mapa mapa, Personaje jugador) {
-        actualizarPersecucion(jugador, mapa);
+        if (estrategia != null) {
+            estrategia.mover(this, jugador, mapa);
+        }
     }
 
     public boolean esLetal() {
@@ -77,35 +68,23 @@ public class Enemigo extends ObjetoEntorno {
     }
 
     public void moverEnemigo(int mejorX, int mejorY, Mapa mapa) {
-            Celda celdaActual = mapa.conseguirCelda(this.x, this.y);
-            Celda celdaNueva = mapa.conseguirCelda(mejorX, mejorY);
+        Celda celdaActual = mapa.conseguirCelda(this.x, this.y);
+        Celda celdaNueva = mapa.conseguirCelda(mejorX, mejorY);
+        if (celdaActual == null || celdaNueva == null) return;
 
-            if (celdaActual != null && celdaNueva != null) {
-                
-                // Si el enemigo se va de su celda y había contenido abajo, lo restauramos a visible
-                if (celdaActual.getContenidoDebajo() != null) {
-                    celdaActual.setContenido(celdaActual.getContenidoDebajo());
-                    celdaActual.setContenidoDebajo(null);
-                } else {
-                    celdaActual.setContenido(null);
-                }
-
-                // Si la celda nueva a la que entra tiene contenido, lo resguardamos en 'contenidoDebajo'
-                if (celdaNueva.getContenido() != null && !celdaNueva.getContenido().bloqueaPaso()) {
-                    celdaNueva.setContenidoDebajo(celdaNueva.getContenido());
-                }
-
-                // Colocamos al enemigo en la celda nueva y actualizamos sus coordenadas
-                celdaNueva.setContenido(this);
-                this.x = mejorX;
-                this.y = mejorY;
-            }
+        if (celdaActual.getContenidoDebajo() != null) {
+            celdaActual.setContenido(celdaActual.getContenidoDebajo());
+            celdaActual.setContenidoDebajo(null);
+        } else {
+            celdaActual.setContenido(null);
         }
 
-    public void actualizarPersecucion(Personaje personaje, Mapa mapa) {
-
-        if (estrategia != null) {
-            estrategia.mover(this, personaje, mapa);
+        if (celdaNueva.getContenido() != null && !celdaNueva.getContenido().bloqueaPaso()) {
+            celdaNueva.setContenidoDebajo(celdaNueva.getContenido());
         }
-    } 
+
+        celdaNueva.setContenido(this);
+        this.x = mejorX;
+        this.y = mejorY;
+    }
 }

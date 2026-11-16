@@ -30,45 +30,40 @@ public class DibujanteMapa {
                 }
 
                 ContenidoCelda contenido = mapa.getContenido(x, y);
-                if (contenido != null) {
-                    String tipo = contenido.getTipoVisual();
+                if (contenido instanceof Pared pared) {
+                    Image imgDibujar = imagenes.getImagenPARED();
 
-                    if (tipo.equals("PARED")) {
-                        Pared pared = (Pared) contenido;
-                        Image imgDibujar = imagenes.getImagenPARED();
-
-                        if (nivelActual == 1) {
-                            switch (pared.getVariante()) {
-                                case 1: if (imagenes.getImagenSilla1() != null) imgDibujar = imagenes.getImagenSilla1(); break;
-                                case 2: if (imagenes.getImagenSilla2() != null) imgDibujar = imagenes.getImagenSilla2(); break;
-                                case 3: if (imagenes.getImagenSilla3() != null) imgDibujar = imagenes.getImagenSilla3(); break;
-                                case 4: if (imagenes.getImagenSilla4() != null) imgDibujar = imagenes.getImagenSilla4(); break;
-                            }
+                    if (nivelActual == 1) {
+                        switch (pared.getVariante()) {
+                            case 1: if (imagenes.getImagenSilla1() != null) imgDibujar = imagenes.getImagenSilla1(); break;
+                            case 2: if (imagenes.getImagenSilla2() != null) imgDibujar = imagenes.getImagenSilla2(); break;
+                            case 3: if (imagenes.getImagenSilla3() != null) imgDibujar = imagenes.getImagenSilla3(); break;
+                            case 4: if (imagenes.getImagenSilla4() != null) imgDibujar = imagenes.getImagenSilla4(); break;
                         }
-
-                        if (imgDibujar != null) {
-                            g2d.drawImage(imgDibujar, px, py, tamaño, tamaño, null);
-                        } else {
-                            g2d.setColor(Color.BLACK);
-                            g2d.fillRect(px, py, tamaño, tamaño);
-                        }
-
-                    } else if (tipo.equals("DINERO")) {
-                        if (imagenes.getImagenDinero() != null) {
-                            g2d.drawImage(imagenes.getImagenDinero(), px, py, tamaño, tamaño, null);
-                        } else {
-                            g2d.setColor(Color.YELLOW);
-                            g2d.fillOval(px + tamaño / 4, py + tamaño / 4, tamaño / 2, tamaño / 2);
-                        }
-
-                    } else if (tipo.equals("BONUS")) {
-                        if (imagenes.getImagenBonus() != null) {
-                            g2d.drawImage(imagenes.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
-                        }
-                        g2d.setColor(Color.BLACK);
-                        g2d.drawString("", px + 10, py + 20);
                     }
 
+                    if (imgDibujar != null) {
+                        g2d.drawImage(imgDibujar, px, py, tamaño, tamaño, null);
+                    } else {
+                        g2d.setColor(Color.BLACK);
+                        g2d.fillRect(px, py, tamaño, tamaño);
+                    }
+
+                } else if (contenido instanceof Dinero) {
+                    if (imagenes.getImagenDinero() != null) {
+                        g2d.drawImage(imagenes.getImagenDinero(), px, py, tamaño, tamaño, null);
+                    } else {
+                        g2d.setColor(Color.YELLOW);
+                        g2d.fillOval(px + tamaño / 4, py + tamaño / 4, tamaño / 2, tamaño / 2);
+                    }
+
+                } else if (contenido instanceof Bonus) {
+                    if (imagenes.getImagenBonus() != null) {
+                        g2d.drawImage(imagenes.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+                    }
+                }
+
+                if (contenido != null) {
                     g2d.setColor(Color.GRAY);
                     g2d.drawRect(px, py, tamaño, tamaño);
                 }

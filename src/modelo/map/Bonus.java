@@ -16,14 +16,13 @@ public class Bonus extends ObjetoEntorno {
     public int getBonusVelocidad() { return bonusVelocidad; }
     public long getDuracionMs() { return duracionMs; }
 
-    @Override
-    public boolean recolectar(Personaje personaje) {
-        personaje.activarBonus(this);
+    @Override 
+    public boolean bloqueaPaso() { return false; }
+
+    @Override 
+    public boolean interactuar(Personaje p) {
+        p.activarBonus(this);
         return true;
     }
 
-    @Override
-    public String getTipoVisual() {
-        return "BONUS";
-    }
 }

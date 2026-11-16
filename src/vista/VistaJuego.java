@@ -7,6 +7,7 @@ import javax.swing.*;
 import src.modelo.entities.Personaje;
 import src.modelo.map.ContenidoCelda;
 import src.modelo.map.Enemigo;
+import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
 
 public class VistaJuego extends JFrame { // Clase que representa la ventana del juego y se encarga de dibujar el mapa, el personaje y los enemigos
@@ -91,49 +92,48 @@ private final DibujantePanelInfo dibujantePanelInfo = new DibujantePanelInfo();
     }
 
     public void actualizarEstadoVisual(Mapa mapa, Personaje jugador, boolean moviendo) {
-        if (jugador != null) {
-            EstadoVisualPersonaje estado = estadosJugador.get(jugador);
-            if (estado == null) {
-                estado = new EstadoVisualPersonaje(jugador.getX(), jugador.getY());
-                estadosJugador.put(jugador, estado);
-            }
-            String direccion = jugador.getDireccionActual();
-            if (direccion != null) {
-                switch (direccion) {
-                    case "W": estado.setDireccionVisual("N"); break;
-                    case "S": estado.setDireccionVisual("S"); break;
-                    case "A": estado.setDireccionVisual("O"); break;
-                    case "D": estado.setDireccionVisual("E"); break;
-                }
-            }
-            estado.actualizarPosicionVisual(jugador.getX(), jugador.getY());
-            estado.actualizarAnimacion(moviendo);
+    if (jugador != null) {
+        EstadoVisualPersonaje estado = estadosJugador.get(jugador);
+        if (estado == null) {
+            estado = new EstadoVisualPersonaje(jugador.getX(), jugador.getY());
+            estadosJugador.put(jugador, estado);
         }
+        String direccion = jugador.getDireccionActual();
+        if (direccion != null) {
+            switch (direccion) {
+                case "W": estado.setDireccionVisual("N"); break;
+                case "S": estado.setDireccionVisual("S"); break;
+                case "A": estado.setDireccionVisual("O"); break;
+                case "D": estado.setDireccionVisual("E"); break;
+            }
+        }
+        estado.actualizarPosicionVisual(jugador.getX(), jugador.getY());
+        estado.actualizarAnimacion(moviendo);
+    }
 
-        if (mapa != null) {
-            for (int y = 0; y < mapa.getAlto(); y++) {
-                for (int x = 0; x < mapa.getAncho(); x++) {
-                    ContenidoCelda contenido = mapa.getContenido(x, y);
-                    Enemigo enemigo = contenido != null ? contenido.asEnemigo() : null;
-                    if (enemigo != null) {
-                        EstadoVisualPersonaje estado = estadosEnemigos.get(enemigo);
-                        if (estado == null) {
-                            estado = new EstadoVisualPersonaje(enemigo.getX(), enemigo.getY());
-                            estadosEnemigos.put(enemigo, estado);
-                        }
-                        double distX = Math.abs(estado.getPosXVisual() - enemigo.getX());
-                        double distY = Math.abs(estado.getPosYVisual() - enemigo.getY());
-                        if (enemigo.esLetal() && (distX > 1.5 || distY > 1.5)) {
-                            estado.teletransportar(enemigo.getX(), enemigo.getY());
-                        } else {
-                            estado.actualizarPosicionVisual(enemigo.getX(), enemigo.getY());
-                        }
-                        estado.actualizarAnimacion(false);
-                    }
+    if (mapa != null) {
+        for (int y = 0; y < mapa.getAlto(); y++) {
+            for (int x = 0; x < mapa.getAncho(); x++) {
+                ContenidoCelda contenido = mapa.getContenido(x, y);
+                if (!(contenido instanceof Enemigo enemigo)) continue;
+
+                EstadoVisualPersonaje estado = estadosEnemigos.get(enemigo);
+                if (estado == null) {
+                    estado = new EstadoVisualPersonaje(enemigo.getX(), enemigo.getY());
+                    estadosEnemigos.put(enemigo, estado);
                 }
+                double distX = Math.abs(estado.getPosXVisual() - enemigo.getX());
+                double distY = Math.abs(estado.getPosYVisual() - enemigo.getY());
+                if (enemigo instanceof EnemigoLetal && (distX > 1.5 || distY > 1.5)) {
+                    estado.teletransportar(enemigo.getX(), enemigo.getY());
+                } else {
+                    estado.actualizarPosicionVisual(enemigo.getX(), enemigo.getY());
+                }
+                estado.actualizarAnimacion(false);
             }
         }
     }
+}
 
     // suaviza el desplazamiento de la camara hacia la posicion objetivo 
     // sigue al jugador usando su posicion VISUAL (no la logica) para que el paneo

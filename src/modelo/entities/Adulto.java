@@ -13,19 +13,11 @@ public class Adulto extends Personaje {
         return 2;
     }
 
+    @Override public int getTipoSprite() { return 1; }
+
     @Override
     public String getNombreTipo() {
         return "Adulto";
-    }
-
-    @Override
-    public int getTipoSprite() {
-        return 1;
-    }
-
-    @Override
-    public boolean puedeCrearParedes() {
-        return true;
     }
 
     @Override
@@ -35,7 +27,6 @@ public class Adulto extends Personaje {
 
         char dir = dirStr.charAt(0);
         int dx = 0, dy = 0;
-
         switch (dir) {
             case 'W': dy = -1; break;
             case 'S': dy = 1;  break;
@@ -46,9 +37,8 @@ public class Adulto extends Personaje {
 
         int nx = getX() + dx;
         int ny = getY() + dy;
-
         while (nx >= 0 && nx < getMapa().getAncho()
-            && ny >= 0 && ny < getMapa().getAlto()) {
+                && ny >= 0 && ny < getMapa().getAlto()) {
             getMapa().ponerPared(nx, ny);
             nx += dx;
             ny += dy;

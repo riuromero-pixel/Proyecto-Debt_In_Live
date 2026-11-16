@@ -13,71 +13,70 @@ public class DibujanteEntidades {
         for (int y = 0; y < mapa.getAlto(); y++) {
             for (int x = 0; x < mapa.getAncho(); x++) {
                 ContenidoCelda contenido = mapa.getContenido(x, y);
-                Enemigo en = contenido != null ? contenido.asEnemigo() : null;
-                if (en != null) {
-                    EstadoVisualPersonaje estado = vista.getEstadoVisual(en);
-                    double posX = estado != null ? estado.getPosXVisual() : en.getX();
-                    double posY = estado != null ? estado.getPosYVisual() : en.getY();
+                if (!(contenido instanceof Enemigo en)) continue;
 
-                    if (posX + 1 < camX || posX > camX + CamaraJuego.VIEW_COLS) continue;
-                    if (posY + 1 < camY || posY > camY + CamaraJuego.VIEW_ROWS) continue;
+                EstadoVisualPersonaje estado = vista.getEstadoVisual(en);
+                double posX = estado != null ? estado.getPosXVisual() : en.getX();
+                double posY = estado != null ? estado.getPosYVisual() : en.getY();
 
-                    int ex = (int) ((posX - camX) * tamaño) + desplazamientoX;
-                    int ey = (int) ((posY - camY) * tamaño) + desplazamientoY;
+                if (posX + 1 < camX || posX > camX + CamaraJuego.VIEW_COLS) continue;
+                if (posY + 1 < camY || posY > camY + CamaraJuego.VIEW_ROWS) continue;
 
-                    if (en.esLetal()) {
-                        String dirMuerte = "abajo";
-                        double difX = en.getX() - posX;
-                        double difY = en.getY() - posY;
+                int ex = (int) ((posX - camX) * tamaño) + desplazamientoX;
+                int ey = (int) ((posY - camY) * tamaño) + desplazamientoY;
 
-                        if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
-                            if (Math.abs(difX) > Math.abs(difY)) {
-                                dirMuerte = difX > 0 ? "derecha" : "izquierda";
-                            } else {
-                                dirMuerte = difY > 0 ? "abajo" : "arriba";
-                            }
-                        } else if (jugador != null) {
-                            double distJugadorX = jugador.getX() - en.getX();
-                            double distJugadorY = jugador.getY() - en.getY();
-                            if (Math.abs(distJugadorX) > Math.abs(distJugadorY)) {
-                                dirMuerte = distJugadorX > 0 ? "derecha" : "izquierda";
-                            } else {
-                                dirMuerte = distJugadorY > 0 ? "abajo" : "arriba";
-                            }
-                        }
+                if (en instanceof EnemigoLetal) {
+                    String dirMuerte = "abajo";
+                    double difX = en.getX() - posX;
+                    double difY = en.getY() - posY;
 
-                        Image spriteLetal = GestorSprites.getInstance().obtenerSpriteEnemigoLetal(dirMuerte);
-
-                        if (spriteLetal != null) {
-                            int anchoOriginal = spriteLetal.getWidth(null);
-                            int altoOriginal = spriteLetal.getHeight(null);
-                            double margen = 1.3;
-                            double escala = (double) tamaño / Math.max(anchoOriginal, altoOriginal) * margen;
-                            int anchoDibujo = (int) (anchoOriginal * escala);
-                            int altoDibujo = (int) (altoOriginal * escala);
-                            int dibujoX = ex + (tamaño - anchoDibujo) / 2;
-                            int dibujoY = ey + (tamaño - altoDibujo);
-                            g2d.drawImage(spriteLetal, dibujoX, dibujoY, anchoDibujo, altoDibujo, null);
+                    if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
+                        if (Math.abs(difX) > Math.abs(difY)) {
+                            dirMuerte = difX > 0 ? "derecha" : "izquierda";
                         } else {
-                            g2d.setColor(Color.BLACK);
-                            g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
-                            g2d.setColor(Color.RED);
-                            g2d.drawString("V", ex + 11, ey + 20);
+                            dirMuerte = difY > 0 ? "abajo" : "arriba";
                         }
+                    } else if (jugador != null) {
+                        double distJugadorX = jugador.getX() - en.getX();
+                        double distJugadorY = jugador.getY() - en.getY();
+                        if (Math.abs(distJugadorX) > Math.abs(distJugadorY)) {
+                            dirMuerte = distJugadorX > 0 ? "derecha" : "izquierda";
+                        } else {
+                            dirMuerte = distJugadorY > 0 ? "abajo" : "arriba";
+                        }
+                    }
 
+                    Image spriteLetal = GestorSprites.getInstance().obtenerSpriteEnemigoLetal(dirMuerte);
+
+                    if (spriteLetal != null) {
+                        int anchoOriginal = spriteLetal.getWidth(null);
+                        int altoOriginal = spriteLetal.getHeight(null);
+                        double margen = 1.3;
+                        double escala = (double) tamaño / Math.max(anchoOriginal, altoOriginal) * margen;
+                        int anchoDibujo = (int) (anchoOriginal * escala);
+                        int altoDibujo = (int) (altoOriginal * escala);
+                        int dibujoX = ex + (tamaño - anchoDibujo) / 2;
+                        int dibujoY = ey + (tamaño - altoDibujo);
+                        g2d.drawImage(spriteLetal, dibujoX, dibujoY, anchoDibujo, altoDibujo, null);
                     } else {
-                        int var = en.getVariante();
-                        Image imgEnemigo = (var >= 1 && var <= imagenes.getSpritesEnemigos().length)
-                                ? imagenes.getSpritesEnemigos()[var - 1] : null;
+                        g2d.setColor(Color.BLACK);
+                        g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
+                        g2d.setColor(Color.RED);
+                        g2d.drawString("V", ex + 11, ey + 20);
+                    }
 
-                        if (imgEnemigo != null) {
-                            g2d.drawImage(imgEnemigo, ex, ey, tamaño, tamaño, null);
-                        } else {
-                            g2d.setColor(Color.RED);
-                            g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
-                            g2d.setColor(Color.WHITE);
-                            g2d.drawString("V", ex + 11, ey + 20);
-                        }
+                } else {
+                    int var = en.getVariante();
+                    Image imgEnemigo = (var >= 1 && var <= imagenes.getSpritesEnemigos().length)
+                            ? imagenes.getSpritesEnemigos()[var - 1] : null;
+
+                    if (imgEnemigo != null) {
+                        g2d.drawImage(imgEnemigo, ex, ey, tamaño, tamaño, null);
+                    } else {
+                        g2d.setColor(Color.RED);
+                        g2d.fillRect(ex + 4, ey + 4, tamaño - 8, tamaño - 8);
+                        g2d.setColor(Color.WHITE);
+                        g2d.drawString("V", ex + 11, ey + 20);
                     }
                 }
             }

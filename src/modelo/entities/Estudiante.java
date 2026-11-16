@@ -28,57 +28,43 @@ public class Estudiante extends Personaje{
         return 0;
     }
 
-    @Override
-public boolean puedeSaltar() {
-    return true;
-}
 
 @Override
 public void saltar() {
-    long ahora = System.currentTimeMillis();
-    if (ahora - ultimoSalto < COOLDOWN_SALTO_MS) {
-        return;
-    }
+        long ahora = System.currentTimeMillis();
+        if (ahora - ultimoSalto < COOLDOWN_SALTO_MS) return;
 
-    String dirStr = getDireccionActual();
-    if (dirStr == null) {
-        return;
-    }
+        String dirStr = getDireccionActual();
+        if (dirStr == null) return;
 
-    char dir = dirStr.charAt(0);
-    int dx = 0, dy = 0;
-    switch (dir) {
-        case 'W': dy = -2; break;
-        case 'S': dy =  2; break;
-        case 'A': dx = -2; break;
-        case 'D': dx =  2; break;
-        default: return;
-    }
-
-    Mapa m = getMapa();
-    int nx = getX() + dx;
-    int ny = getY() + dy;
-
-    if (nx < 0 || nx >= m.getAncho() || ny < 0 || ny >= m.getAlto()) {
-        return;
-    }
-
-    Celda destino = m.conseguirCelda(nx, ny);
-    if (destino != null) {
-        ContenidoCelda contenido = destino.getContenido();
-        if (contenido != null) {
-            return;
+        char dir = dirStr.charAt(0);
+        int dx = 0, dy = 0;
+        switch (dir) {
+            case 'W': dy = -2; break;
+            case 'S': dy =  2; break;
+            case 'A': dx = -2; break;
+            case 'D': dx =  2; break;
+            default: return;
         }
-    }
 
-    if (destino != null) {
-        m.recolectarDeCelda(this, nx, ny);
-    }
-    m.limpiarCeldaDe(this);
-    setPosicion(nx, ny);
-    m.setPersonaje(this, nx, ny);
+        Mapa m = getMapa();
+        int nx = getX() + dx;
+        int ny = getY() + dy;
 
-    ultimoSalto = ahora;
+        if (nx < 0 || nx >= m.getAncho() || ny < 0 || ny >= m.getAlto()) return;
+
+        Celda destino = m.conseguirCelda(nx, ny);
+        if (destino != null) {
+            ContenidoCelda contenido = destino.getContenido();
+            if (contenido != null) return;
+        }
+
+        if (destino != null) m.recolectarDeCelda(this, nx, ny);
+        m.limpiarCeldaDe(this);
+        setPosicion(nx, ny);
+        m.setPersonaje(this, nx, ny);
+
+        ultimoSalto = ahora;
     }
 
 }

@@ -25,34 +25,22 @@ public class Jubilado extends Personaje {
     }
 
     @Override
-    public boolean puedeCrearParedes() {
-        return true;
-    }
-
-    @Override
     public void crearParedes() {
-        //el jubilado solo puede poner 1 pared
-        if (getDireccionActual() == null) {
-            return;
-        }
-        
+        if (getDireccionActual() == null) return;
+
         char dir = getDireccionActual().charAt(0);
         int nuevaX = getX();
         int nuevaY = getY();
-        
         switch (dir) {
             case 'W': nuevaY--; break;
             case 'S': nuevaY++; break;
             case 'A': nuevaX--; break;
             case 'D': nuevaX++; break;
-            default:
-                return;
+            default: return;
         }
-        
-        // verificar que no sea borde
-        if (nuevaX < 0 || nuevaX >= getMapa().getAncho() || nuevaY < 0 || nuevaY >= getMapa().getAlto()) {
-            return;
-        }
+
+        if (nuevaX < 0 || nuevaX >= getMapa().getAncho()
+                || nuevaY < 0 || nuevaY >= getMapa().getAlto()) return;
         getMapa().ponerPared(nuevaX, nuevaY);
     }
 }

@@ -14,25 +14,13 @@ public class EnemigoLetal extends Enemigo {
     }
 
     @Override
-    public boolean aplicarDanio(Personaje personaje) {
+    public void aplicarDanio(Personaje personaje) {
         personaje.morir();
-        return true;
-    }
-
-    @Override
-    public String getTipoVisual() {
-        return "ENEMIGO_LETAL";
-    }
-
-    @Override
-    public boolean esLetal() {
-        return true;
     }
 
     @Override
     public void actualizarMovimiento(Mapa mapa, Personaje jugador) {
         long ahora = System.currentTimeMillis();
-
         if (ahora - ultimoTeletransporte >= INTERVALO_TELETRANSPORTE_MS) {
             if (intentarTeletransporte(mapa, jugador)) {
                 ultimoTeletransporte = ahora;
@@ -42,21 +30,16 @@ public class EnemigoLetal extends Enemigo {
         super.actualizarMovimiento(mapa, jugador);
     }
 
-private boolean intentarTeletransporte(Mapa mapa, Personaje jugador) {
-    for (int intento = 0; intento < 30; intento++) {
-        int nx = random.nextInt(mapa.getAncho());
-        int ny = random.nextInt(mapa.getAlto());
-
-        ContenidoCelda contenido = mapa.getContenido(nx, ny);
-
-        if (contenido != null && (contenido.bloqueaPaso() || contenido == jugador)) {
-            continue;
+    private boolean intentarTeletransporte(Mapa mapa, Personaje jugador) {
+        for (int intento = 0; intento < 30; intento++) {
+            int nx = random.nextInt(mapa.getAncho());
+            int ny = random.nextInt(mapa.getAlto());
+            ContenidoCelda contenido = mapa.getContenido(nx, ny);
+            if (contenido != null && (contenido.bloqueaPaso() || contenido == jugador)) continue;
+            moverEnemigo(nx, ny, mapa);
+            return true;
         }
-
-        moverEnemigo(nx, ny, mapa); // reutiliza el metodo de Enemigo
-        return true;
+        return false;
     }
-    return false;
-}
 
 }

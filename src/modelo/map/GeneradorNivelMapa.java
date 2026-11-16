@@ -40,43 +40,44 @@ public class GeneradorNivelMapa {
     }
 
     private void colocarAleatorio(Mapa mapa, int cantidad, int nivel) {
-        int colocados = 0;
-        int intentos = 0;
-        int maxIntentos = cantidad * 50;
+    int colocados = 0, intentos = 0, maxIntentos = cantidad * 50;
 
-        while (colocados < cantidad && intentos < maxIntentos) {
-            intentos++;
-            int x = 1 + random.nextInt(mapa.getAncho() - 2);
-            int y = 1 + random.nextInt(mapa.getAlto() - 2);
+    while (colocados < cantidad && intentos < maxIntentos) {
+        intentos++;
+        int x = 1 + random.nextInt(mapa.getAncho() - 2);
+        int y = 1 + random.nextInt(mapa.getAlto() - 2);
 
-            if (mapa.getCeldas()[y][x].getContenido() != null
-                    || mapa.getCeldas()[y][x].getContenidoDebajo() != null) continue;
+        if (mapa.getCeldas()[y][x].getContenido() != null
+                || mapa.getCeldas()[y][x].getContenidoDebajo() != null) continue;
 
-            EstrategiaMovimiento estrategia = random.nextBoolean()
-                    ? new MovimientoPerseguidor()
-                    : new MovimientoErrante();
+        EstrategiaMovimiento estrategia = random.nextBoolean()
+                ? new MovimientoPerseguidor()
+                : new MovimientoErrante();
 
-            mapa.getCeldas()[y][x].setContenido(new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel));
-            colocados++;
-        }
+        Enemigo enemigo = new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel);
+        mapa.getCeldas()[y][x].setContenido(enemigo);
+        mapa.registrarEnemigo(enemigo);   // <-- NUEVO
+        colocados++;
     }
+}
 
     private void colocarEnemigoLetal(Mapa mapa, int nivel) {
-        if (nivel != 3) return;
+    if (nivel != 3) return;
 
-        int x, y, intentos = 0;
-        do {
-            x = 1 + random.nextInt(mapa.getAncho() - 2);
-            y = 1 + random.nextInt(mapa.getAlto() - 2);
-            intentos++;
-        } while ((mapa.getCeldas()[y][x].getContenido() != null
-                || Math.abs(x - 5) + Math.abs(y - 5) < 8)
-                && intentos < 100);
+    int x, y, intentos = 0;
+    do {
+        x = 1 + random.nextInt(mapa.getAncho() - 2);
+        y = 1 + random.nextInt(mapa.getAlto() - 2);
+        intentos++;
+    } while ((mapa.getCeldas()[y][x].getContenido() != null
+            || Math.abs(x - 5) + Math.abs(y - 5) < 8) && intentos < 100);
 
-        if (intentos < 100) {
-            mapa.getCeldas()[y][x].setContenido(new EnemigoLetal(x, y, 9999));
-        }
+    if (intentos < 100) {
+        EnemigoLetal letal = new EnemigoLetal(x, y, 9999);
+        mapa.getCeldas()[y][x].setContenido(letal);
+        mapa.registrarEnemigo(letal);   // <-- NUEVO
     }
+}
 
     private void generarBonus(Mapa mapa, int cantidad) {
         for (int i = 0; i < cantidad; i++) {
