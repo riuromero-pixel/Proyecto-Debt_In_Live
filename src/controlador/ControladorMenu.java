@@ -12,7 +12,7 @@ import src.vista.VistaCargando;
 import src.vista.VistaComoJugar;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaOpciones;
-
+import src.modelo.entities.CreadorNivel;
 import src.modelo.entities.NivelCreado;
 import src.modelo.entities.Personaje;
 import src.modelo.entities.RecordDAO;
@@ -93,7 +93,8 @@ public class ControladorMenu {
 
         @Override
         protected NivelCreado doInBackground() throws Exception {
-            return RegistroNiveles.paraNivel(1).crearNivel(4, 4);
+            CreadorNivel creador = RegistroNiveles.paraNivel(1);
+            return creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
         }
 
         @Override

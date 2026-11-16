@@ -18,6 +18,15 @@ public abstract class CreadorNivel {
         return new NivelCreado(mapa, jugador, getNivel());
     }
 
+    public int getSpawnX() { return 5; }
+    public int getSpawnY() { return 5; }
+
+    public String[] getMensajeInicio() { return null; }
+
+    public abstract String getMensajeDerrota();
+
+    public String getMensajeVictoria() { return "¡Ganaste!"; }
+
     public abstract int getNivel();
 
     protected abstract Personaje crearPersonaje(int x, int y, Mapa mapa);

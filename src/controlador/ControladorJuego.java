@@ -86,13 +86,14 @@ public class ControladorJuego {
             gestorReglas.verificarPerdida(this);
 
             if (juegoActivo && jugador.getDinero() >= 3000) {
-                if (nivelActual < 3) {
+                if (!RegistroNiveles.esUltimoNivel(nivelActual)) {
                     detener();
                     nivelActual++;
                     iniciarNivel(nivelActual);
                     return;
                 } else {
-                    gestorReglas.ganarJuego(this, "¡Bien ahi! Ganaste el juego! Lograste sobrevivir a las deudas de la vida.");
+                    String mensajeVictoria = RegistroNiveles.paraNivel(nivelActual).getMensajeVictoria();
+                    gestorReglas.ganarJuego(this, mensajeVictoria);
                     return;
                 }
             }

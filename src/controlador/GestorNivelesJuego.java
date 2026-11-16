@@ -9,10 +9,11 @@ public class GestorNivelesJuego {
 
     public void iniciarNivel(ControladorJuego controlador, int nivel) {
 
-        if (nivel == 2) {
-            VistaDialogoEstilo.mostrarMensaje(controlador.getVista(), "¡NIVEL 2!", "Ahora sos un Adulto", "A agarrar la pala.");
-        } else if (nivel == 3) {
-            VistaDialogoEstilo.mostrarMensaje(controlador.getVista(), "¡NIVEL 3!", "Ahora sos un Jubilado", "Ahora cagaste.");
+        CreadorNivel creador = RegistroNiveles.paraNivel(nivel);
+
+        String[] msg = creador.getMensajeInicio();
+        if (msg != null) {
+            VistaDialogoEstilo.mostrarMensaje(controlador.getVista(), msg[0], msg[1], msg[2]);
         }
 
         VistaCargando cargando = new VistaCargando(controlador.getVista(), "Generando nivel " + nivel + "...");
@@ -20,7 +21,7 @@ public class GestorNivelesJuego {
         SwingWorker<NivelCreado, Void> worker = new SwingWorker<NivelCreado, Void>() {
             @Override
             protected NivelCreado doInBackground() throws Exception {
-                return RegistroNiveles.paraNivel(nivel).crearNivel(5, 5);
+                return creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
             }
 
             @Override
@@ -28,7 +29,6 @@ public class GestorNivelesJuego {
                 try {
                     NivelCreado resultado = get();
                     controlador.cambiarNivel(resultado.mapa(), resultado.jugador(), nivel);
-
                     cargando.dispose();
                 } catch (Exception ex) {
                     cargando.dispose();

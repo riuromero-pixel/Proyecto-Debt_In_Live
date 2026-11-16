@@ -11,6 +11,21 @@ public class CreadorNivel2 extends CreadorNivel {
     }
 
     @Override
+    public int getSpawnX() { return 6; }
+    @Override
+    public int getSpawnY() { return 2; }
+
+    @Override
+    public String[] getMensajeInicio() {
+        return new String[]{"¡NIVEL 2!", "Ahora sos un Adulto", "A agarrar la pala."};
+    }
+
+    @Override
+    public String getMensajeDerrota() {
+        return "¡PERDISTE! Te quedaste sin plata. No llegaste a fin de mes. Pinchó mal.";
+    }
+
+    @Override
     protected Personaje crearPersonaje(int x, int y, Mapa mapa) {
         return new Adulto(x, y, mapa);
     }

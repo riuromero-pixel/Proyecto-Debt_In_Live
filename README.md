@@ -29,7 +29,7 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 - Los enemigos estarán a lo largo de todo el mapa de forma aleatoria y tendrán un recorrido preestablecido para dificultar la partida al jugador. Algunos persiguen al jugador y otros se mueven de forma errante.
 
-- En el nivel final aparece además un **Enemigo Letal** que elimina al jugador con solo tocarlo.
+- En el nivel final aparece además un **Enemigo Letal** que elimina al jugador con solo tocarlo y tiene una habilidad la cual lo teletransporta cada cierto tiempo.
 
 ## Mecanicas de Juego
 
@@ -42,6 +42,8 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 - Al recolectar $3000 el jugador avanza al siguiente nivel (o gana el juego si estaba en el último).
 
 - Dependiendo del nivel, el jugador puede **romper paredes** (tecla R) o **crear paredes** (tecla C): el Adulto puede llenar una fila/columna entera, el Jubilado solo puede colocar una pared.
+
+- El personaje "Estudiante" tiene una habilidad especial con (tecla F) esta le permite dar un salto de una casilla permitiendole atravezar paredes, enemigos , etc (esta habilidad solo la tiene el Estudiante y tiene un coldown de 7 segundos)
 
 ## Interfaz Grafica
 
@@ -78,120 +80,24 @@ Concepto personaje estudiante:
 
 - **Nombre del Patrón:** **Factory Method**.
   
-- ControladorJuego.iniciarNivel()
- ```java
-  private void iniciarNivel(int nivel) {
-    if (nivel == 2) {
-        JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
-    } else if (nivel == 3) {
-        JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
-    }
-    // Crear nuevo mapa y generar nivel
-    this.mapa = new Mapa(40, 40);
-    this.mapa.cargarNivel(nivel);
-    Reproductor_audio.getInstancia().reproducirSonido(nivel);
-    this.mapa.generarDinero();
+`CreadorNivel` es la **única fuente de verdad** de cada nivel: no solo crea
+el mapa y el personaje, sino que también define:
 
-    switch (nivel) {
-        case 1: this.jugador = new Estudiante(5, 5, this.mapa); break;
-        case 2: this.jugador = new Adulto(5, 5, this.mapa); break;
-        case 3: this.jugador = new Jubilado(5, 5, this.mapa); break;
-    }
+- `crearPersonaje(x, y, mapa)` → qué Personaje (Estudiante/Adulto/Jubilado)
+- `cargarPlantilla(mapa)` → la plantilla del mapa
+- `getMensajeInicio()` → diálogo al entrar
+- `getMensajeDerrota()` → mensaje al perder
+- `getMensajeVictoria()` → mensaje al ganar
+- `getSpawnX/Y()` → dónde aparece el jugador
 
-    // limpiar la celda de inicio por si hay paredes o enemigos de casualidad
-    this.mapa.celdas[5][5].contenido = null;
-    this.mapa.setPersonaje(this.jugador, 5, 5);
+Para agregar un nivel nuevo:
 
-    this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
-    this.vista.desactivarGameOver();
-    this.juegoActivo = true;
-    iniciarTimers();
-    this.vista.repaint();
-}
- ```
--ControladorJuego.iniciarJuego()
- ```java
-private void iniciarJuego() {
-   // 1) MODELO inicial (Nivel 1 siempre es el Estudiante/Adolescente)
-   Mapa mapa = new Mapa(40, 40);
-   mapa.cargarNivel(1);
-   mapa.generarDinero();
+1. Crear `CreadorNivel4 extends CreadorNivel` con esos 5 métodos.
+2. Agregar `CREADORES.put(4, new CreadorNivel4());` en `RegistroNiveles`.
 
-   Personaje jugador = new Estudiante(5, 5, mapa);
-
-   mapa.celdas[5][5].contenido = null;
-   mapa.setPersonaje(jugador, 5, 5);
-
-   VistaJuego vista = new VistaJuego(mapa, jugador, 1);
-   ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador, this.tiempoInicioPartida, this.recordDAO, nombreJugador);
-
-   vistaMenu.dispose();
-   vista.mostrar();
-}
- ```
-- **Problema:** el controlador instancia directamente los personajes mediante un switch, lo que generaba un acoplamiento fuerte con las clases concretas Estudiante, Adulto y Jubilado.
-- **Justificación:** Se utilizó este patrón para centralizar la creación de los objetos `Personaje` (Estudiante, Adulto, Jubilado). Se creó la clase `PersonajeFactory` con un método estático `crearPersonaje(int nivel, int x, int y, Mapa mapa)` que decide qué subclase instanciar según el nivel recibido. Esto hará que el controlador solo pida "un personaje para el nivel N" y la factory se encarga de instanciar el correcto. Así, agregar un nuevo tipo de personaje no requerirá modificar el código que gestiona los niveles.
-
--PersonajeFactory.java //Clase nueva
- ```java
-public class PersonajeFactory {
-
-    public static Personaje crearPersonaje(int nivel, int x, int y, Mapa mapa) {
-       switch (nivel) {
-           case 1: return new Estudiante(x, y, mapa);
-           case 2: return new Adulto(x, y, mapa);
-           case 3: return new Jubilado(x, y, mapa);
-           default: return new Estudiante(x, y, mapa); //Personaje por defecto
-       }
-   }
-}
- ```
--ControladorJuego.iniciarNivel() //Con Factory
- ```java
-private void iniciarNivel(int nivel) {
-   if (nivel == 2) {
-       JOptionPane.showMessageDialog(vista, "¡NIVEL 2!\n Ahora sos un Adulto. A agarrar la pala.");
-   } else if (nivel == 3) {
-       JOptionPane.showMessageDialog(vista, "¡NIVEL 3!\n Ahora sos un Jubilado. Ahora cagaste.");
-   }
-   this.mapa = new Mapa(40, 40);
-   this.mapa.cargarNivel(nivel);
-   Reproductor_audio.getInstancia().reproducirSonido(nivel);
-   this.mapa.generarDinero();
-
-   this.jugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, this.mapa); //este es el cambio
-
-   this.mapa.celdas[5][5].contenido = null;
-   this.mapa.setPersonaje(this.jugador, 5, 5);
-
-   this.vista.actualizarModelo(this.mapa, this.jugador, nivel);
-   this.vista.desactivarGameOver();
-   this.juegoActivo = true;
-   iniciarTimers();
-   this.vista.repaint();
-}
- ```
--ControladorJuego.iniciarJuego() //con Factory
- ```java
-private void iniciarJuego() {
-   // (pedir nombre al jugador) 
-
-   Mapa mapa = new Mapa(40, 40);
-   mapa.cargarNivel(1);
-   mapa.generarDinero();
-
-   Personaje jugador = PersonajeFactory.crearPersonaje(1, 5, 5, mapa); //aca esta el cambio
-
-   mapa.celdas[5][5].contenido = null;
-   mapa.setPersonaje(jugador, 5, 5);
-
-   VistaJuego vista = new VistaJuego(mapa, jugador, 1);
-   ControladorJuego controlador = new ControladorJuego(vista, mapa, jugador, this.tiempoInicioPartida, this.recordDAO, nombreJugador);
-
-   vistaMenu.dispose();
-   vista.mostrar();
-}
- ```
+**Nada más.** No hay que tocar el Controlador, ni el GestorReglas, ni el
+GestorNiveles: todos le preguntan al `CreadorNivel` en lugar de hacer
+`if (nivel == X)`.
 -----------------------------------------------------
 - **Nombre del Patrón:** **Strategy**.
  ```java

@@ -1,5 +1,6 @@
 package src.controlador;
 
+import src.modelo.entities.RegistroNiveles;
 import src.modelo.map.Reproductor_audio;
 import src.vista.VistaDialogoEstilo;
 
@@ -13,13 +14,7 @@ public class GestorReglasJuego {
             controlador.getVista().mostrarGameOver();
             controlador.detener();
 
-            String mensaje;
-            switch (controlador.getNivelActual()) {
-                case 1: mensaje = "¡PERDISTE! Te quedaste sin plata. Chau play 5:(."; break;
-                case 2: mensaje = "¡PERDISTE! Te quedaste sin plata. No llegaste a fin de mes. Pinchó mal."; break;
-                case 3: mensaje = "¡PERDISTE! Te quedaste sin plata. Perdiste toda la plata de la jubilación. Cagamo."; break;
-                default: mensaje = "¡PERDISTE! Te quedaste sin plata."; break;
-            }
+            String mensaje = RegistroNiveles.paraNivel(controlador.getNivelActual()).getMensajeDerrota();
 
             int opcion = VistaDialogoEstilo.mostrarOpciones(
                 controlador.getVista(),

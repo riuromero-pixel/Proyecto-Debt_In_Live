@@ -11,6 +11,16 @@ public class CreadorNivel3 extends CreadorNivel {
     }
 
     @Override
+    public String[] getMensajeInicio() {
+        return new String[]{"¡NIVEL 3!", "Ahora sos un Jubilado", "Ahora cagaste."};
+    }
+
+    @Override
+    public String getMensajeDerrota() {
+        return "¡PERDISTE! Te quedaste sin plata. Perdiste toda la plata de la jubilación. Cagamo.";
+    }
+
+    @Override
     protected Personaje crearPersonaje(int x, int y, Mapa mapa) {
         return new Jubilado(x, y, mapa);
     }
