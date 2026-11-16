@@ -28,7 +28,7 @@ public class ControladorJuego {
 
     public ControladorJuego(VistaJuego vista, Mapa mapa, Personaje jugador,
                             long tiempoInicioPartida, RecordDAO recordDAO, String nombreJugador,
-                            Reproductor_audio reproductorAudio) {
+                            Reproductor_audio reproductorAudio, int nivelInicial) {
         this.vista = vista;
         this.mapa = mapa;
         this.jugador = jugador;
@@ -36,6 +36,7 @@ public class ControladorJuego {
         this.recordDAO = recordDAO;
         this.nombreJugador = nombreJugador;
         this.reproductorAudio = reproductorAudio;
+        this.nivelActual = nivelInicial;
 
         this.reproductorAudio.reproducirSonido(1);
 

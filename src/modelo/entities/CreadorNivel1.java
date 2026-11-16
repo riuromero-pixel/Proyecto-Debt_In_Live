@@ -11,9 +11,9 @@ public class CreadorNivel1 extends CreadorNivel {
     }
 
     @Override
-    public int getSpawnX() { return 4; }
+    public int getSpawnX() { return 10; }
     @Override
-    public int getSpawnY() { return 4; }
+    public int getSpawnY() { return 10; }
 
     @Override
     public String getMensajeDerrota() {

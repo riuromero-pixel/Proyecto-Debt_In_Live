@@ -88,12 +88,12 @@ public class ControladorMenu {
         this.tiempoInicioPartida = System.currentTimeMillis();
     // diálogo de carga
     final VistaCargando cargando = new VistaCargando(vistaMenu, "Generando nivel 1...");
-
+    final int nivelInicial = 3;
     SwingWorker<NivelCreado, Void> worker = new SwingWorker<NivelCreado, Void>() {
 
         @Override
         protected NivelCreado doInBackground() throws Exception {
-            CreadorNivel creador = RegistroNiveles.paraNivel(1);
+            CreadorNivel creador = RegistroNiveles.paraNivel(nivelInicial);
             return creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
         }
 
@@ -103,14 +103,15 @@ public class ControladorMenu {
                 NivelCreado resultado = get();
                 Mapa mapa = resultado.mapa();
                 Personaje jugador = resultado.jugador();
+                int nivel = resultado.nivel();
 
                 reproductorAudio.reproducirSonido(1);
 
-                VistaJuego vista = new VistaJuego(mapa, jugador, 1);
+                VistaJuego vista = new VistaJuego(mapa, jugador, nivelInicial);
                 vista.setTiempoInicioPartida(tiempoInicioPartida);
                 ControladorJuego controlador = new ControladorJuego(
                     vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugadorFinal,
-                    reproductorAudio
+                    reproductorAudio, nivel
                 );
 
                 controlador.setAccionVolverMenu(() -> {
