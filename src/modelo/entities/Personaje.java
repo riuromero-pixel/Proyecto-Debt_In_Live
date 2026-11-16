@@ -74,6 +74,18 @@ public abstract class Personaje implements ContenidoCelda {
         return false;
     }
 
+    public boolean puedeSaltar() {
+    return false;
+    }
+
+    public void saltar() {
+    }
+
+    protected void setPosicion(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public void crearParedes() {
     }
 

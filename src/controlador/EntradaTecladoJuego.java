@@ -38,6 +38,12 @@ public class EntradaTecladoJuego extends KeyAdapter {
                     controlador.getVista().repaint();
                 }
                 break;
+            case 'f': case 'F':
+                if (controlador.getJugador().puedeSaltar()) {
+                    controlador.getJugador().saltar();
+                    controlador.getVista().repaint();
+                }
+                break;    
         }
     }
 
