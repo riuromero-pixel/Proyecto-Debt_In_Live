@@ -35,18 +35,11 @@ public class Enemigo extends ObjetoEntorno {
 
     public int getX() { return x; }
     public int getY() { return y; }
-    public int getDanio() { return danio; }
 
     public int getVariante() {
         return this.variante;
     }
     
-    public void setEstrategia(EstrategiaMovimiento e) { this.estrategia = e; }
-
-    public EstrategiaMovimiento getEstrategia() {
-        return this.estrategia;
-    }
-
     @Override 
     public boolean interactuar(Personaje p) {
         aplicarDanio(p);
@@ -61,10 +54,6 @@ public class Enemigo extends ObjetoEntorno {
         if (estrategia != null) {
             estrategia.mover(this, jugador, mapa);
         }
-    }
-
-    public boolean esLetal() {
-        return false;
     }
 
     public void moverEnemigo(int mejorX, int mejorY, Mapa mapa) {

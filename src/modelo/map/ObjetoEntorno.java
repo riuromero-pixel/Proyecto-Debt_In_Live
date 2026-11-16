@@ -13,7 +13,4 @@ public abstract class ObjetoEntorno implements ContenidoCelda {
 
     @Override
     public boolean bloqueaPaso() { return !pasoLibre; }
-
-    public boolean isPasoLibre() { return pasoLibre; }
-
 }

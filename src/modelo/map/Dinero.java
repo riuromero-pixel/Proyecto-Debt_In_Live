@@ -13,8 +13,6 @@ public class Dinero extends ObjetoEntorno {
         this.cantidad = cantidad;
     }
 
-    public int getCantidad() { return cantidad; }
-
     @Override 
     public boolean bloqueaPaso() { return false; }
 

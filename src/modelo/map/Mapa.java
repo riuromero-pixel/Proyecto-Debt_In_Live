@@ -85,16 +85,6 @@ public class Mapa {
         }
     }
 
-    public boolean estaLibre(int x, int y) {
-        if (!estaDentro(x, y)) return false;
-        return celdas[y][x].getContenido() == null;
-    }
-
-    public boolean esPared(int x, int y) {
-        if (!estaDentro(x, y)) return false;
-        return celdas[y][x].getContenido() instanceof Golpeable;
-    }
-
     public int getAncho() { return ancho; }
     public int getAlto() { return alto; }
     Celda[][] getCeldas() { return celdas; }
@@ -105,11 +95,5 @@ public class Mapa {
         ContenidoCelda contenido = celda.getContenido();
         if (contenido != null && contenido.bloqueaPaso()) return;
         celda.setContenido(personaje);
-    }
-
-    public Personaje getPersonaje(int x, int y) {
-        if (!estaDentro(x, y)) return null;
-        ContenidoCelda contenido = celdas[y][x].getContenido();
-        return contenido instanceof Personaje p ? p : null;
     }
 }
