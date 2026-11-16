@@ -38,6 +38,11 @@ public class EstadoVisualPersonaje {
         }
     }
 
+    public void teletransportar(int x, int y) {
+        this.posXVisual = x;
+        this.posYVisual = y;
+    }
+
     public double getPosXVisual() { return posXVisual; }
     public double getPosYVisual() { return posYVisual; }
     public String getDireccionVisual() { return direccionVisual; }

@@ -121,7 +121,13 @@ private final DibujantePanelInfo dibujantePanelInfo = new DibujantePanelInfo();
                             estado = new EstadoVisualPersonaje(enemigo.getX(), enemigo.getY());
                             estadosEnemigos.put(enemigo, estado);
                         }
-                        estado.actualizarPosicionVisual(enemigo.getX(), enemigo.getY());
+                        double distX = Math.abs(estado.getPosXVisual() - enemigo.getX());
+                        double distY = Math.abs(estado.getPosYVisual() - enemigo.getY());
+                        if (enemigo.esLetal() && (distX > 1.5 || distY > 1.5)) {
+                            estado.teletransportar(enemigo.getX(), enemigo.getY());
+                        } else {
+                            estado.actualizarPosicionVisual(enemigo.getX(), enemigo.getY());
+                        }
                         estado.actualizarAnimacion(false);
                     }
                 }
