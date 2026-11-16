@@ -94,7 +94,6 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
         @Override
         protected Object[] doInBackground() throws Exception {
             // HILO SECUNDARIO 
-            Thread.sleep(900); // simula carga para evitar el parpadeo del escritorio
 
             Mapa mapa = new Mapa(40, 40);
             mapa.cargarNivel(1);

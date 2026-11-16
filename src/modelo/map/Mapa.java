@@ -327,15 +327,19 @@ public class Mapa {
     }
     
     //verificar si el jugador piso un Enemigo
-    public boolean verificarColisionConEnemigo(Personaje jugador) {
-        Celda celdaJugador = conseguirCelda(jugador.getX(), jugador.getY());
-        if (celdaJugador != null && celdaJugador.contenido instanceof Enemigo) {
-            Enemigo enemigo = (Enemigo) celdaJugador.contenido;
-            jugador.danioRecibido(enemigo.danio);
-            return true;
-        }
-        return false;
+   public boolean verificarColisionConEnemigo(Personaje jugador) {
+    Celda celdaJugador = conseguirCelda(jugador.getX(), jugador.getY());
+
+    if (celdaJugador != null && celdaJugador.contenido instanceof Enemigo) {
+        Enemigo enemigo = (Enemigo) celdaJugador.contenido;
+
+        enemigo.hacerDanio(jugador); // POLIMORFISMO
+
+        return true;
     }
+
+    return false;
+}
     
     //verificar si no queda dinero en el mapa (visible o debajo)
     public boolean noQuedaDinero() {

@@ -158,8 +158,6 @@ private void iniciarNivel(int nivel) {
     SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
         @Override
         protected Object[] doInBackground() throws Exception {
-           
-            Thread.sleep(700); // simula la carga para que no parpadee el escritorio
 
             Mapa nuevoMapa = new Mapa(40, 40);
             nuevoMapa.cargarNivel(nivel);
@@ -317,7 +315,7 @@ private void ganarJuego(String mensaje) {
                     creador.crearParedes();
                     vista.repaint();
                 }
-                
+               
                     break;
                     
             }
