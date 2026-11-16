@@ -1,6 +1,8 @@
 package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.concurrent.ExecutionException;
+
 import javax.swing.*;
 
 import src.modelo.entities.*;
@@ -330,13 +332,37 @@ private void ganarJuego(String mensaje) {
         }
     }
 
-      private void guardarRecordActual(int nivelAlcanzado) {
-        if (recordDAO == null) return;
-        long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
-        Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
-        recordDAO.guardar(nuevoRecord);
-    }
-   
+     private void guardarRecordActual(int nivelAlcanzado) {
+    if (recordDAO == null) return;
+
+
+    long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
+    Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
+
+
+    new SwingWorker<Boolean, Void>() {
+        @Override
+        protected Boolean doInBackground() {
+            // HILO DE FONDO: guardar en SQLite sin bloquear el EDT.
+            return recordDAO.guardar(nuevoRecord);
+        }
+
+
+        @Override
+        protected void done() {
+            try {
+                if (!get()) {
+                    System.err.println("No se pudo guardar el récord.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }.execute();
+}
+
     // ---------- CIERRE ----------
     public void detener() {
         juegoActivo = false;

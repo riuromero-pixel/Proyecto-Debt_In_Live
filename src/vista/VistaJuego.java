@@ -197,16 +197,21 @@ try {
     }
 
     //el controlador llama a este metodo para mostrar la ventana
-    public void mostrar() {
-        setUndecorated(true);
-         GraphicsDevice gd = GraphicsEnvironment
-        .getLocalGraphicsEnvironment()
-        .getDefaultScreenDevice();
-        gd.setFullScreenWindow(this);
-        setVisible(true);
-        this.toFront();
-        this.requestFocusInWindow();
-    }
+   public void mostrar() {
+    setUndecorated(true);
+
+    // Obtener las dimensiones de la pantalla
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice gd = ge.getDefaultScreenDevice();
+    Rectangle bounds = gd.getDefaultConfiguration().getBounds();
+
+    // Ocupar toda la pantalla sin usar fullscreen exclusivo
+    setBounds(bounds);
+
+    setVisible(true);
+    toFront();
+    requestFocusInWindow();
+}
 
     //el controlador se registra como listener del teclado a traves de la vista
     public void registrarTeclado(java.awt.event.KeyListener listener) {

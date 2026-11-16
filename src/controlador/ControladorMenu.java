@@ -80,6 +80,9 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
         if (nombreJugador == null) {
             return;
         }
+           vistaMenu.toFront();
+            vistaMenu.requestFocusInWindow();
+
         if (nombreJugador.trim().isEmpty()) {
             nombreJugador = "Anonimo";
         }
@@ -147,28 +150,64 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
 }
 
 
-    private void mostrarRecords() {
+   private void mostrarRecords() {
     if (this.recordDAO == null) {
-        JOptionPane.showMessageDialog(vistaMenu, "Error: Base de datos no conectada.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(vistaMenu,
+                "Error: Base de datos no conectada.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         return;
     }
+
+
+    new SwingWorker<java.util.List<Record>, Void>() {
+        @Override
+        protected java.util.List<Record> doInBackground() {
+            // HILO DE FONDO: consulta a SQLite.
+            return recordDAO.obtenerMejores();
+        }
+
+
+        @Override
+        protected void done() {
+            // EDT: crear y mostrar la ventana.
+            try {
+                java.util.List<Record> records = get();
+                VistaRecords ventana = new VistaRecords(vistaMenu, records);
+                ventana.setVisible(true);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (java.util.concurrent.ExecutionException e) {
+                JOptionPane.showMessageDialog(vistaMenu,
+                        "Error al leer los récords.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }.execute();
+
 
     java.util.List<Record> records = this.recordDAO.obtenerMejores();
 
     // usamos la ventana propia con un estilo
     VistaRecords ventana = new VistaRecords(vistaMenu, records);
     ventana.setVisible(true);
+      vistaMenu.toFront();
+    vistaMenu.requestFocusInWindow();
 }
 
 private void mostrarComoJugar() {
     // ventana propia con un estilo
     VistaComoJugar ventana = new VistaComoJugar(vistaMenu);
     ventana.setVisible(true);
+     vistaMenu.toFront();
+    vistaMenu.requestFocusInWindow();
 }
 
 private void mostrarOpciones() {
     VistaOpciones ventana = new VistaOpciones(vistaMenu, accionSilenciarGlobal);
-    ventana.setVisible(true);
+    ventana.setVisible(true); 
+    vistaMenu.toFront();
+    vistaMenu.requestFocusInWindow();
 }
-
 }
