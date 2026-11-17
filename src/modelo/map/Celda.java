@@ -31,10 +31,4 @@ public class Celda {
         }
     }
 
-    public int contarComoDinero() {
-        int total = 0;
-        if (contenido != null) total += contenido.contarComoDinero();
-        if (contenidoDebajo != null) total += contenidoDebajo.contarComoDinero();
-        return total;
-    }
 }

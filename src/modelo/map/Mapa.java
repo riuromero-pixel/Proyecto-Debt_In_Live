@@ -12,6 +12,7 @@ public class Mapa {
     private final int alto;
 
     private final List<Enemigo> enemigos = new ArrayList<>();
+    private final List<Dinero> dineros = new ArrayList<>();
 
     private final GeneradorNivelMapa generador = new GeneradorNivelMapa();
     private final GestorEnemigosMapa gestorEnemigos = new GestorEnemigosMapa();
@@ -35,6 +36,9 @@ public class Mapa {
 
     public void registrarEnemigo(Enemigo e) { enemigos.add(e); }
     public List<Enemigo> getEnemigos() { return enemigos; }
+
+    public void registrarDinero(Dinero d) { dineros.add(d); }
+    public List<Dinero> getDineros() { return dineros; }
 
     public void moverEnemigos(Personaje jugador) { gestorEnemigos.moverEnemigos(this, jugador); }
     public boolean verificarColisionConEnemigo(Personaje jugador) { return gestorEnemigos.verificarColisionConEnemigo(this, jugador); }

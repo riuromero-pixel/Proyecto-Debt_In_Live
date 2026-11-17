@@ -101,7 +101,9 @@ public class GeneradorNivelMapa {
                 y = 1 + random.nextInt(mapa.getAlto() - 2);
             } while (mapa.getCeldas()[y][x].getContenido() != null
                     || mapa.getCeldas()[y][x].getContenidoDebajo() != null);
-            mapa.getCeldas()[y][x].setContenido(new Dinero(100 + random.nextInt(400)));
+            Dinero nuevoDinero = new Dinero(100 + random.nextInt(400));
+        mapa.getCeldas()[y][x].setContenido(nuevoDinero);
+        mapa.registrarDinero(nuevoDinero);
         }
     }
 }

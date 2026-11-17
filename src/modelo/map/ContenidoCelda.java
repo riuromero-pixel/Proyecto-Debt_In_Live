@@ -7,6 +7,4 @@ public interface ContenidoCelda {
 
     default boolean interactuar(Personaje p) { return false; }
 
-    default int contarComoDinero() { return 0; }
-
 }

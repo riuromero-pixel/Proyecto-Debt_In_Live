@@ -4,6 +4,7 @@ import src.modelo.entities.Personaje;
 
 public class Dinero extends ObjetoEntorno {
     private int cantidad;
+    private boolean recolectado = false;
     
     public Dinero(int cantidad) {
         super(true);
@@ -19,10 +20,11 @@ public class Dinero extends ObjetoEntorno {
     @Override
     public boolean interactuar(Personaje p) {
     p.recolectarDinero(cantidad);
+    this.recolectado = true;
     return true;
 }
 
-    public int contarComoDinero() {
-        return 1;
+    public boolean estaRecolectado() {
+        return recolectado;
     }
 }
