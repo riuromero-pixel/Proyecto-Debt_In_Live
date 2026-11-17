@@ -1,6 +1,5 @@
 package src.modelo.map;
 import java.io.File;
-import java.io.IOException;
 import javax.sound.sampled.*;
 
 public class Reproductor_audio {
@@ -11,12 +10,47 @@ public class Reproductor_audio {
 private Reproductor_audio() {
         // Constructor privado para evitar instanciación externa
     }
-    //solo una instancia
-public static synchronized Reproductor_audio getInstancia() {
+
+    public static synchronized Reproductor_audio getInstancia() {
         if (instanciaUnica == null) {
             instanciaUnica = new Reproductor_audio();
         }
         return instanciaUnica;
+    }
+    
+    public Clip cargarSonido(int nivel) {
+        if (silenciado) return null;
+
+        String nombreArchivo = switch (nivel) {
+            case 1 -> "images/Movimiento-Naranja-NES-FC.wav";
+            case 2 -> "images/Homero_Chiptune_Master.wav";
+            case 3 -> "images/Tango-in-8-bits-por-una-cabeza-NES-famitracker-EliKomponistaSaturn.wav";
+            default -> null;
+        };
+        if (nombreArchivo == null) return null;
+
+        try {
+            File archivoAudio = new File(nombreArchivo);
+            if (!archivoAudio.exists()) {
+                System.out.println("Archivo de audio no encontrado: " + archivoAudio.getAbsolutePath());
+                return null;
+            }
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoAudio);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            return clip;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void reproducirClip(Clip clip) {
+        if (silenciado || clip == null) return;
+        detenerSonido();
+        clipActual = clip;
+        clip.start();
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
     public boolean isSilenciado() {
@@ -33,42 +67,8 @@ public static synchronized Reproductor_audio getInstancia() {
     }
 }
     public void reproducirSonido(int nivel) {
-        if (silenciado){
-            return;
-        }
-        detenerSonido(); // Se asegura de cortar la música anterior antes de arrancar otra
-
-        String nombreArchivo = "";
-        switch (nivel) {
-            case 1:
-                nombreArchivo = "images/Movimiento-Naranja-NES-FC.wav";
-                
-                break;
-            case 2:
-                nombreArchivo = "images/Homero_Chiptune_Master.wav";
-                break;
-            case 3:
-                nombreArchivo = "images/Tango-in-8-bits-por-una-cabeza-NES-famitracker-EliKomponistaSaturn.wav";
-                break;
-            default:
-                return;
-        }
-
-        try {
-            File archivoAudio = new File(nombreArchivo);
-            if (archivoAudio.exists()) {
-                AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoAudio);
-                clipActual = AudioSystem.getClip();
-                clipActual.open(audioStream);
-                clipActual.start();
-                clipActual.loop(Clip.LOOP_CONTINUOUSLY); // Reproducción en bucle
-            } else {
-                System.out.println("Archivo de audio no encontrado en: " + archivoAudio.getAbsolutePath());
-            }
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
+    reproducirClip(cargarSonido(nivel));
+}
 
     // metodo para frenar el clip actual de forma segura
     public void detenerSonido() {

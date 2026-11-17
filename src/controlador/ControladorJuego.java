@@ -1,8 +1,11 @@
 package src.controlador;
 
+import javax.sound.sampled.Clip;
+
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
+import src.vista.CargadorImagenesNivel;
 import src.vista.VistaJuego;
 
 public class ControladorJuego {
@@ -110,13 +113,13 @@ public class ControladorJuego {
         gestorNiveles.iniciarNivel(this, nivel);
     }
 
-    public void cambiarNivel(Mapa nuevoMapa, Personaje nuevoJugador, int nivel) {
+    public void cambiarNivel(Mapa nuevoMapa, Personaje nuevoJugador, int nivel, CargadorImagenesNivel imagenes, Clip clipMusica) {
         this.mapa = nuevoMapa;
         this.jugador = nuevoJugador;
         this.nivelActual = nivel;
 
-        this.reproductorAudio.reproducirSonido(nivel);
-        vista.actualizarModelo(mapa, jugador, nivel);
+        reproductorAudio.reproducirClip(clipMusica);  // ya no hace I/O, solo start()
+        vista.actualizarModelo(mapa, jugador, nivel, imagenes);
         vista.setTiempoInicioPartida(tiempoInicioPartida);
         vista.desactivarGameOver();
 
@@ -155,4 +158,5 @@ public class ControladorJuego {
     public long getTiempoInicioPartida() { return tiempoInicioPartida; }
     public RecordDAO getRecordDAO() { return recordDAO; }
     public String getNombreJugador() { return nombreJugador; }
+    public Reproductor_audio getReproductorAudio() { return reproductorAudio; }
 }

@@ -158,4 +158,28 @@ public class GestorSprites {
 
         return sheet.obtenerFrame(fila, columna);
     }
+
+    public void precargarPersonajePara(int tipoIndex) {
+        if (tipoIndex < 0 || tipoIndex > 2) return;
+
+        String tipoStr = switch (tipoIndex) {
+            case 1 -> "adulto";
+            case 2 -> "jubilado";
+            default -> "estudiante";
+        };
+        String[] dirs    = {"abajo", "arriba", "derecha", "izquierda"};
+        int[]    dirIdx  = {0, 1, 2, 3};
+
+        for (int i = 0; i < dirs.length; i++) {
+            getSpriteEstatico(tipoIndex, tipoStr, dirIdx[i], dirs[i]);  // I/O
+            getSpriteAnimado (tipoIndex, tipoStr, dirIdx[i], dirs[i]);  // I/O
+        }
+    }
+
+    public void precargarEnemigoLetal() {
+        for (String dir : new String[]{"abajo", "arriba", "derecha", "izquierda"}) {
+            obtenerSpriteEnemigoLetal(dir);   // I/O
+        }
+    }
+
 }

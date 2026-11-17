@@ -19,6 +19,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     private static final int PANEL_ALTO = 60;
     private boolean gameOver = false; //bandera para saber si terminó el juego
     private long tiempoInicioPartida;
+    private CargadorImagenesNivel imagenesNivel;
    
 
     //buffer para evitar parpadeo
@@ -31,12 +32,13 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     public void cargarImagenesNivel() {
     imagenesNivel.cargar(nivelActual);
 }
-    public VistaJuego(Mapa mapa, Personaje jugador, int nivelActual) {
+    public VistaJuego(Mapa mapa, Personaje jugador, int nivelActual,
+                  CargadorImagenesNivel imagenes) {
         this.mapa = mapa;
         this.jugador = jugador;
         this.nivelActual = nivelActual;
-      
-        cargarImagenesNivel();
+        this.imagenesNivel = imagenes;       
+        
         setTitle("Juego");
         setSize(15 * tamaño + 45, 10 * tamaño + 120);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,7 +55,6 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     }
 
     private final CamaraJuego camara = new CamaraJuego();
-private final CargadorImagenesNivel imagenesNivel = new CargadorImagenesNivel();
 private final DibujanteMapa dibujanteMapa = new DibujanteMapa();
 private final DibujanteEntidades dibujanteEntidades = new DibujanteEntidades();
 private final DibujantePanelInfo dibujantePanelInfo = new DibujantePanelInfo();
@@ -67,17 +68,16 @@ private final DibujantePanelInfo dibujantePanelInfo = new DibujantePanelInfo();
     }
 
     //Permite al controlador actualizar el mapa, el jugador y el nivel actual al cambiar de nivel
-    public void actualizarModelo(Mapa mapa, Personaje jugador, int nivelActual) {
+    public void actualizarModelo(Mapa mapa, Personaje jugador, int nivelActual,CargadorImagenesNivel imagenes) {
         this.mapa = mapa;
         this.jugador = jugador;
         this.nivelActual = nivelActual;
-        
-        this.bufferImagen = null; //reiniciar buffer para evitar problemas de renderizado al cambiar de nivel
+        this.imagenesNivel = imagenes;
+
+        this.bufferImagen = null;
         this.estadosJugador.clear();
         this.estadosEnemigos.clear();
-        //reiniciar la cámara suave para que arranque centrada en el nuevo nivel ===
         this.reiniciarCamaraSuave();
-        cargarImagenesNivel();
     }
         public void setTiempoInicioPartida(long tiempoInicio) { // permite al controlador establecer el tiempo de inicio de la partida para calcular el tiempo transcurrido
         this.tiempoInicioPartida = tiempoInicio;

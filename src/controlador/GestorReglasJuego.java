@@ -1,18 +1,17 @@
 package src.controlador;
 
 import src.modelo.entities.RegistroNiveles;
-import src.modelo.map.Reproductor_audio;
 import src.vista.VistaDialogoEstilo;
 
 public class GestorReglasJuego {
 
     public void verificarPerdida(ControladorJuego controlador) {
-        if (controlador.getJugador().getDinero() < 0) {
+        if (controlador.getJugador().getDinero() >= 0) return;
+        if (!controlador.isJuegoActivo()) return;
 
             controlador.guardarRecordActual(controlador.getNivelActual());
-            Reproductor_audio.getInstancia().detenerSonido();
-            controlador.getVista().mostrarGameOver();
             controlador.detener();
+            controlador.getVista().mostrarGameOver();    
 
             String mensaje = RegistroNiveles.paraNivel(controlador.getNivelActual()).getMensajeDerrota();
 
@@ -34,10 +33,11 @@ public class GestorReglasJuego {
                 System.exit(0);
             }
         }
-    }
+    
 
     public void ganarJuego(ControladorJuego controlador, String mensaje) {
         controlador.setJuegoActivo(false);
+        controlador.detener(); 
         controlador.guardarRecordActual(3);
 
         long tiempoTotal = System.currentTimeMillis() - controlador.getTiempoInicioPartida();
@@ -58,6 +58,7 @@ public class GestorReglasJuego {
 
     public void mostrarPausa(ControladorJuego controlador) {
         controlador.setJuegoActivo(false);
+        controlador.detener(); 
 
         int opcion = VistaDialogoEstilo.mostrarOpciones(
             controlador.getVista(),
@@ -69,6 +70,7 @@ public class GestorReglasJuego {
 
         if (opcion == 0) {
             controlador.setJuegoActivo(true);
+            controlador.iniciarTimers();
             controlador.getVista().requestFocusInWindow();
         } else if (opcion == 1) {
             controlador.detener();

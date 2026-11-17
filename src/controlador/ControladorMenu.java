@@ -3,11 +3,14 @@ package src.controlador;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.sound.sampled.Clip;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import src.modelo.entities.Record;
 import src.vista.VistaRecords;
+import src.vista.CargadorImagenesNivel;
+import src.vista.GestorSprites;
 import src.vista.VistaCargando;
 import src.vista.VistaComoJugar;
 import src.vista.VistaDialogoEstilo;
@@ -89,12 +92,22 @@ public class ControladorMenu {
     // diálogo de carga
     final VistaCargando cargando = new VistaCargando(vistaMenu, "Generando nivel 1...");
     final int nivelInicial = 1;
-    SwingWorker<NivelCreado, Void> worker = new SwingWorker<NivelCreado, Void>() {
+    SwingWorker<NivelCreado, Void> worker = new SwingWorker<>() {
+
+        private Clip clipMusica;
+        private CargadorImagenesNivel cargadorImagenes;
 
         @Override
         protected NivelCreado doInBackground() throws Exception {
             CreadorNivel creador = RegistroNiveles.paraNivel(nivelInicial);
-            return creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
+            NivelCreado resultado = creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
+            
+            cargadorImagenes = new CargadorImagenesNivel();
+            cargadorImagenes.cargar(nivelInicial);                                // sprites del nivel
+            GestorSprites.getInstance().precargarPersonajePara(resultado.jugador().getTipoSprite());
+            clipMusica = reproductorAudio.cargarSonido(nivelInicial);            // audio
+
+            return resultado;
         }
 
         @Override
@@ -102,15 +115,16 @@ public class ControladorMenu {
             try {
                 NivelCreado resultado = get();
                 Mapa mapa = resultado.mapa();
-                Personaje jugador = resultado.jugador();
+                Personaje jug = resultado.jugador();
                 int nivel = resultado.nivel();
 
-                reproductorAudio.reproducirSonido(1);
+                reproductorAudio.reproducirClip(clipMusica);
 
-                VistaJuego vista = new VistaJuego(mapa, jugador, nivelInicial);
+                VistaJuego vista = new VistaJuego(mapa, jug, nivelInicial, cargadorImagenes);
                 vista.setTiempoInicioPartida(tiempoInicioPartida);
+
                 ControladorJuego controlador = new ControladorJuego(
-                    vista, mapa, jugador, tiempoInicioPartida, recordDAO, nombreJugadorFinal,
+                    vista, mapa, jug, tiempoInicioPartida, recordDAO, nombreJugadorFinal,
                     reproductorAudio, nivel
                 );
 

@@ -1,7 +1,10 @@
 package src.controlador;
 
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import src.modelo.entities.*;
+import src.vista.CargadorImagenesNivel;
+import src.vista.GestorSprites;
 import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 
@@ -18,17 +21,30 @@ public class GestorNivelesJuego {
 
         VistaCargando cargando = new VistaCargando(controlador.getVista(), "Generando nivel " + nivel + "...");
 
-        SwingWorker<NivelCreado, Void> worker = new SwingWorker<NivelCreado, Void>() {
+        SwingWorker<NivelCreado, Void> worker = new SwingWorker<>() {
+
+            private Clip clipMusica;
+            private CargadorImagenesNivel cargadorImagenes;
+
             @Override
             protected NivelCreado doInBackground() throws Exception {
-                return creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
+                NivelCreado resultado = creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
+                cargadorImagenes = new CargadorImagenesNivel();
+                cargadorImagenes.cargar(nivel);
+                GestorSprites.getInstance().precargarPersonajePara(resultado.jugador().getTipoSprite());
+                if (nivel == 3) {
+                    GestorSprites.getInstance().precargarEnemigoLetal();
+                }
+                clipMusica = controlador.getReproductorAudio().cargarSonido(nivel);
+
+                return resultado;
             }
 
             @Override
             protected void done() {
                 try {
                     NivelCreado resultado = get();
-                    controlador.cambiarNivel(resultado.mapa(), resultado.jugador(), nivel);
+                    controlador.cambiarNivel(resultado.mapa(), resultado.jugador(), nivel, cargadorImagenes, clipMusica);
                     cargando.dispose();
                 } catch (Exception ex) {
                     cargando.dispose();
