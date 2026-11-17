@@ -11,4 +11,7 @@ public class Dinero extends ObjetoEntorno {
     public void recolectar(Personaje personaje) {
         personaje.recolectarDinero(this.cantidad);
     }
+    public TipoVisual getTipoVisual() {
+        return TipoVisual.DINERO;
+    }
 }

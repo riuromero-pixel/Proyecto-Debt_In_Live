@@ -5,15 +5,16 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import src.modelo.entities.Adulto;
-import src.modelo.entities.Estudiante;
+import java.util.HashMap;
+import java.util.Map;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Bonus;
-import src.modelo.map.Dinero;
+import src.modelo.map.Celda;
 import src.modelo.map.Pared;
+import src.modelo.map.TipoVisual;
 import src.modelo.map.Enemigo;
-import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
+import src.modelo.map.ObjetoEntorno;
 
 public class VistaJuego extends JFrame { // Clase que representa la ventana del juego y se encarga de dibujar el mapa, el personaje y los enemigos
     
@@ -25,6 +26,9 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     private boolean gameOver = false; //bandera para saber si terminó el juego
     private long tiempoInicioPartida;
    
+    private Map<Personaje, EstadoVisualPJ> estadosVisualesPJS = new HashMap<>();
+    private Map<Enemigo, EstadoVisualEnemigo> estadosVisualesEnemigos = new HashMap<>();
+
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
 
@@ -52,16 +56,16 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
 
     try {
     imagenDinero = ImageIO.read(new File("images/sprites/dinero.png")); 
-} catch (IOException e) {
+    } catch (IOException e) {
     System.out.println("Error al cargar la imagen del dinero");
-}
-try {
-    spritesBonus[0] = ImageIO.read(new File("images/bonus_estudiante.png"));
-    spritesBonus[1] = ImageIO.read(new File("images/bonus_adulto.png"));
-    spritesBonus[2] = ImageIO.read(new File("images/bonus_anciano.png"));
-} catch (IOException e) {
+    }
+    try {
+        spritesBonus[0] = ImageIO.read(new File("images/bonus_estudiante.png"));
+        spritesBonus[1] = ImageIO.read(new File("images/bonus_adulto.png"));
+        spritesBonus[2] = ImageIO.read(new File("images/bonus_anciano.png"));
+    } catch (IOException e) {
     System.out.println("Error al cargar los sprites del Bonus");
-}
+    }
 
     switch (nivelActual) {
         case 1:
@@ -125,7 +129,8 @@ try {
         this.mapa = mapa;
         this.jugador = jugador;
         this.nivelActual = nivelActual;
-      
+        this.estadosVisualesPJS.put(jugador, new EstadoVisualPJ(jugador.getX(), jugador.getY()));
+
         cargarImagenesNivel();
         setTitle("Juego");
         setSize(15 * tamaño + 45, 10 * tamaño + 120);
@@ -158,6 +163,19 @@ try {
         this.bufferImagen = null; //reiniciar buffer para evitar problemas de renderizado al cambiar de nivel
         //reiniciar la cámara suave para que arranque centrada en el nuevo nivel ===
         this.reiniciarCamaraSuave();
+        this.estadosVisualesPJS.clear();
+        this.estadosVisualesEnemigos.clear();
+        this.estadosVisualesPJS.put(jugador, new EstadoVisualPJ(jugador.getX(), jugador.getY()));
+
+        for (int y = 0; y < mapa.getAlto(); y++) {
+            for (int x = 0; x < mapa.getAncho(); x++) {
+                Celda c = mapa.conseguirCelda(x, y);
+                if (c != null && c.getContenido() instanceof Enemigo) {
+                    Enemigo en = (Enemigo) c.getContenido();
+                    estadosVisualesEnemigos.put(en, new EstadoVisualEnemigo(en.getX(), en.getY()));
+                }
+            }
+        }
         cargarImagenesNivel();
     }
         public void setTiempoInicioPartida(long tiempoInicio) { // permite al controlador establecer el tiempo de inicio de la partida para calcular el tiempo transcurrido
@@ -170,13 +188,16 @@ try {
     public void actualizarCamaraSuave() {
         if (jugador == null || mapa == null) return;
 
+        EstadoVisualPJ e = getEstadoVisual(jugador);
+        if (e == null) return;
+
         // Objetivo: centrar al jugador en el viewport
-        double camXObjetivo = jugador.getPosXVisual() - VIEW_COLS / 2.0;
-        double camYObjetivo = jugador.getPosYVisual() - VIEW_ROWS / 2.0;
+        double camXObjetivo = e.getPosXVisual() - VIEW_COLS / 2.0;
+        double camYObjetivo = e.getPosYVisual() - VIEW_ROWS / 2.0;
 
         // clamp para no salir del mapa
-        camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.ancho - VIEW_COLS));
-        camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.alto - VIEW_ROWS));
+        camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.getAncho() - VIEW_COLS));
+        camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.getAlto() - VIEW_ROWS));
 
         // primera vez: inicializar sin interpolar (evita un "salto" inicial desde 0,0)
         if (camXSuave < 0 || camYSuave < 0) {
@@ -249,17 +270,21 @@ try {
         // si todavia no se llamo a actualizarCamaraSuave() (por ej primer paint)
         // se calcula directamente como respaldo a partir de la posición visual del jugador.
         double camX, camY;
-        if (camXSuave < 0 || camYSuave < 0) {
-            double camXCalc = jugador != null ? jugador.getPosXVisual() - VIEW_COLS / 2.0 : 0;
-            double camYCalc = jugador != null ? jugador.getPosYVisual() - VIEW_ROWS / 2.0 : 0;
-            camXCalc = Math.max(0, Math.min(camXCalc, mapa.ancho - VIEW_COLS));
-            camYCalc = Math.max(0, Math.min(camYCalc, mapa.alto - VIEW_ROWS));
-            camX = camXCalc;
-            camY = camYCalc;
-        } else {
+        if (camXSuave == -1 || camYSuave == -1) {
+            EstadoVisualPJ eJugador = getEstadoVisual(jugador);
+            if(eJugador != null){
+            camXSuave = eJugador.getPosXVisual() - VIEW_COLS / 2.0;
+            camYSuave = eJugador.getPosYVisual() - VIEW_ROWS / 2.0;
+            camXSuave = Math.max(0, Math.min(camXSuave, mapa.getAncho() - VIEW_COLS));
+            camYSuave = Math.max(0, Math.min(camYSuave, mapa.getAlto() - VIEW_ROWS));
+            } else {
+            camXSuave = 0;
+            camYSuave = 0;
+            }
+        }
             camX = camXSuave;
             camY = camYSuave;
-        }
+        
 
         // rango de celdas a dibujar considerando desplazamiento subpixel 
         // se agrega 1 celda extra a cada borde para no dejar huecos cuando la cámara
@@ -271,7 +296,7 @@ try {
         for (int y = inicioY; y <= inicioY + VIEW_ROWS; y++) {
             for (int x = inicioX; x <= inicioX + VIEW_COLS; x++) {
                 // Evitar dibujar fuera de los límites del mapa
-                if (y < 0 || y >= mapa.alto || x < 0 || x >= mapa.ancho) continue;
+                if (y < 0 || y >= mapa.getAlto() || x < 0 || x >= mapa.getAncho()) continue;
 
                 // Posición en pantalla usando las coordenadas double de la cámara
                 int px = (int) ((x - camX) * tamaño) + desplazamientoX;
@@ -287,78 +312,74 @@ try {
             }
 
              // dibujamos el contenido
-            if (mapa.celdas[y][x].contenido != null) {
-               Object obj = mapa.celdas[y][x].contenido;
-    
-            // 1. SOLO si es Pared, dibujamos la imagen de pared
-            if (obj instanceof src.modelo.map.Pared) {
-            Pared pared = (src.modelo.map.Pared) obj;
-            Image imgDibujar = imagenPARED; // Imagen por defecto (casillero)
+            Celda celdaActual = mapa.conseguirCelda(x, y);
+            if (celdaActual != null && celdaActual.getContenido() != null) {
+            Object obj = celdaActual.getContenido();
 
-            if (nivelActual == 1) {
-            switch(pared.getVariante()) {
-                case 1: if (imagenSilla1 != null) imgDibujar = imagenSilla1; break;
-                case 2: if (imagenSilla2 != null) imgDibujar = imagenSilla2; break;
-                case 3: if (imagenSilla3 != null) imgDibujar = imagenSilla3; break;
-                case 4: if (imagenSilla4 != null) imgDibujar = imagenSilla4; break;
+            if (obj instanceof ObjetoEntorno) {
+                ObjetoEntorno ent = (ObjetoEntorno) obj;
+                switch (ent.getTipoVisual()) {
+                    case PARED:
+                        Pared pared = (Pared) ent;
+                        Image imgDibujar = imagenPARED;
+                        if (nivelActual == 1) {
+                            switch(pared.getVariante()) {
+                                case 1: if (imagenSilla1 != null) imgDibujar = imagenSilla1; break;
+                                case 2: if (imagenSilla2 != null) imgDibujar = imagenSilla2; break;
+                                case 3: if (imagenSilla3 != null) imgDibujar = imagenSilla3; break;
+                                case 4: if (imagenSilla4 != null) imgDibujar = imagenSilla4; break;
+                            }
+                        }
+                        if (imgDibujar != null) {
+                            g2d.drawImage(imgDibujar, px, py, tamaño, tamaño, null);
+                        } else {
+                            g2d.setColor(Color.BLACK);
+                            g2d.fillRect(px, py, tamaño, tamaño);
+                        }
+                        break;
+                    case DINERO: //dibujar dinero
+                        if (imagenDinero != null) {
+                            g2d.drawImage(imagenDinero, px, py, tamaño, tamaño, null);
+                        } else {
+                            g2d.setColor(Color.YELLOW); //en el caso de no poder dibujar la imagen, hace un circulo amarillo
+                            g2d.fillOval(px + tamaño/4, py + tamaño/4, tamaño/2, tamaño/2);
+                        }
+                        break;
+                    case BONUS: //dibuja el bonus
+                        Bonus unBonus = (Bonus) ent;
+                        int nivelBonus = unBonus.nivel;
+                        Image imgBonus = (nivelBonus >= 1 && nivelBonus <= 3) ? spritesBonus[nivelBonus - 1] : null;
+                        if (imgBonus != null) {
+                            g2d.drawImage(imgBonus, px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+                        }
+                        default:
+                        break;
+                }
             }
-        }
-
-        if (imgDibujar != null) {
-            g2d.drawImage(imgDibujar, px, py, tamaño, tamaño, null);
-        } else {
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(px, py, tamaño, tamaño);
-        }
-    } 
-        // 2. Si es Dinero
-         else if (obj instanceof Dinero) {
-             if (imagenDinero != null) {
-        // Dibuja la imagen ocupando toda la celda (o podés sumarle un margen si la querés más chica)
-        g2d.drawImage(imagenDinero, px, py, tamaño, tamaño, null);
-            } else {
-           // Fallback: si por algún motivo no carga la imagen, dibuja el círculo amarillo
-            g2d.setColor(Color.YELLOW);
-            g2d.fillOval(px + tamaño/4, py + tamaño/4, tamaño/2, tamaño/2);
-    }
-}
-    // 3. Si es un Bonus
-    else if (obj instanceof Bonus) {
-        Bonus unBonus = (Bonus) obj;
-        int nivelBonus = unBonus.nivel;
-        Image imgBonus = (nivelBonus >= 1 && nivelBonus <= 3) ? spritesBonus[nivelBonus - 1] : null;
-
-        if (imgBonus != null) {
-            g2d.drawImage(imgBonus, px + 5, py + 5, tamaño - 10, tamaño - 10, null);
-        } else {
-            // Fallback visual (cuadrado amarillo con un $) por si no encuentra la imagen
-            g2d.setColor(Color.YELLOW);
-            g2d.fillRect(px + 5, py + 5, tamaño - 10, tamaño - 10);
-            g2d.setColor(Color.BLACK);
-            g2d.drawString("$", px + tamaño / 2 - 4, py + tamaño / 2 + 5);
-        }
-    }
-
                 g2d.setColor(Color.GRAY);
                 g2d.drawRect(px, py, tamaño, tamaño);
             }
-        
         }}
-        for (int y = 0; y < mapa.alto; y++) {
-            for (int x = 0; x < mapa.ancho; x++) {
-                if (mapa.celdas[y][x].contenido instanceof Enemigo) {
-                    Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+        for (int y = 0; y < mapa.getAlto(); y++) {
+            for (int x = 0; x < mapa.getAncho(); x++) {
+                Celda celdaEnemigo = mapa.conseguirCelda(x, y);
+                if (celdaEnemigo != null && celdaEnemigo.getContenido() instanceof Enemigo) {
+                    Enemigo en = (Enemigo) celdaEnemigo.getContenido();
+                    EstadoVisualEnemigo ev = estadosVisualesEnemigos.get(en);
+                    if (ev == null) { //si no existe se crea
+                        ev = new EstadoVisualEnemigo(en.getX(), en.getY());
+                        estadosVisualesEnemigos.put(en, ev);
+                    }
+                 if (ev.getPosXVisual() + 1 < camX || ev.getPosXVisual() > camX + VIEW_COLS) continue;
+                 if (ev.getPosYVisual() + 1 < camY || ev.getPosYVisual() > camY + VIEW_ROWS) continue;
 
-            if (en.posXVisual + 1 < camX || en.posXVisual > camX + VIEW_COLS) continue;
-            if (en.posYVisual + 1 < camY || en.posYVisual > camY + VIEW_ROWS) continue;
+                    int ex = (int) ((ev.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+                    int ey = (int) ((ev.getPosYVisual() - camY) * tamaño) + desplazamientoY;
 
-                    int ex = (int) ((en.posXVisual - camX) * tamaño) + desplazamientoX;
-                    int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
-
-                    if (en instanceof EnemigoLetal){
+                    if (en.getTipoVisual() == TipoVisual.ENEMIGOLETAL){
                     String dirMuerte = "abajo";
-                        double difX = en.x - en.posXVisual;
-                        double difY = en.y - en.posYVisual;
+                        double difX = en.getX() - ev.getPosXVisual();
+                        double difY = en.getY() - ev.getPosYVisual();
                 
                         if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
                             
@@ -368,8 +389,8 @@ try {
                                 dirMuerte = difY > 0 ? "abajo" : "arriba";
                             }
                         } else if (jugador != null) {
-                            double distJugadorX = jugador.getX() - en.x;
-                            double distJugadorY = jugador.getY() - en.y;
+                            double distJugadorX = jugador.getX() - en.getX();
+                            double distJugadorY = jugador.getY() - en.getY();
                             if (Math.abs(distJugadorX) > Math.abs(distJugadorY)) {
                                 dirMuerte = distJugadorX > 0 ? "derecha" : "izquierda";
                             } else {
@@ -423,12 +444,12 @@ try {
 
         //dibujar el personaje
         if (jugador != null) {
-            // se usa la posicion visual (double) del jugador para que se mueva suave 
-            // Cuando agreguemos sprites, aqui se dibujara la imagen del personaje:
-            // g2d.drawImage(spriteJugador, px, py, tamaño, tamaño, null);
-            int px = (int) ((jugador.getPosXVisual() - camX) * tamaño) + desplazamientoX;
-            int py = (int) ((jugador.getPosYVisual() - camY) * tamaño) + desplazamientoY;
-            dibujarPersonaje(g2d, px, py);
+            EstadoVisualPJ e = getEstadoVisual(jugador);
+            if (e != null){
+            int px = (int) ((e.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+            int py = (int) ((e.getPosYVisual() - camY) * tamaño) + desplazamientoY;
+            dibujarPersonaje(g2d, px, py, e);
+            }
         }
 
         // === DIBUJAR PANEL DE INFORMACIÓN ABAJO ===
@@ -470,10 +491,12 @@ try {
         //texto de información (blanco)
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
-        String tipo = "";
-        if (jugador instanceof Adulto) tipo = "Adulto";
-        else if (jugador instanceof Estudiante) tipo = "Estudiante";
-        else if (jugador != null) tipo = "Jubilado";
+        String tipo = "Desconocido";
+        if (jugador != null) {
+            String tipoPersonaje = jugador.getTipoPersonaje();
+            // Ponemos la primera letra en mayúscula (ej: "adulto" -> "Adulto")
+            tipo = tipoPersonaje.substring(0, 1).toUpperCase() + tipoPersonaje.substring(1);
+        }
 
         String infoTexto = String.format("Personaje: %s | Velocidad: %d | Nivel: %d",
                 tipo,
@@ -494,11 +517,11 @@ try {
     }
         
          // dibujamos estudiante
-        private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
+        private void dibujarPersonaje(Graphics2D g2d, int px, int py, EstadoVisualPJ estadoVisualPJ) {
         
         // Se elimina el if(jugador instanceof Estudiante) y todo el casting engorroso.
         // Ahora le pedimos a GestorSprites que nos dé la imagen correspondiente de manera limpia.
-        java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador);
+        java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador, estadoVisualPJ);
         
         if (sprite != null) {
             // Obtenemos el ancho y alto original de la imagen
@@ -527,6 +550,22 @@ try {
             
             g2d.setColor(new Color(0, 0, 0, 60));
             g2d.fillOval(px + margen + 2, py + margen + 4, radio * 2, radio * 2);
+        }
+    }
+    public EstadoVisualPJ getEstadoVisual(Personaje jugador) {
+        return estadosVisualesPJS.get(jugador);
+    }
+    public EstadoVisualEnemigo getEstadoVisualEnemigo(Enemigo en) {
+        return estadosVisualesEnemigos.get(en);
+    }
+    public void actualizarEstadoVisualJugador (Personaje j, boolean moviendo, char tecla){
+        EstadoVisualPJ e = getEstadoVisual(j);
+        if (e != null) {
+            e.actualizarPosicionVisual(j.getX(), j.getY());
+            e.actualizarAnimacion(moviendo);
+            if (moviendo){
+                e.actualizarDireccionDesdeTecla(tecla);
+            }
         }
     }
  }

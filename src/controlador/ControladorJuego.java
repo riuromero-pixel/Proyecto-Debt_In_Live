@@ -2,10 +2,15 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
+
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import src.modelo.entities.*;
+import src.modelo.map.Celda;
+import src.modelo.map.Enemigo;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
+import src.vista.EstadoVisualEnemigo;
 import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaJuego;
@@ -81,27 +86,20 @@ private void iniciarTimers() {
 
     timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> { //timer de animación para interpolación suave (cada 16ms ~ 60fps)
         if (juegoActivo) {
-            jugador.actualizarPosicionVisual();
             jugador.actualizarBonus();
 
 // === Animación del sprite del jugador ===
         boolean moviendo = (teclaPulsada != ' ');
-        jugador.setEnMovimiento(moviendo);
+        vista.actualizarEstadoVisualJugador(jugador, moviendo, teclaPulsada);
 
-        if (moviendo) {
-            long ahora = System.currentTimeMillis();
-            if (ahora - jugador.ultimoFrameAnimacion > 100) { // 100ms por frame
-                jugador.frameAnimacion++;
-                if (jugador.frameAnimacion >= 22) { // 11 cols x 2 filas
-                    jugador.frameAnimacion = 0;
-                }
-                jugador.ultimoFrameAnimacion = ahora;
+        List<Enemigo> enemigos = mapa.getEnemigos(); // Necesitás crear este método en Mapa
+           for (Enemigo en : enemigos) {
+               EstadoVisualEnemigo ev = vista.getEstadoVisualEnemigo(en);
+               if (ev != null) {
+                   ev.actualizarPosicionVisual(en.getX(), en.getY());
+               }
             }
-        } else {
-            jugador.frameAnimacion = 0; // idle: vuelve al primer frame
-        }
 
-            mapa.actualizarPosicionesVisualesEnemigos();
             vista.actualizarCamaraSuave();
             vista.repaint();
         }
@@ -173,7 +171,10 @@ private void iniciarNivel(int nivel) {
             }
             Personaje nuevoJugador = creador.crearPersonaje(5, 5, nuevoMapa);
 
-            nuevoMapa.celdas[5][5].contenido = null;
+            Celda celdaInicio = nuevoMapa.conseguirCelda(5, 5);
+            if (celdaInicio != null) { 
+              celdaInicio.setContenido(null);
+             }            
             nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
             return new Object[]{nuevoMapa, nuevoJugador};
@@ -282,8 +283,12 @@ private void ganarJuego(String mensaje) {
             //Menu de Pausa
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 juegoActivo = false;
+
+                    // detener los timers
+                    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
+                    if (timerJuego != null) timerJuego.stop();
+                    if (timerAnimacion != null) timerAnimacion.stop();
              
-                // NUEVO: Menu de pausa con estilo
                 int opcion = VistaDialogoEstilo.mostrarOpciones(
                         vista,
                         "Juego pausado",
@@ -294,6 +299,12 @@ private void ganarJuego(String mensaje) {
 
                 if (opcion == 0) { //continuar
                     juegoActivo = true;
+
+                    //se reanudan los timers
+                    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.start();
+                    if (timerJuego != null) timerJuego.start();
+                    if (timerAnimacion != null) timerAnimacion.start();
+                    
                     vista.requestFocusInWindow(); 
                 } else if (opcion == 1){ //volver al menu
                     detener();

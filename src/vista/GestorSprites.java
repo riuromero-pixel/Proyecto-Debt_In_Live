@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import src.modelo.entities.Personaje;
-import src.modelo.entities.Adulto;
-import src.modelo.entities.Jubilado;
 
 public class GestorSprites {
     
@@ -32,21 +30,20 @@ public class GestorSprites {
     }
 
     // Método centralizado limpio y sin código duplicado
-    public Image obtenerSpritePersonaje(Personaje jugador) {
+    public Image obtenerSpritePersonaje(Personaje jugador, EstadoVisualPJ estadoVisual) {
         // 1. Identificar el tipo de personaje
         int tipoIndex = 0;
-        String tipoStr = "estudiante";
-        if (jugador instanceof Adulto) { 
-            tipoIndex = 1; tipoStr = "adulto"; 
-        } else if (jugador instanceof Jubilado) { 
-            tipoIndex = 2; tipoStr = "jubilado"; 
-        }
+        String tipoStr = jugador.getTipoPersonaje();
+        if (tipoStr.equals("adulto")) tipoIndex = 1;
+        else if (tipoStr.equals("jubilado")) tipoIndex = 2;
 
         // 2. Identificar la dirección visual
         int dirIndex = 0;
         String dirStr = "abajo";
-        if (jugador.direccionVisual != null) {
-            switch(jugador.direccionVisual) {
+        if (estadoVisual == null) return null;
+        String dirVisual = estadoVisual.getDireccionVisual();
+        if (dirVisual != null) {
+            switch(dirVisual) {
                 case "N": dirIndex = 1; dirStr = "arriba"; break;
                 case "E": dirIndex = 2; dirStr = "derecha"; break;
                 case "O": dirIndex = 3; dirStr = "izquierda"; break;
@@ -55,7 +52,7 @@ public class GestorSprites {
         }
 
         // 3. Retornar el frame animado o el estático según el estado
-        if (jugador.isEnMovimiento()) {
+        if (estadoVisual.isEnMovimiento()) {
             // Se llama con 4 argumentos para usar la configuración por sprite irregular
             SpriteSheet sheet = getSpriteAnimado(tipoIndex, tipoStr, dirIndex, dirStr);
             if (sheet == null) return null;
@@ -64,8 +61,9 @@ public class GestorSprites {
             int cols = sheet.getColumnas();
             int fils = sheet.getFilas();
             
-            int fila = (jugador.frameAnimacion / cols) % fils; 
-            int columna = jugador.frameAnimacion % cols;
+            int frameActual = estadoVisual.getFrameAnimacion();
+            int fila = (frameActual / cols) % fils; 
+            int columna = frameActual% cols;
             return sheet.obtenerFrame(fila, columna);
         } else {
             return getSpriteEstatico(tipoIndex, tipoStr, dirIndex, dirStr);

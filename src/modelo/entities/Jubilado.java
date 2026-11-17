@@ -13,7 +13,7 @@ super(x, y, 1, 100, false, mapa);
 @Override 
     public void activarBonus(Bonus bonus) {
         super.activarBonus(bonus);
-        this.velocidad += bonus.bonusVelocidad + 3;
+        this.velocidad += bonus.bonusVelocidad + 2;
     }
 @Override
 public void crearParedes() {
@@ -42,10 +42,10 @@ public void crearParedes() {
         return;
     }
     
-    if (celda.contenido != null) {
+    if (celda.getContenido() != null) {
         return;
     }
-    celda.contenido = new Pared();
+    celda.setContenido(new Pared());
 }
 public void romperParedes() {
         long tiempoActual = System.currentTimeMillis();
@@ -54,7 +54,6 @@ public void romperParedes() {
         }
         // Direcciones: ARRIBA, ABAJO, DERECHA, IZQUIERDA
         int[][] direcciones = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-        boolean encontroPared = false;      
         for (int[] dir : direcciones) {
             int nx = x + dir[0];
             int ny = y + dir[1];
@@ -76,15 +75,18 @@ public void romperParedes() {
                     // Eliminar la pared de la celda
                     Celda celda = conseguirCelda(nx, ny);
                     if (celda != null) {
-                        celda.contenido = null;
+                        celda.setContenido(null);
                     }
                     // Reiniciar contadores
                     golpesRestantes = 2;
                     paredObjetivo = null;
                 }      
-                encontroPared = true;
                 break;
             }
         }    
-}
+    }
+    @Override 
+    public String getTipoPersonaje() {
+        return "jubilado";
+    }
 }

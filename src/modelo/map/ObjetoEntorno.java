@@ -15,4 +15,7 @@ public class ObjetoEntorno {
     public boolean esRecolectable() {
         return esRecolectable;
     }
+    public TipoVisual getTipoVisual() {
+        return TipoVisual.PARED; // Por defecto
+    }
 }

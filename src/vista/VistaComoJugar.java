@@ -15,7 +15,6 @@ public class VistaComoJugar extends JDialog { // Clase que representa la ventana
 
     // paleta, igual que en VistaRecords
     private static final Color AMARILLO = new Color(255, 215, 0);
-    private static final Color CYAN = new Color(0, 220, 220);
     private static final Color TEXTO = new Color(230, 230, 240);
     private static final Color TEXTO_SEC = new Color(170, 170, 190);
 

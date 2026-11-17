@@ -40,8 +40,8 @@ public class Adulto extends Personaje implements CreadorParedes, RompeParedes{ /
     
        while (nx >= 0 && nx < mapa.getAncho() && ny >= 0 && ny < mapa.getAlto()) {
            Celda celda = mapa.conseguirCelda(nx, ny);
-           if (celda != null && celda.contenido == null) {
-               celda.contenido = new Pared();
+           if (celda != null && celda.getContenido() == null) {
+               celda.setContenido(new Pared());
            }
            nx += dx;
            ny += dy;
@@ -62,12 +62,16 @@ public class Adulto extends Personaje implements CreadorParedes, RompeParedes{ /
             boolean hayPared = verificarPared(nx, ny); 
             if (hayPared) {
                 Celda celda = conseguirCelda(nx, ny);
-                if (celda != null && celda.contenido instanceof Pared) {
-                    celda.contenido = null; // Romper la pared
+                if (celda != null && celda.getContenido() instanceof Pared) {
+                    celda.setContenido(null);// Romper la pared
                     ultimoGolpe = tiempoActual; 
                     break; // Romper solo una pared por acción
                 }
             }
         }
+    }
+    @Override
+    public String getTipoPersonaje() {
+        return "adulto";
     }
 }

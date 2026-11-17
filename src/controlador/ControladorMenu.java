@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import java.util.concurrent.ExecutionException;
 import src.modelo.entities.CreadorPersonaje;
 import src.modelo.entities.CreadorEstudiante;
 import src.modelo.entities.Record;
@@ -20,12 +19,12 @@ import src.modelo.entities.Personaje;
 import src.modelo.entities.RecordDAO;
 import src.persistencia.RecordDAOSQLite;
 import src.persistencia.Conexion;
+import src.modelo.map.Celda;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
 import src.vista.VistaIntro;
-import src.vista.VistaDialogoEstilo;
 
 public class ControladorMenu {
     private final VistaMenu vistaMenu;
@@ -105,7 +104,10 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
             CreadorPersonaje creador = new CreadorEstudiante();
             Personaje jugador = creador.crearPersonaje(4, 4, mapa);
 
-            mapa.celdas[4][4].contenido = null;
+            Celda celdaInicio = mapa.conseguirCelda(4, 4);
+            if (celdaInicio != null) {
+            celdaInicio.setContenido(null);
+            }           
             mapa.setPersonaje(jugador, 4, 4);
 
             return new Object[]{mapa, jugador};

@@ -15,4 +15,7 @@ public class Bonus extends ObjetoEntorno {
     public void recolectar(Personaje personaje) {
         personaje.activarBonus(this);
     }
+    public TipoVisual getTipoVisual() {
+        return TipoVisual.BONUS;
+    }
 }
