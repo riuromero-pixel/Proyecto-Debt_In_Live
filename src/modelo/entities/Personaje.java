@@ -48,6 +48,7 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     public void setBonusActivado(boolean bonusActivado) { this.bonusActivado = bonusActivado; }
     public void setMapa(Mapa mapa) { this.mapa = mapa; }
     public String getDireccionActual() { return direccionActual; }
+    public abstract TipoPersonaje getTipo();
 
     // Eliminados los getters de las posiciones visuales
 

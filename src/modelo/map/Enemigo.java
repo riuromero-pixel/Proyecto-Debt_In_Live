@@ -34,6 +34,13 @@ public class Enemigo extends ObjetoEntorno {
             this.variante = 1; 
         }
     }
+
+            
+    @Override
+    public TipoObjetoEntorno getTipoObjeto() {
+      return TipoObjetoEntorno.ENEMIGO;
+    }
+        
     public int getVariante() {
         return this.variante;
     }
@@ -81,5 +88,9 @@ public class Enemigo extends ObjetoEntorno {
     // borrado el metodo actualizarPosicionVisual
     public int hacerDanio() {
         return this.danio;
+    }
+
+    public boolean esLetal() {
+        return false;
     }
 } 

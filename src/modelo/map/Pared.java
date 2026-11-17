@@ -17,4 +17,8 @@ public class Pared extends ObjetoEntorno {
     public int getVariante() {
         return variante;
     }
+        @Override
+    public TipoObjetoEntorno getTipoObjeto() {
+        return TipoObjetoEntorno.PARED;
+    }
 }

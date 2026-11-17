@@ -10,4 +10,7 @@ public class ObjetoEntorno {
     // personaje puede atravezar la celda ocupada por ese objeto
         this.pasoLibre = pasoLibre;
     }
+    public TipoObjetoEntorno getTipoObjeto() {
+        return TipoObjetoEntorno.DESCONOCIDO;
+    }
 }

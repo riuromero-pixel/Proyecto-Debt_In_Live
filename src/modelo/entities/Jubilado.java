@@ -14,6 +14,11 @@ public Jubilado(int x, int y, Mapa mapa) {
 super(x, y, 1, 100, false, mapa);
    this.velocidad = 1; // velocidad inicial mas baja por ser un jubilado
 }
+    @Override
+    public TipoPersonaje getTipo() {
+        return TipoPersonaje.JUBILADO;
+    }
+    
     public void activarBonus(Bonus bonus) {
         if (!isBonusActivado()) {
             velocidadOriginal = velocidad; // Guardar la velocidad original
@@ -62,4 +67,5 @@ public void crearParedes() {
     
     celda.contenido = new Pared();
 }
+
 }

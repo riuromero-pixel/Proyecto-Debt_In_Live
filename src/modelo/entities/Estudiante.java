@@ -11,6 +11,11 @@ public class Estudiante extends Personaje{
         super(x, y, 2, 100, false, mapa);
         this.velocidad = 3; // velocidad inicial mas alta por ser un estudiante
     }
+    
+    @Override
+    public TipoPersonaje getTipo() {
+        return TipoPersonaje.ESTUDIANTE;
+    }
     public void activarBonus(Bonus bonus) {
          if (!isBonusActivado()) {
         velocidadOriginal = velocidad; // Guardar la velocidad original
@@ -23,4 +28,5 @@ public class Estudiante extends Personaje{
         super.desactivarBonus();
         this.velocidad = velocidadOriginal; 
     }
+    
 }

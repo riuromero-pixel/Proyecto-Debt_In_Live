@@ -7,4 +7,8 @@ public class Dinero extends ObjetoEntorno {
         super(true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
         this.cantidad = cantidad; //el dinero que asigna al recoger
     }
+        @Override
+    public TipoObjetoEntorno getTipoObjeto() {
+        return TipoObjetoEntorno.DINERO;
+    }
 }

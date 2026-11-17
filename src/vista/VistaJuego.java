@@ -14,6 +14,8 @@ import src.modelo.map.Pared;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
+import src.modelo.map.ObjetoEntorno;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -300,10 +302,12 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                Object obj = mapa.celdas[y][x].contenido;
     
             // 1. SOLO si es Pared, dibujamos la imagen de pared
-            if (obj instanceof src.modelo.map.Pared) {
-            Pared pared = (src.modelo.map.Pared) obj;
-            Image imgDibujar = imagenPARED; // Imagen por defecto (casillero)
-
+            if (obj instanceof ObjetoEntorno) {
+           ObjetoEntorno objeto = (ObjetoEntorno) obj;
+           switch (objeto.getTipoObjeto()) {
+            case PARED:
+                Pared pared = (Pared) obj;
+                Image imgDibujar = imagenPARED;
             if (nivelActual == 1) {
             switch(pared.getVariante()) {
                 case 1: if (imagenSilla1 != null) imgDibujar = imagenSilla1; break;
@@ -315,13 +319,12 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
 
         if (imgDibujar != null) {
             g2d.drawImage(imgDibujar, px, py, tamaño, tamaño, null);
-        } else {
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(px, py, tamaño, tamaño);
         }
-    } 
+        break;
+
+    
         // 2. Si es Dinero
-         else if (obj instanceof Dinero) {
+        case DINERO:
              if (imagenDinero != null) {
         // Dibuja la imagen ocupando toda la celda (o podés sumarle un margen si la querés más chica)
         g2d.drawImage(imagenDinero, px, py, tamaño, tamaño, null);
@@ -329,21 +332,34 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
            // Fallback: si por algún motivo no carga la imagen, dibuja el círculo amarillo
             g2d.setColor(Color.YELLOW);
             g2d.fillOval(px + tamaño/4, py + tamaño/4, tamaño/2, tamaño/2);
-    }
-}
-    // 3. Si es un Bonus
-    else if (obj instanceof Bonus) {
+       }
+       break;
+
+       // 3. Si es un Bonus
+       case BONUS:
         Bonus unBonus = (Bonus) obj;
         g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
-        g2d.setColor(Color.BLACK);
-        g2d.drawString("", px + 10, py + 20);
-    }
+       break;
 
+       case ENEMIGO:
+
+       break;
+    
+       case DESCONOCIDO:
+        default:
+            g2d.setColor(Color.MAGENTA); 
+       g2d.fillRect(px, py, tamaño, tamaño); 
+       break;
+       }
                 g2d.setColor(Color.GRAY);
                 g2d.drawRect(px, py, tamaño, tamaño);
+            
             }
-        
-        }}
+        }
+    }
+}
+
+
         for (int y = 0; y < mapa.alto; y++) {
             for (int x = 0; x < mapa.ancho; x++) {
                 if (mapa.celdas[y][x].contenido instanceof Enemigo) {
@@ -361,7 +377,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                      int ex = (int) ((evEn.getPosXVisual() - camX) * tamaño) + desplazamientoX;
                      int ey = (int) ((evEn.getPosYVisual() - camY) * tamaño) + desplazamientoY;
             
-                    if (en instanceof EnemigoLetal){
+                    if (en.esLetal()){
                     String dirMuerte = "abajo";
                         double difX = en.x - evEn.getPosXVisual();
                         double difY = en.y - evEn.getPosYVisual();
@@ -477,9 +493,18 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
         String tipo = "";
-        if (jugador instanceof Adulto) tipo = "Adulto";
-        else if (jugador instanceof Estudiante) tipo = "Estudiante";
-        else if (jugador != null) tipo = "Jubilado";
+        if (jugador != null) {
+            switch (jugador.getTipo()) {
+                case ADULTO: tipo = "Adulto";
+                break;
+                case ESTUDIANTE: tipo = "Estudiante";
+                break;
+                case JUBILADO: tipo = "Jubilado";
+                break;
+                default: tipo = "Desconocido";
+                break;
+            }
+        }
 
         String infoTexto = String.format("Personaje: %s | Velocidad: %d | Nivel: %d",
                 tipo,
@@ -497,6 +522,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
 
         //copiar el buffer a la pantalla
         g.drawImage(bufferImagen, 0, 0, this);
+        
     }
         
          // dibujamos estudiante

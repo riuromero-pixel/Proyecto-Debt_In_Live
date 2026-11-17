@@ -37,4 +37,8 @@ public class Bonus extends ObjetoEntorno {
     public Image getImagenBonus() {
         return imagenBonus;
     }
+        @Override
+    public TipoObjetoEntorno getTipoObjeto() {
+        return TipoObjetoEntorno.BONUS;
+    }
 }
