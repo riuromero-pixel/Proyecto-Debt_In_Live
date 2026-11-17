@@ -176,11 +176,13 @@ public class VistaMenu extends JFrame {
     //  Se usa un JDialog con BoxLayout para que se vea ordenado y prolijo
     
     public void mostrar() {
-        GraphicsDevice gd = GraphicsEnvironment
+        Rectangle pantalla = GraphicsEnvironment
             .getLocalGraphicsEnvironment()
-            .getDefaultScreenDevice();
-            gd.setFullScreenWindow(this);
-            setVisible(true);
+            .getDefaultScreenDevice()
+            .getDefaultConfiguration()
+            .getBounds();
+    setBounds(pantalla);
+    setVisible(true);
         
     }
 }

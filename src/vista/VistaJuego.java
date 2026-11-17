@@ -149,13 +149,15 @@ private final DibujantePanelInfo dibujantePanelInfo = new DibujantePanelInfo();
 
     //el controlador llama a este metodo para mostrar la ventana
     public void mostrar() {
-         GraphicsDevice gd = GraphicsEnvironment
-        .getLocalGraphicsEnvironment()
-        .getDefaultScreenDevice();
-        gd.setFullScreenWindow(this);
-        setVisible(true);
-        this.toFront();
-        this.requestFocusInWindow();
+         Rectangle pantalla = GraphicsEnvironment
+            .getLocalGraphicsEnvironment()
+            .getDefaultScreenDevice()
+            .getDefaultConfiguration()
+            .getBounds();
+            setBounds(pantalla);
+            setVisible(true);
+            this.toFront();
+            this.requestFocusInWindow();
     }
 
     //el controlador se registra como listener del teclado a traves de la vista
