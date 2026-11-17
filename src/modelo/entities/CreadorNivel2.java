@@ -11,11 +11,6 @@ public class CreadorNivel2 extends CreadorNivel {
     }
 
     @Override
-    public int getSpawnX() { return 18; }
-    @Override
-    public int getSpawnY() { return 1; }
-
-    @Override
     public String[] getMensajeInicio() {
         return new String[]{"¡NIVEL 2!", "Ahora sos un Adulto", "A agarrar la pala."};
     }

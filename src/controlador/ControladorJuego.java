@@ -41,7 +41,7 @@ public class ControladorJuego {
         this.reproductorAudio = reproductorAudio;
         this.nivelActual = nivelInicial;
 
-        this.reproductorAudio.reproducirSonido(1);
+        this.reproductorAudio.reproducirSonido(nivelInicial);
 
         this.vista.registrarTeclado(new EntradaTecladoJuego(this));
         iniciarTimers();

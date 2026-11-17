@@ -11,18 +11,8 @@ public class CreadorNivel1 extends CreadorNivel {
     }
 
     @Override
-    public int getSpawnX() { return 10; }
-    @Override
-    public int getSpawnY() { return 10; }
-
-    @Override
     public String getMensajeDerrota() {
         return "¡PERDISTE! Te quedaste sin plata. Chau play 5:(";
-    }
-
-    @Override
-    public String getMensajeVictoria() {
-        return "¡Bien ahi! Ganaste el juego! Lograste sobrevivir a las deudas de la vida.";
     }
 
     @Override
