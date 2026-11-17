@@ -312,20 +312,6 @@ public class Mapa {
            enemigo.actualizarPersecucion(jugador, this);
         }
     }
-
-    // actualiza las posiciones VISUALES de todos los enemigos
-    // Lo llama el timer de animación del controlador (~60 FPS) para interpolar
-    // el movimiento del enemigo entre la celda anterior y la nueva.
-    public void actualizarPosicionesVisualesEnemigos() {
-        for (int y = 0; y < alto; y++) {
-            for (int x = 0; x < ancho; x++) {
-                if (celdas[y][x].contenido instanceof Enemigo) {
-                    ((Enemigo) celdas[y][x].contenido).actualizarPosicionVisual();
-                }
-            }
-        }
-    }
-    
     //verificar si el jugador piso un Enemigo
    public boolean verificarColisionConEnemigo(Personaje jugador) {
     Celda celdaJugador = conseguirCelda(jugador.getX(), jugador.getY());

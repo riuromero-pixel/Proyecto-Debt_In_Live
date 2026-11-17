@@ -18,28 +18,10 @@ protected boolean bonusActivado = false;
 protected int golpesRestantes;   
 protected long ultimoGolpe;
 protected Mapa mapa;
+
 protected Object paredObjetivo;  
 protected String direccionActual; //guarda la ultima direccion del personaje
 protected long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
-
-// coordenadas VISUALES para interpolación suave (independientes de la lógica) ===
-// La lógica del juego sigue usando (x, y). Estas coordenadas se usan SOLO para dibujar
-// y permiten que el sprite se desplace celda a celda de forma fluida en vez de teletransportarse.
-
-protected double posXVisual;
-protected double posYVisual;
-// Factor de interpolación exponencial: qué tan rápido la posición visual alcanza a la lógica.
-// Valores recomendados: 0.1 (lento, más "flotante") a 0.35 (rápido, más responsivo).
-
-protected static final double FACTOR_INTERPOLACION = 0.2;
-
-//variables para animación de sprites
-public String direccionVisual = "S";
-public int frameAnimacion = 0;
-public long ultimoFrameAnimacion = 0;
-public boolean enMovimiento = false;
-public boolean isEnMovimiento() { return enMovimiento; }
-public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
 
 public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){ // Constructor que inicializa las propiedades del personaje, incluyendo su posición, velocidad, fuerza, dinero, estado de bonus y referencia al mapa
     this.x = x;
@@ -49,11 +31,7 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     this.bonusActivado = bonusActivado;
     this.ultimoGolpe = 0;
     this.mapa = mapa;
-    this.direccionActual = null;
-
-    // inicializar posiciones visuales con la posición lógica inicial ===
-    this.posXVisual = x;
-    this.posYVisual = y;
+    this.direccionActual = null; 
 }
     //getters y setters
     public int getX() { return x; }
@@ -68,22 +46,10 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     public void setVelocidad(int velocidad) { this.velocidad = velocidad; }
     public void setBonusActivado(boolean bonusActivado) { this.bonusActivado = bonusActivado; }
     public void setMapa(Mapa mapa) { this.mapa = mapa; }
-    public String getDireccionActual() { return direccionActual; }
+    public String getDireccionActual() { return direccionActual; 
 
-    // getters de las posiciones visuales, usados por la VistaJuego para dibujar ===
-    public double getPosXVisual() { return posXVisual; }
-    public double getPosYVisual() { return posYVisual; }
 
-    //  interpola suavemente las coordenadas visuales hacia las lógicas ===
-    // Lo llama el timer de animación del controlador (~60 FPS).
-    // NOTA: no modifica la lógica del juego; solo la representación visual.
-    public void actualizarPosicionVisual() {
-        posXVisual += (x - posXVisual) * FACTOR_INTERPOLACION;
-        posYVisual += (y - posYVisual) * FACTOR_INTERPOLACION;
-
-        // Umbral para evitar oscilaciones infinitas cuando ya está prácticamente encima
-        if (Math.abs(posXVisual - x) < 0.01) posXVisual = x;
-        if (Math.abs(posYVisual - y) < 0.01) posYVisual = y;
+       
     }
 
 public void moverse(String tecla, int anchoMapa, int altoMapa) {
@@ -96,19 +62,22 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     
     switch (direccion) {
         case 'W':
-            nuevaY = Math.min(altoMapa - 1, this.y - 1); this.direccionVisual = "N";
+            nuevaY = Math.min(altoMapa - 1, this.y - 1);
             break;
+
         case 'S':
-            nuevaY = Math.max(0, this.y + 1); this.direccionVisual = "S";
+          nuevaY = Math.max(0, this.y + 1);
             break;
+
+            
         case 'A':
-            nuevaX = Math.max(0, this.x - 1); this.direccionVisual = "O";
+            nuevaX = Math.max(0, this.x - 1);
             break;
-        case 'D':
-            nuevaX = Math.min(anchoMapa - 1, this.x + 1); this.direccionVisual = "E";
+        case 'D':      
+            nuevaX = Math.min(anchoMapa - 1, this.x + 1);
             break;
     }
-    
+
     //verificar si la celda destino tiene una pared (NO se puede pisar)
     Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
     if (celdaDestino != null && celdaDestino.contenido instanceof ObjetoEntorno) {

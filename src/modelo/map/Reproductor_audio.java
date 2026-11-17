@@ -11,13 +11,14 @@ public class Reproductor_audio {
 private Reproductor_audio() {
         // Constructor privado para evitar instanciación externa
     }
-    //solo una instancia
-public static Reproductor_audio getInstancia() {
+    //solo una instancia sincronizada
+public static synchronized Reproductor_audio getInstancia() {
         if (instanciaUnica == null) {
             instanciaUnica = new Reproductor_audio();
         }
         return instanciaUnica;
     }
+
 
     public boolean isSilenciado() {
     return silenciado;

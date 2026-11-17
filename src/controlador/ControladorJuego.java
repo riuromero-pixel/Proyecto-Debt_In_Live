@@ -2,9 +2,8 @@ package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.ExecutionException;
-
+import src.vista.EstadoVisualEnemigo;
 import javax.swing.*;
-
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
@@ -83,27 +82,15 @@ private void iniciarTimers() {
 
     timerAnimacion = new Timer(MS_POR_FRAME_ANIMACION, e -> { //timer de animación para interpolación suave (cada 16ms ~ 60fps)
         if (juegoActivo) {
-            jugador.actualizarPosicionVisual();
             jugador.actualizarBonus();
 
-// === Animación del sprite del jugador ===
-        boolean moviendo = (teclaPulsada != ' ');
-        jugador.setEnMovimiento(moviendo);
+            boolean moviendo = (teclaPulsada != ' ');
 
-        if (moviendo) {
-            long ahora = System.currentTimeMillis();
-            if (ahora - jugador.ultimoFrameAnimacion > 100) { // 100ms por frame
-                jugador.frameAnimacion++;
-                if (jugador.frameAnimacion >= 22) { // 11 cols x 2 filas
-                    jugador.frameAnimacion = 0;
-                }
-                jugador.ultimoFrameAnimacion = ahora;
-            }
-        } else {
-            jugador.frameAnimacion = 0; // idle: vuelve al primer frame
-        }
+            vista.actualizarEstadoVisualJugador(jugador, moviendo, teclaPulsada);
+            // 5. Actualizar posiciones visuales de los enemigos (esto lo vemos más adelante)
+                vista.actualizarEstadoVisualEnemigos(mapa);
 
-            mapa.actualizarPosicionesVisualesEnemigos();
+           
             vista.actualizarCamaraSuave();
             vista.repaint();
         }

@@ -4,11 +4,15 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 import src.modelo.entities.Adulto;
 import src.modelo.entities.Estudiante;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Bonus;
+import src.vista.EstadoVisualPersonaje;
+import src.vista.EstadoVisualEnemigo;
 import src.modelo.map.Dinero;
 import src.modelo.map.Pared;
 import src.modelo.map.Enemigo;
@@ -27,6 +31,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
    
     private static final int VIEW_COLS = 15; //defino los viewports para la ventana que seguirá al jugador
     private static final int VIEW_ROWS = 10;
+ private Map<Personaje, EstadoVisualPersonaje> estadosVisualesPersonajes = new HashMap<>();
+   private Map<Enemigo, EstadoVisualEnemigo> estadosVisualesEnemigos = new HashMap<>();
 
     // coordenadas suavizadas de la camara (double para permitir subpixel) 
     // se actualizan cada frame en actualizarCamaraSuave() y se usan en paint().
@@ -127,6 +133,7 @@ try {
         this.nivelActual = nivelActual;
       
         cargarImagenesNivel();
+         this.estadosVisualesPersonajes.put(jugador, new EstadoVisualPersonaje(jugador.getX(), jugador.getY()));
         setTitle("Juego");
         setSize(15 * tamaño + 45, 10 * tamaño + 120);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -158,7 +165,10 @@ try {
         this.bufferImagen = null; //reiniciar buffer para evitar problemas de renderizado al cambiar de nivel
         //reiniciar la cámara suave para que arranque centrada en el nuevo nivel ===
         this.reiniciarCamaraSuave();
-        cargarImagenesNivel();
+          this.estadosVisualesPersonajes.clear();
+        this.estadosVisualesPersonajes.put(jugador, new EstadoVisualPersonaje(jugador.getX(), jugador.getY()));
+          this.estadosVisualesEnemigos.clear();
+          cargarImagenesNivel();
     }
         public void setTiempoInicioPartida(long tiempoInicio) { // permite al controlador establecer el tiempo de inicio de la partida para calcular el tiempo transcurrido
         this.tiempoInicioPartida = tiempoInicio;
@@ -169,11 +179,12 @@ try {
     // sea continuo incluso entre celdas.
     public void actualizarCamaraSuave() {
         if (jugador == null || mapa == null) return;
+            EstadoVisualPersonaje ev = getEstadoVisual(jugador);
+        if (ev == null) return;
 
         // Objetivo: centrar al jugador en el viewport
-        double camXObjetivo = jugador.getPosXVisual() - VIEW_COLS / 2.0;
-        double camYObjetivo = jugador.getPosYVisual() - VIEW_ROWS / 2.0;
-
+        double camXObjetivo = ev.getPosXVisual() - VIEW_COLS / 2.0;
+        double camYObjetivo = ev.getPosYVisual() - VIEW_ROWS / 2.0;
         // clamp para no salir del mapa
         camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.ancho - VIEW_COLS));
         camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.alto - VIEW_ROWS));
@@ -257,18 +268,34 @@ try {
         // si todavia no se llamo a actualizarCamaraSuave() (por ej primer paint)
         // se calcula directamente como respaldo a partir de la posición visual del jugador.
         double camX, camY;
-        if (camXSuave < 0 || camYSuave < 0) {
-            double camXCalc = jugador != null ? jugador.getPosXVisual() - VIEW_COLS / 2.0 : 0;
-            double camYCalc = jugador != null ? jugador.getPosYVisual() - VIEW_ROWS / 2.0 : 0;
-            camXCalc = Math.max(0, Math.min(camXCalc, mapa.ancho - VIEW_COLS));
-            camYCalc = Math.max(0, Math.min(camYCalc, mapa.alto - VIEW_ROWS));
-            camX = camXCalc;
-            camY = camYCalc;
-        } else {
-            camX = camXSuave;
-            camY = camYSuave;
+        if (camXSuave == -1 || camYSuave == -1) {
+            EstadoVisualPersonaje evJugador = getEstadoVisual(jugador);
+             if (evJugador != null) {
+                camXSuave = evJugador.getPosXVisual() - VIEW_COLS / 2.0;
+                camYSuave = evJugador.getPosYVisual() - VIEW_ROWS / 2.0;
+                camXSuave = Math.max(0, Math.min(camXSuave, mapa.ancho - VIEW_COLS));
+                camYSuave = Math.max(0, Math.min(camYSuave, mapa.alto - VIEW_ROWS));
+            } else {
+                camXSuave = 0;
+                camYSuave = 0;
+            }
         }
-
+        camX = camXSuave;
+        camY = camYSuave;
+   if (camXSuave == -1 || camYSuave == -1) {
+            EstadoVisualPersonaje evJugador = getEstadoVisual(jugador);
+             if (evJugador != null) {
+                camXSuave = evJugador.getPosXVisual() - VIEW_COLS / 2.0;
+                camYSuave = evJugador.getPosYVisual() - VIEW_ROWS / 2.0;
+                camXSuave = Math.max(0, Math.min(camXSuave, mapa.ancho - VIEW_COLS));
+                camYSuave = Math.max(0, Math.min(camYSuave, mapa.alto - VIEW_ROWS));
+            } else {
+                camXSuave = 0;
+                camYSuave = 0;
+            }
+        }
+        camX = camXSuave;
+        camY = camYSuave;
         // rango de celdas a dibujar considerando desplazamiento subpixel 
         // se agrega 1 celda extra a cada borde para no dejar huecos cuando la cámara
         // esta entre dos celdas.
@@ -356,17 +383,22 @@ try {
             for (int x = 0; x < mapa.ancho; x++) {
                 if (mapa.celdas[y][x].contenido instanceof Enemigo) {
                     Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+ // Buscamos el estado visual del enemigo
+                    EstadoVisualEnemigo evEn = estadosVisualesEnemigos.get(en);
 
-            if (en.posXVisual + 1 < camX || en.posXVisual > camX + VIEW_COLS) continue;
-            if (en.posYVisual + 1 < camY || en.posYVisual > camY + VIEW_ROWS) continue;
+                    // Si no existe, lo salteamos
+                    if (evEn == null) continue;
+                    
+                    // Usamos las coordenadas VISUALES del estado, no las del modelo
+                     if (evEn.getPosXVisual() + 1 < camX || evEn.getPosXVisual() > camX + VIEW_COLS) continue;
+                     if (evEn.getPosYVisual() + 1 < camY || evEn.getPosYVisual() > camY + VIEW_ROWS) continue;
 
-                    int ex = (int) ((en.posXVisual - camX) * tamaño) + desplazamientoX;
-                    int ey = (int) ((en.posYVisual - camY) * tamaño) + desplazamientoY;
-
+                     int ex = (int) ((evEn.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+                     int ey = (int) ((evEn.getPosYVisual() - camY) * tamaño) + desplazamientoY;
                     if (en instanceof EnemigoLetal){
                     String dirMuerte = "abajo";
-                        double difX = en.x - en.posXVisual;
-                        double difY = en.y - en.posYVisual;
+                        double difX = en.x - evEn.getPosXVisual();
+                        double difY = en.y - evEn.getPosYVisual();
                 
                         if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
                             
@@ -431,12 +463,12 @@ try {
 
         //dibujar el personaje
         if (jugador != null) {
-            // se usa la posicion visual (double) del jugador para que se mueva suave 
-            // Cuando agreguemos sprites, aqui se dibujara la imagen del personaje:
-            // g2d.drawImage(spriteJugador, px, py, tamaño, tamaño, null);
-            int px = (int) ((jugador.getPosXVisual() - camX) * tamaño) + desplazamientoX;
-            int py = (int) ((jugador.getPosYVisual() - camY) * tamaño) + desplazamientoY;
-            dibujarPersonaje(g2d, px, py);
+            EstadoVisualPersonaje ev = getEstadoVisual(jugador);
+            if (ev != null) {
+            int px = (int) ((ev.getPosXVisual() - camX) * tamaño) + desplazamientoX;
+            int py = (int) ((ev.getPosYVisual() - camY) * tamaño) + desplazamientoY;
+            dibujarPersonaje(g2d, px, py, ev);
+            }
         }
 
         // === DIBUJAR PANEL DE INFORMACIÓN ABAJO ===
@@ -502,12 +534,12 @@ try {
     }
         
          // dibujamos estudiante
-        private void dibujarPersonaje(Graphics2D g2d, int px, int py) {
+           private void dibujarPersonaje(Graphics2D g2d, int px, int py, EstadoVisualPersonaje estadoVisual) {
         
         // Se elimina el if(jugador instanceof Estudiante) y todo el casting engorroso.
         // Ahora le pedimos a GestorSprites que nos dé la imagen correspondiente de manera limpia.
-        java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador);
-        
+        java.awt.Image sprite = GestorSprites.getInstance().obtenerSpritePersonaje(jugador, estadoVisual);
+
         if (sprite != null) {
             // Obtenemos el ancho y alto original de la imagen
             int anchoOriginal = sprite.getWidth(null);
@@ -537,4 +569,45 @@ try {
             g2d.fillOval(px + margen + 2, py + margen + 4, radio * 2, radio * 2);
         }
     }
+        //Getter para el controlador
+     public EstadoVisualPersonaje getEstadoVisual(Personaje personaje) {
+        return estadosVisualesPersonajes.get(personaje);
+    }
+    
+     // Método que usa el Controlador para decirle a la vista que actualice la animación
+    public void actualizarEstadoVisualJugador(Personaje p, boolean moviendo, char tecla) {
+        EstadoVisualPersonaje ev = getEstadoVisual(p);
+        if (ev != null) {
+            // Actualizamos las coordenadas suaves en base a la posición lógica del modelo
+            ev.actualizarPosicionVisual(p.getX(), p.getY());
+            
+            // Actualizamos el frame de animación y el estado de movimiento
+            ev.actualizarAnimacion(moviendo);
+            
+            // Si se está moviendo, actualizamos hacia dónde mira
+            if (moviendo) {
+                ev.actualizarDireccionDesdeTecla(tecla);
+            }
+        }
+    }
+       // Metodo que usa el Controlador para actualizar la posición de todos los enemigos
+public void actualizarEstadoVisualEnemigos(Mapa mapa) {
+    // Recorremos todo el mapa buscando enemigos
+    for (int y = 0; y < mapa.alto; y++) {
+        for (int x = 0; x < mapa.ancho; x++) {
+            if (mapa.celdas[y][x].contenido instanceof Enemigo) {
+                Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+                
+                // Si el enemigo no tiene un estado visual todavía, se lo creamos
+                if (!estadosVisualesEnemigos.containsKey(en)) {
+                    estadosVisualesEnemigos.put(en, new EstadoVisualEnemigo(en.x, en.y));
+                }
+                
+                // Le decimos al estado visual que se actualice con la posición lógica del enemigo
+                estadosVisualesEnemigos.get(en).actualizarPosicionVisual(en.x, en.y);
+            }
+        }
+    }
+}
+
  }
