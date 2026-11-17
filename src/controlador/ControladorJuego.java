@@ -118,7 +118,7 @@ public class ControladorJuego {
         this.jugador = nuevoJugador;
         this.nivelActual = nivel;
 
-        reproductorAudio.reproducirClip(clipMusica);  // ya no hace I/O, solo start()
+        reproductorAudio.reproducirClip(clipMusica);  
         vista.actualizarModelo(mapa, jugador, nivel, imagenes);
         vista.setTiempoInicioPartida(tiempoInicioPartida);
         vista.desactivarGameOver();

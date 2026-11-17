@@ -27,7 +27,7 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 - A medida que se aumentan el nivel aparecerán más enemigos.
 
-- Los enemigos estarán a lo largo de todo el mapa de forma aleatoria y tendrán un recorrido preestablecido para dificultar la partida al jugador. Algunos persiguen al jugador y otros se mueven de forma errante.
+- Los enemigos se ubican de forma aleatoria a lo largo del mapa. Al crearse, cada uno recibe una estrategia de movimiento que mantiene durante todo el nivel: algunos **persiguen al jugador** (siempre se acercan a la celda vecina más cercana a él) y otros son **errantes** (se mueven al azar entre las celdas libres vecinas). La mezcla de ambos tipos dificulta la partida.
 
 - En el nivel final aparece además un **Enemigo Letal** que elimina al jugador con solo tocarlo y tiene una habilidad la cual lo teletransporta cada cierto tiempo.
 
@@ -100,96 +100,49 @@ GestorNiveles: todos le preguntan al `CreadorNivel` en lugar de hacer
 `if (nivel == X)`.
 -----------------------------------------------------
 - **Nombre del Patrón:** **Strategy**.
- ```java
--Enemigo.java
-public class Enemigo extends ObjetoEntorno {
-   public int x;
-   public int y;
-   public int danio;
-   private Random random;
 
-   public double posXVisual;
-   public double posYVisual;
-   private static final double FACTOR_INTERPOLACION = 0.15;
+- **Problema:** La clase Enemigo contenía toda la lógica de movimiento adentro de un solo método. Todos los enemigos se comportaban igual y no había forma de tener variación sin meter un `if` gigante.
 
-   public Enemigo(int x, int y, int danio) {   
-       super(true);
-       this.x = x;
-       this.y = y;
-       this.danio = danio;
-       this.random = new Random();
-       this.posXVisual = x;
-       this.posYVisual = y;
-   }
- 
- public void actualizarPersecucion(Personaje personaje, Mapa mapa){}
- //Toda la logica de movimiento de perseguir al jugador
- .......
- .......
- ```
-- **Problema:** La clase Enemigo contiene toda la lógica de movimiento adentro del método actualizarPersecucion(). Todos los enemigos se comportaban igual y no había forma de tener variación sin meter un if gigante.
+- **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. Se definió la interfaz `EstrategiaMovimiento` con dos implementaciones: `MovimientoPerseguidor` (elige la celda vecina libre más cercana al jugador) y `MovimientoErrante` (elige al azar entre las celdas vecinas libres). La clase `Enemigo` guarda una estrategia y le **delega** el movimiento con `estrategia.mover(...)`, sin saber cuál es. Cada enemigo recibe su estrategia al ser creado (la elige `GeneradorNivelMapa`) y la conserva durante el nivel; la variación está **entre enemigos**, no dentro de uno. Agregar un comportamiento nuevo es crear una clase que implemente la interfaz, sin modificar `Enemigo` ni `Mapa`.
 
-- **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. El que persigue al jugador y el errante que se mueve aleatoriamente. Se definió la interfaz `EstrategiaMovimiento` con las implementaciones `MovimientoPerseguidor` y `MovimientoErrante`. La clase `Enemigo` contiene una estrategia y le **delega** el movimiento, permitiendo intercambiarlo en runtime con `setEstrategia()`. Logrando asi poder agregar un nuevo comportamiento en un futuro solo haciendo una clase nueva, sin modificar `Enemigo` ni `Mapa`.
+- **Similitud entre estrategias:** Ambas recorren las cuatro celdas vecinas y atacan si encuentran al jugador, porque ese es el esqueleto de moverse en una grilla. Lo que las diferencia, y lo que justifica que sean dos clases, es el **criterio de elección** de la celda destino: azar en `MovimientoErrante`, menor distancia Manhattan al jugador en `MovimientoPerseguidor`. Una posible mejora es subir el recorrido de vecinos a una clase base común.
 
--EstrategiaMovimiento.java //interfaz nueva
+-EstrategiaMovimiento.java
  ```java
 public interface EstrategiaMovimiento {
-    void mover(Enemigo enemigo, Personaje jugador, Mapa mapa);
+    void mover(Enemigo enemigo, Personaje personaje, Mapa mapa);
 }
  ```
--MovimientoPerseguidor.java
- ```java
-public class MovimientoPerseguidor implements EstrategiaMovimiento {
-
-    @Override
-    public void mover(Enemigo enemigo, Personaje jugador, Mapa mapa) {
-       //aca iria la logica de movimiento de perseguidor que antes estaba en Enemigo.java
-    }
-}
- ```
--MovimientoErrante.java 
- ```java
-public class MovimientoErrante implements EstrategiaMovimiento {
-
-    private final Random random = new Random();
-
-    @Override
-    public void mover(Enemigo enemigo, Personaje jugador, Mapa mapa) {
-        //aca va la logica del enemigo que se mueve aleatoriamente por el mapa
-    }
-}
- ```
--Enemigo.java //Con Strategy
+-Enemigo.java 
  ```java
 public class Enemigo extends ObjetoEntorno {
-    public int x;
-    public int y;
-    public int danio;
-    private EstrategiaMovimiento estrategia; //Atributo de estrategia
+    private int x;
+    private int y;
+    private int danio;
+    private EstrategiaMovimiento estrategia;
 
-    public double posXVisual;
-    public double posYVisual;
-    private static final double FACTOR_INTERPOLACION = 0.15;
-
-    public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia) { //ahora pide estrategia
-        super(true);
+    public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
+        super(false);
         this.x = x;
         this.y = y;
         this.danio = danio;
         this.estrategia = estrategia;
-        this.posXVisual = x;
-        this.posYVisual = y;
+        // ...
     }
 
-    public void setEstrategia(EstrategiaMovimiento estrategia) {
-        this.estrategia = estrategia;
-    }
-
-    public void actualizarPersecucion(Personaje personaje, Mapa mapa) {
+    public void actualizarMovimiento(Mapa mapa, Personaje jugador) {
         if (estrategia != null) {
-            estrategia.mover(this, personaje, mapa);
+            estrategia.mover(this, jugador, mapa);
         }
     }
+}
+ ```
+-Asignación en GeneradorNivelMapa
+ ```java
+EstrategiaMovimiento estrategia = random.nextBoolean()
+        ? new MovimientoPerseguidor()
+        : new MovimientoErrante();
+Enemigo enemigo = new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel);
  ```
 -----------------------------------------------------   
 Nombre del Patrón: Singleton.
