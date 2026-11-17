@@ -18,6 +18,10 @@ super(x, y, 1, 100, false, mapa);
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 3;
     }
+     @Override
+    public TipoPersonaje getTipo() {
+        return TipoPersonaje.JUBILADO;
+    }
 
 @Override
 public void crearParedes() {

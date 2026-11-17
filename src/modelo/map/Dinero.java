@@ -11,4 +11,8 @@ public class Dinero extends ObjetoEntorno {
     public void recolectar(Personaje jugador) {
         jugador.recolectarDinero(this.cantidad);
     }
+      @Override
+    public TipoObjetoEntorno getTipoObjeto() {
+        return TipoObjetoEntorno.DINERO;
+    }
 }

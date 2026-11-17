@@ -20,4 +20,7 @@ public class ObjetoEntorno {
     public boolean esRecolectable() {
         return esRecolectable;
     }
+       public TipoObjetoEntorno getTipoObjeto() {
+        return TipoObjetoEntorno.DESCONOCIDO;
+    }
 }

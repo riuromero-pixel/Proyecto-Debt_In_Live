@@ -1,4 +1,5 @@
 package src.modelo.entities;
+import src.modelo.entities.TipoPersonaje;
 
 import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
@@ -46,11 +47,9 @@ public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado,
     public void setVelocidad(int velocidad) { this.velocidad = velocidad; }
     public void setBonusActivado(boolean bonusActivado) { this.bonusActivado = bonusActivado; }
     public void setMapa(Mapa mapa) { this.mapa = mapa; }
-    public String getDireccionActual() { return direccionActual; 
+    public String getDireccionActual() { return direccionActual; }
+    public abstract TipoPersonaje getTipo();
 
-
-       
-    }
 
 public void moverse(String tecla, int anchoMapa, int altoMapa) {
     char direccion = tecla.toUpperCase().charAt(0);

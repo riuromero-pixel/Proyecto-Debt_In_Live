@@ -84,5 +84,13 @@ public class Enemigo extends ObjetoEntorno {
     public void hacerDanio(Personaje jugador) {
         jugador.danioRecibido(this.danio);}
 
+    public boolean esLetal() {
+        return false;
+    }
+      @Override
+    public TipoObjetoEntorno getTipoObjeto() {
+      return TipoObjetoEntorno.ENEMIGO;
+    }
+
 
 } 

@@ -6,8 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import src.modelo.entities.Personaje;
-import src.modelo.entities.Adulto;
-import src.modelo.entities.Jubilado;
+import src.modelo.entities.TipoPersonaje;
 
 public class GestorSprites {
     
@@ -33,14 +32,19 @@ public class GestorSprites {
 
     // Método centralizado limpio y sin código duplicado
     public Image obtenerSpritePersonaje(Personaje jugador, EstadoVisualPersonaje estadoVisual) {
-       
-       if (estadoVisual == null) return null;
         int tipoIndex = 0;
         String tipoStr = "estudiante";
-        if (jugador instanceof Adulto) { 
-            tipoIndex = 1; tipoStr = "adulto"; 
-        } else if (jugador instanceof Jubilado) { 
+       switch (jugador.getTipo()) {
+        case ADULTO: 
+            tipoIndex = 1; tipoStr = "adulto";
+            break; 
+         case JUBILADO:
             tipoIndex = 2; tipoStr = "jubilado"; 
+            break;
+                    case ESTUDIANTE:
+            default:
+                tipoIndex = 0; tipoStr = "estudiante";
+                break;
         }
 
         // 2. Identificar la dirección visual

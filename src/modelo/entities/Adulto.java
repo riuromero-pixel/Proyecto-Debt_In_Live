@@ -18,7 +18,10 @@ public class Adulto extends Personaje implements CreadorParedes{ // Clase que re
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 2;
     }
-
+   @Override
+    public TipoPersonaje getTipo() {
+        return TipoPersonaje.ADULTO;
+    }
      @Override
     public void crearParedes() {
         // El adulto puede llenar su fila entera de paredes a la que apunta

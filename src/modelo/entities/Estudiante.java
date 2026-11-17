@@ -17,4 +17,9 @@ public class Estudiante extends Personaje{
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 3;
     }
+      
+    @Override
+    public TipoPersonaje getTipo() {
+        return TipoPersonaje.ESTUDIANTE;
+    }
 }

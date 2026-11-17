@@ -12,4 +12,9 @@ public class EnemigoLetal extends Enemigo {
     public void hacerDanio(Personaje jugador) {
         jugador.danioRecibido(jugador.getDinero() + 1);
     }
+
+    @Override
+    public boolean esLetal () {
+        return true;
+    }
 }

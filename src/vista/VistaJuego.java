@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.swing.*;
 import src.modelo.entities.Adulto;
 import src.modelo.entities.Estudiante;
+import src.modelo.map.ObjetoEntorno;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Bonus;
 import src.vista.EstadoVisualPersonaje;
@@ -18,6 +19,8 @@ import src.modelo.map.Pared;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
+import src.modelo.map.ObjetoEntorno;
+
 
 public class VistaJuego extends JFrame { // Clase que representa la ventana del juego y se encarga de dibujar el mapa, el personaje y los enemigos
     
@@ -326,10 +329,12 @@ try {
                Object obj = mapa.celdas[y][x].contenido;
     
             // 1. SOLO si es Pared, dibujamos la imagen de pared
-            if (obj instanceof src.modelo.map.Pared) {
-            Pared pared = (src.modelo.map.Pared) obj;
-            Image imgDibujar = imagenPARED; // Imagen por defecto (casillero)
-
+             if (obj instanceof ObjetoEntorno) {
+           ObjetoEntorno objeto = (ObjetoEntorno) obj;
+           switch (objeto.getTipoObjeto()) {
+            case PARED:
+                Pared pared = (Pared) obj;
+                Image imgDibujar = imagenPARED;
             if (nivelActual == 1) {
             switch(pared.getVariante()) {
                 case 1: if (imagenSilla1 != null) imgDibujar = imagenSilla1; break;
@@ -341,13 +346,11 @@ try {
 
         if (imgDibujar != null) {
             g2d.drawImage(imgDibujar, px, py, tamaño, tamaño, null);
-        } else {
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(px, py, tamaño, tamaño);
-        }
-    } 
+        }  break;
+        
+    
         // 2. Si es Dinero
-         else if (obj instanceof Dinero) {
+          case DINERO:{
              if (imagenDinero != null) {
         // Dibuja la imagen ocupando toda la celda (o podés sumarle un margen si la querés más chica)
         g2d.drawImage(imagenDinero, px, py, tamaño, tamaño, null);
@@ -356,29 +359,36 @@ try {
             g2d.setColor(Color.YELLOW);
             g2d.fillOval(px + tamaño/4, py + tamaño/4, tamaño/2, tamaño/2);
     }
-}
-    // 3. Si es un Bonus
-    else if (obj instanceof Bonus) {
-        Bonus unBonus = (Bonus) obj;
-        int nivelBonus = unBonus.nivel;
-        Image imgBonus = (nivelBonus >= 1 && nivelBonus <= 3) ? spritesBonus[nivelBonus - 1] : null;
+       break;
+       }
 
-        if (imgBonus != null) {
-            g2d.drawImage(imgBonus, px + 5, py + 5, tamaño - 10, tamaño - 10, null);
-        } else {
-            // Fallback visual (cuadrado amarillo con un $) por si no encuentra la imagen
-            g2d.setColor(Color.YELLOW);
-            g2d.fillRect(px + 5, py + 5, tamaño - 10, tamaño - 10);
-            g2d.setColor(Color.BLACK);
-            g2d.drawString("$", px + tamaño / 2 - 4, py + tamaño / 2 + 5);
-        }
-    }
+       // 3. Si es un Bonus
+       case BONUS:
+    // 3. Si es un Bonus
+        Bonus unBonus = (Bonus) obj;
+
+        g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
+        break;
+
+       case ENEMIGO:
+
+       break;
+    
+       case DESCONOCIDO:
+        default:
+            g2d.setColor(Color.MAGENTA); 
+       g2d.fillRect(px, py, tamaño, tamaño); 
+       break;
+       }
 
                 g2d.setColor(Color.GRAY);
                 g2d.drawRect(px, py, tamaño, tamaño);
             }
-        
-        }}
+               }
+    }
+}
+
+
         for (int y = 0; y < mapa.alto; y++) {
             for (int x = 0; x < mapa.ancho; x++) {
                 if (mapa.celdas[y][x].contenido instanceof Enemigo) {
@@ -511,9 +521,18 @@ try {
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
         String tipo = "";
-        if (jugador instanceof Adulto) tipo = "Adulto";
-        else if (jugador instanceof Estudiante) tipo = "Estudiante";
-        else if (jugador != null) tipo = "Jubilado";
+            if (jugador != null) {
+            switch (jugador.getTipo()) {
+                case ADULTO: tipo = "Adulto";
+                break;
+                case ESTUDIANTE: tipo = "Estudiante";
+                break;
+                case JUBILADO: tipo = "Jubilado";
+                break;
+                default: tipo = "Desconocido";
+                break;
+            }
+        }
 
         String infoTexto = String.format("Personaje: %s | Velocidad: %d | Nivel: %d",
                 tipo,
