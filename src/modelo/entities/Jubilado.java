@@ -53,10 +53,10 @@ public void crearParedes() {
         return;
     }
     
-    if (celda.contenido != null) {
+    if (celda.getContenido() != null) {
         return;
     }
     
-    celda.contenido = new Pared();
+    celda.setContenido(new Pared());
 }
 }

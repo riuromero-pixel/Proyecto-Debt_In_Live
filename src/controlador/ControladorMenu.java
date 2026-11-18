@@ -13,7 +13,7 @@ import src.vista.VistaCargando;
 import src.vista.VistaComoJugar;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaOpciones;
-
+import src.modelo.map.Celda;
 import src.modelo.entities.Personaje;
 import src.modelo.entities.PersonajeFactory;
 import src.modelo.entities.RecordDAO;
@@ -24,7 +24,6 @@ import src.modelo.map.Reproductor_audio;
 import src.vista.VistaJuego;
 import src.vista.VistaMenu;
 import src.vista.VistaIntro;
-import src.vista.VistaDialogoEstilo;
 
 public class ControladorMenu {
     private final VistaMenu vistaMenu;
@@ -103,7 +102,11 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
             mapa.generarDinero();
 
             Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
-            mapa.celdas[4][4].contenido = null;
+                   Celda celdaInicio = mapa.conseguirCelda(4, 4);
+            if (celdaInicio != null) {
+            celdaInicio.setContenido(null);
+             }   
+           
             mapa.setPersonaje(jugador, 4, 4);
 
             return new Object[]{mapa, jugador};

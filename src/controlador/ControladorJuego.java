@@ -3,8 +3,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.ExecutionException;
 import src.vista.EstadoVisualEnemigo;
+import java.util.List;
 import javax.swing.*;
 import src.modelo.entities.*;
+import src.modelo.map.Celda;
+import src.modelo.map.Enemigo;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
 import src.vista.VistaCargando;
@@ -85,16 +88,25 @@ private void iniciarTimers() {
             jugador.actualizarBonus();
 
             boolean moviendo = (teclaPulsada != ' ');
+ vista.actualizarEstadoVisualJugador(jugador, moviendo, teclaPulsada);
 
-            vista.actualizarEstadoVisualJugador(jugador, moviendo, teclaPulsada);
-            // 5. Actualizar posiciones visuales de los enemigos (esto lo vemos más adelante)
-                vista.actualizarEstadoVisualEnemigos(mapa);
+             vista.actualizarEstadoVisualJugador(jugador, moviendo, teclaPulsada);
 
-           
+        List<Enemigo> enemigos = mapa.getEnemigos(); // Necesitás crear este método en Mapa
+           for (Enemigo en : enemigos) {
+               EstadoVisualEnemigo ev = vista.getEstadoVisualEnemigo(en);
+               if (ev != null) {
+                   ev.actualizarPosicionVisual(en.getX(), en.getY());
+               }
+               if (ev != null) {
+                   ev.actualizarPosicionVisual(en.getX(), en.getY());
+               }
+
+            
             vista.actualizarCamaraSuave();
             vista.repaint();
         }
-    });
+    }});
     timerAnimacion.start();
 }
 
@@ -153,7 +165,10 @@ private void iniciarNivel(int nivel) {
             nuevoMapa.generarDinero();
 
             Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
-            nuevoMapa.celdas[5][5].contenido = null;
+           Celda celdaInicio = nuevoMapa.conseguirCelda(5, 5);
+            if (celdaInicio != null) { 
+              celdaInicio.setContenido(null);
+             }            
             nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
             return new Object[]{nuevoMapa, nuevoJugador};
@@ -262,7 +277,11 @@ private void ganarJuego(String mensaje) {
             //Menu de Pausa
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 juegoActivo = false;
-             
+               // detener los timers
+                    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
+                    if (timerJuego != null) timerJuego.stop();
+                    if (timerAnimacion != null) timerAnimacion.stop();
+
                 // NUEVO: Menu de pausa con estilo
                 int opcion = VistaDialogoEstilo.mostrarOpciones(
                         vista,
@@ -274,7 +293,13 @@ private void ganarJuego(String mensaje) {
 
                 if (opcion == 0) { //continuar
                     juegoActivo = true;
+                     //se reanudan los timers
+                    if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.start();
+                    if (timerJuego != null) timerJuego.start();
+                    if (timerAnimacion != null) timerAnimacion.start();
+                    
                     vista.requestFocusInWindow(); 
+
                 } else if (opcion == 1){ //volver al menu
                     detener();
                     vista.dispose(); 

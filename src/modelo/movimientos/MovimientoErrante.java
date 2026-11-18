@@ -23,22 +23,22 @@ public class MovimientoErrante implements EstrategiaMovimiento {
         List<int[]> opciones = new ArrayList<>();
 
         for (int[] dir : direcciones) {
-            int nuevaX = enemigo.x + dir[0];
-            int nuevaY = enemigo.y + dir[1];
+            int nuevaX = enemigo.getX() + dir[0];
+            int nuevaY = enemigo.getY() + dir[1];
 
             Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
             if (celdaDestino == null) continue;
 
             // Si pisa al jugador, le hace daño
-            if (celdaDestino.contenido instanceof Personaje) {
+            if (celdaDestino.getContenido() instanceof Personaje) {
                 
                     enemigo.hacerDanio(jugador);
                 
                 return; //nO NOS MOVEMOS SI PISAMOS AL JUGADOR, SOLO LE HACEMOS DAÑO
             }
 
-            if (!(celdaDestino.contenido instanceof Pared)
-                && !(celdaDestino.contenido instanceof Enemigo)) {
+            if (!(celdaDestino.getContenido() instanceof Pared)
+                && !(celdaDestino.getContenido() instanceof Enemigo)) {
                 opciones.add(new int[]{nuevaX, nuevaY});
             }
         }

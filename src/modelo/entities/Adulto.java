@@ -46,8 +46,8 @@ public class Adulto extends Personaje implements CreadorParedes{ // Clase que re
     
        while (nx >= 0 && nx < mapa.getAncho() && ny >= 0 && ny < mapa.getAlto()) {
            Celda celda = mapa.conseguirCelda(nx, ny);
-           if (celda != null && celda.contenido == null) {
-               celda.contenido = new Pared();
+          if (celda != null && celda.getContenido() == null) {
+               celda.setContenido(new Pared());
            }
            nx += dx;
            ny += dy;
