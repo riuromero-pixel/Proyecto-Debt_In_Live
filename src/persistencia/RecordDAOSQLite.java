@@ -28,7 +28,7 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
     }
 
     @Override
-    public synchronized boolean guardar(Record record) {
+    public boolean guardar(Record record) {
         String sql = "INSERT INTO records (jugador, tiempo, nivel, fecha) VALUES (?, ?, ?, ?) " +
                      "ON CONFLICT(jugador) DO UPDATE SET " +
                      "tiempo = MIN(tiempo, excluded.tiempo), " + 

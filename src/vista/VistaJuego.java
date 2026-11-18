@@ -13,14 +13,11 @@ import src.modelo.entities.Estudiante;
 import src.modelo.map.ObjetoEntorno;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Bonus;
-import src.vista.EstadoVisualPersonaje;
-import src.vista.EstadoVisualEnemigo;
-import src.modelo.map.Dinero;
 import src.modelo.map.Pared;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
-import src.modelo.map.ObjetoEntorno;
+
 
 
 public class VistaJuego extends JFrame { // Clase que representa la ventana del juego y se encarga de dibujar el mapa, el personaje y los enemigos
@@ -365,11 +362,17 @@ try {
 
        // 3. Si es un Bonus
        case BONUS:
-    // 3. Si es un Bonus
-        Bonus unBonus = (Bonus) obj;
+    Bonus unBonus = (Bonus) obj;
+    int indice = unBonus.nivel - 1;
 
-        g2d.drawImage(unBonus.getImagenBonus(), px + 5, py + 5, tamaño - 10, tamaño - 10, null);
-        break;
+    if (indice >= 0 && indice < spritesBonus.length
+            && spritesBonus[indice] != null) {
+
+        g2d.drawImage(spritesBonus[indice],
+                px + 5, py + 5,
+                tamaño - 10, tamaño - 10, null);
+    }
+    break;
 
        case ENEMIGO:
 

@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import src.modelo.entities.Personaje;
-import src.modelo.map.Enemigo;
-import src.modelo.movimientos.EstrategiaMovimiento;
-import src.modelo.movimientos.MovimientoErrante;
-import src.modelo.movimientos.MovimientoPerseguidor;
 
 public class Mapa {
     private Random random;
@@ -275,7 +271,7 @@ public class Mapa {
                 x = 1 + random.nextInt(ancho - 2);
                 y = 1 + random.nextInt(alto - 2);
             } while (celdas[y][x].getContenido() != null || celdas[y][x].getDineroDebajo() != null);
-                        celdas[y][x].setContenido(new Dinero(2999));
+                        celdas[y][x].setContenido(new Dinero(100 + random.nextInt(400)));
 
            // celdas[y][x].setContenido(new Dinero(100 + random.nextInt(400)));
         }

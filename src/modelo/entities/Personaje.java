@@ -1,6 +1,4 @@
 package src.modelo.entities;
-import src.modelo.entities.TipoPersonaje;
-
 import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
 import src.modelo.map.Pared;
