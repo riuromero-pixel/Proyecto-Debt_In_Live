@@ -7,7 +7,7 @@ import src.modelo.map.ContenidoCelda;
 import src.modelo.map.Enemigo;
 import src.modelo.map.Golpeable;
 
-public abstract class Personaje implements ContenidoCelda {
+public class Personaje implements ContenidoCelda {
     private int x;
     private int y;
     private int velocidad;
@@ -30,6 +30,7 @@ public abstract class Personaje implements ContenidoCelda {
         this.mapa = mapa;
         this.direccionActual = null;
     }
+
 
     public int getX() { return x; }
     public int getY() { return y; }
@@ -55,7 +56,9 @@ public abstract class Personaje implements ContenidoCelda {
         return true;
     }
 
-    public abstract String getNombreTipo();
+    public String getNombreTipo() {
+        return "Personaje";
+    }
 
     public int getTipoSprite() {
         return 0;
@@ -76,6 +79,29 @@ public abstract class Personaje implements ContenidoCelda {
 
     public void morir() {
         this.dinero = -9999;
+    }
+
+    protected void ponerParedes(int alcance) {
+        if (direccionActual == null) return;
+
+        int dx = 0, dy = 0;
+        switch (direccionActual.charAt(0)) {
+            case 'W': dy = -1; break;
+            case 'S': dy = 1;  break;
+            case 'A': dx = -1; break;
+            case 'D': dx = 1;  break;
+            default: return;
+        }
+
+        int nx = x + dx;
+        int ny = y + dy;
+        for (int i = 0; i < alcance
+                && nx >= 0 && nx < mapa.getAncho()
+                && ny >= 0 && ny < mapa.getAlto(); i++) {
+            mapa.ponerPared(nx, ny);
+            nx += dx;
+            ny += dy;
+        }
     }
 
     public void moverse(String tecla, int anchoMapa, int altoMapa) {
