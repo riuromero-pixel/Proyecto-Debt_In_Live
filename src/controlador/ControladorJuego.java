@@ -161,15 +161,7 @@ private void iniciarNivel(int nivel) {
             nuevoMapa.cargarNivel(nivel);
             nuevoMapa.generarDinero();
 
-            CreadorPersonaje creador;
-            if (nivel == 1) {
-                creador = new CreadorEstudiante();
-            } else if (nivel == 2) {
-                creador = new CreadorAdulto();
-            } else {
-                creador = new CreadorJubilado();
-            }
-            Personaje nuevoJugador = creador.crearPersonaje(5, 5, nuevoMapa);
+            Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 4, 4, nuevoMapa);
 
             Celda celdaInicio = nuevoMapa.conseguirCelda(5, 5);
             if (celdaInicio != null) { 
@@ -261,7 +253,6 @@ private void ganarJuego(String mensaje) {
         long minutos = segundosTotal/60;
         long segundos = segundosTotal % 60;
         
-        // NUEVO: Mensaje de victoria con estilo
         VistaDialogoEstilo.mostrarMensaje(
                 vista, 
                 "¡GANASTE!", 
@@ -381,7 +372,6 @@ private void ganarJuego(String mensaje) {
          Reproductor_audio.getInstancia().detenerSonido(); // ¡Para que frene la música al perder!Mapa.detenerSonido();
         if (timerMovimientoEnemigos != null) timerMovimientoEnemigos.stop();
         if (timerJuego != null) timerJuego.stop();
-        // === NUEVO: detener también el timer de animación ===
         if (timerAnimacion != null) timerAnimacion.stop();
     }
 }

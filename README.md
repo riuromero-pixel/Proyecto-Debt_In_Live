@@ -46,9 +46,9 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 ## Interfaz Grafica
 
 - Visualización de cada nivel con un mapa, enemigos, aspecto del jugador.
-El jugador es una persona  que debe evitar sumar deudas a lo largo de su vida en una perspectiva top-down, en la cual en los niveles habrán objetos o entidades que harán que el jugador vaya acumulando deudas y por lo tanto se le reste dinero. El jugador deberá recoger dinero esparcido por el mapa donde en una determinada cantidad de dinero avanzará de nivel. Además, dependiendo del nivel, el jugador podrá construir o destruir paredes a voluntad. Como también, contará con potenciadores temporales donde dependiendo del nivel, afectará de manera diferente al jugador, como por ejemplo en velocidad al moverse o inmunidad. El juego tendrá 3 niveles: Estudiante (Con un mapa ambientado en una escuela), Adulto (ambientando el mapa en una oficina) y Jubilado (ambientando el mapa en un lugar calmo y natural), a medida que se vaya avanzando en los niveles, sera mas difícil sumar dinero. Los escenarios e incluso el mismo personaje que usará el jugador serán variados dependiendo el nivel y los enemigos serán distintos, como por ejemplo un enemigo podría ser Los Impuestos, habrá enemigos que siguen al jugador y otros que avanzarán de manera aleatoria en el mapa.
+El jugador es una persona  que debe evitar sumar deudas a lo largo de su vida en una perspectiva top-down, en la cual en los niveles habrán objetos o entidades que harán que el jugador vaya acumulando deudas y por lo tanto se le reste dinero. El jugador deberá recoger dinero esparcido por el mapa donde en una determinada cantidad de dinero avanzará de nivel. Además, dependiendo del nivel, el jugador podrá construir o destruir paredes a voluntad. Como también, contará con potenciadores temporales donde dependiendo del nivel, afectará de manera diferente al jugador, como por ejemplo en velocidad al moverse o inmunidad. El juego tendrá 3 niveles: Estudiante (Con un mapa ambientado en una escuela), Adulto (ambientando el mapa en una obra) y Jubilado (ambientando el mapa en un lugar calmo y natural), a medida que se vaya avanzando en los niveles, sera mas difícil sumar dinero. Los escenarios e incluso el mismo personaje que usará el jugador serán variados dependiendo el nivel y los enemigos serán distintos, como por ejemplo un enemigo podría ser Los Impuestos, habrá enemigos que siguen al jugador y otros que avanzarán de manera aleatoria en el mapa.
 
-- El juego muestra un **HUD inferior** con el dinero del jugador, la cantidad de monedas que quedan en el mapa, la fuerza, la velocidad y el nivel actual.
+- El juego muestra un **HUD inferior** con el dinero del jugador, la cantidad de monedas que quedan en el mapa, la velocidad y el nivel actual.
 
 - Hay una **pantalla de introducción** con un GIF animado antes de llegar al menú principal.
 
@@ -74,9 +74,9 @@ Concepto personaje estudiante:
 
 ## 3. Arquitectura y Diseño
 
-#### Patron de Diseño Adicional: Factory Method y Strategy
+#### Patron de Diseño Adicional: Simple Factory y Strategy
 
-- **Nombre del Patrón:** **Factory Method**.
+- **Nombre del Patrón:** **Simple Factory**.
   
 - ControladorJuego.iniciarNivel()
  ```java
@@ -146,7 +146,7 @@ public class PersonajeFactory {
    }
 }
  ```
--ControladorJuego.iniciarNivel() //Con Factory
+-ControladorJuego.iniciarNivel() //Con Simple Factory
  ```java
 private void iniciarNivel(int nivel) {
    if (nivel == 2) {

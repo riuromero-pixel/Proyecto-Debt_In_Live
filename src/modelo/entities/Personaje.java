@@ -21,7 +21,7 @@ protected Object paredObjetivo;
 protected String direccionActual; //guarda la ultima direccion del personaje
 protected long bonusFin = 0; //tiempo en milisegundos cuando el bonus expira
 
-public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){ // Constructor que inicializa las propiedades del personaje, incluyendo su posición, velocidad, fuerza, dinero, estado de bonus y referencia al mapa
+public Personaje(int x, int y, int velocidad, int dinero, boolean bonusActivado, Mapa mapa){ // Constructor que inicializa las propiedades del personaje y referencia al mapa
     this.x = x;
     this.y = y;
     this.velocidad = velocidad;

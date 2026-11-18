@@ -49,7 +49,6 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     private Image[] spritesEnemigos = new Image[5];
     private Image[] spritesBonus = new Image[3];
 
-
     public void cargarImagenesNivel() {
     String paredtemp;
     String pisotemp;

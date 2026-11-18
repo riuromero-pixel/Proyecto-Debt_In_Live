@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import src.modelo.entities.Personaje;
-import src.modelo.movimientos.EstrategiaMovimiento;
-import src.modelo.movimientos.MovimientoErrante;
-import src.modelo.movimientos.MovimientoPerseguidor;
 
 public class Mapa {
     
@@ -232,10 +229,7 @@ public class Mapa {
 
         if (celdas[y][x].getContenido() != null || celdas[y][x].getDineroDebajo() != null) continue;
             if (tipo == Enemigo.class) {
-            EstrategiaMovimiento estrategia = random.nextBoolean() 
-            ? new MovimientoPerseguidor() 
-            : new MovimientoErrante(); //mezcla al azar entre perseguidor y errante
-            celdas[y][x].setContenido(new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel));
+            celdas[y][x].setContenido(new CreaEnemigo().crearEnemigo(x, y, nivel));
         }
         colocados++;
     }
@@ -254,8 +248,7 @@ public class Mapa {
            && intentos < 100);
 
     if (intentos < 100) {
-        celdas[y][x].setContenido(new EnemigoLetal(x, y, 9999));
-    }
+        celdas[y][x].setContenido(new CreadorEnemigoLetal().crearEnemigo(x, y, 3));  }
     }
     //generar bonus
     public void generarBonus(int cantidad, int nivel) {
@@ -279,8 +272,7 @@ public class Mapa {
                 x = 1 + random.nextInt(ancho - 2);
                 y = 1 + random.nextInt(alto - 2);
             } while (celdas[y][x].getContenido() != null || celdas[y][x].getDineroDebajo() != null);
-
-             celdas[y][x].setContenido(new Dinero(100 + random.nextInt(400)));
+                     celdas[y][x].setContenido(new Dinero(100 + random.nextInt(400)));
         }
     }
 

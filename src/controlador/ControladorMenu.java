@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import src.modelo.entities.CreadorPersonaje;
-import src.modelo.entities.CreadorEstudiante;
 import src.modelo.entities.Record;
 import src.vista.VistaRecords;
 import src.vista.VistaCargando;
@@ -16,6 +14,7 @@ import src.vista.VistaDialogoEstilo;
 import src.vista.VistaOpciones;
 
 import src.modelo.entities.Personaje;
+import src.modelo.entities.PersonajeFactory;
 import src.modelo.entities.RecordDAO;
 import src.persistencia.RecordDAOSQLite;
 import src.persistencia.Conexion;
@@ -101,8 +100,7 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
             mapa.cargarNivel(1);
             mapa.generarDinero();
 
-            CreadorPersonaje creador = new CreadorEstudiante();
-            Personaje jugador = creador.crearPersonaje(4, 4, mapa);
+            Personaje jugador = PersonajeFactory.crearPersonaje(1, 4, 4, mapa);
 
             Celda celdaInicio = mapa.conseguirCelda(4, 4);
             if (celdaInicio != null) {
