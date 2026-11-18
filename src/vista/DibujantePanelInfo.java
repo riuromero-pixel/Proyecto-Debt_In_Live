@@ -52,13 +52,5 @@ public class DibujantePanelInfo {
                 nivelActual);
         g2d.drawString(infoTexto, 20, panelY + 15);
 
-        if (gameOver) {
-            g2d.setColor(Color.BLACK);
-            g2d.setFont(new Font("Arial", Font.BOLD, 80));
-            String texto = "PINCHÓ";
-            FontMetrics fm = g2d.getFontMetrics();
-            g2d.drawString(texto, (anchoPantalla - fm.stringWidth(texto)) / 2,
-                    (altoPantalla - PANEL_ALTO) / 2 - 50);
-        }
     }
 }

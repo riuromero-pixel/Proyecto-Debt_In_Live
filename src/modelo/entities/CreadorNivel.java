@@ -1,6 +1,7 @@
 package src.modelo.entities;
 
 import src.modelo.map.Mapa;
+import src.modelo.map.Pared;
 
 public abstract class CreadorNivel {
 
@@ -31,5 +32,19 @@ public abstract class CreadorNivel {
 
     protected abstract Personaje crearPersonaje(int x, int y, Mapa mapa);
 
-    protected abstract void cargarPlantilla(Mapa mapa);
+    protected abstract String[] getPlantilla();
+
+    protected void cargarPlantilla(Mapa mapa) {
+        String[] plantilla = getPlantilla();
+        for (int y = 0; y < plantilla.length && y < mapa.getAlto(); y++) {
+            for (int x = 0; x < plantilla[y].length() && x < mapa.getAncho(); x++) {
+                char caracter = plantilla[y].charAt(x);
+                if (caracter == '#') {
+                    mapa.setContenido(x, y, new Pared(0));
+                } else if (caracter == '+') {
+                    mapa.setContenido(x, y, new Pared());
+                }
+            }
+        }
+    }
 }

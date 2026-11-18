@@ -43,7 +43,7 @@ Será un juego con controles sencillos y conocidos con mecánicas básicas de un
 
 - Dependiendo del nivel, el jugador puede **romper paredes** (tecla R) o **crear paredes** (tecla C): el Adulto puede llenar una fila/columna entera, el Jubilado solo puede colocar una pared.
 
-- El personaje "Estudiante" tiene una habilidad especial con (tecla F) esta le permite dar un salto de una casilla permitiendole atravezar paredes, enemigos , etc (esta habilidad solo la tiene el Estudiante y tiene un coldown de 7 segundos)
+- El personaje "Estudiante" tiene una habilidad especial con (tecla C) esta le permite dar un salto de una casilla permitiendole atravezar paredes, enemigos , etc (esta habilidad solo la tiene el Estudiante y tiene un coldown de 7 segundos)
 
 ## Interfaz Grafica
 

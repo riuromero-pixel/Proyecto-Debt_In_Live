@@ -1,7 +1,6 @@
 package src.modelo.entities;
 
 import src.modelo.map.Mapa;
-import src.modelo.map.Pared;
 
 public class CreadorNivel3 extends CreadorNivel {
 
@@ -26,8 +25,8 @@ public class CreadorNivel3 extends CreadorNivel {
     }
 
     @Override
-    protected void cargarPlantilla(Mapa mapa) {
-        String[] plantilla = {
+    protected String[] getPlantilla() {
+        return new String[] {
             "########################################",
             "#......................................#",
             "#....####......................####....#",
@@ -69,15 +68,5 @@ public class CreadorNivel3 extends CreadorNivel {
             "#......................................#",
             "########################################"
         };
-        for (int y = 0; y < plantilla.length && y < mapa.getAlto(); y++) {
-            for (int x = 0; x < plantilla[y].length() && x < mapa.getAncho(); x++) {
-                char caracter = plantilla[y].charAt(x);
-                if (caracter == '#') {
-                    mapa.setContenido(x, y, new Pared(0));
-                } else if (caracter == '+') {
-                    mapa.setContenido(x, y, new Pared());
-                }
-            }
-        }
     }
 }

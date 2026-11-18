@@ -23,7 +23,4 @@ public class RegistroNiveles {
             return nivel >= max;
         }
 
-        public static int getTotalNiveles() {
-            return CREADORES.size();
-        }
 }

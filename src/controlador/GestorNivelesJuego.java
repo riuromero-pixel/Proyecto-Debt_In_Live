@@ -1,10 +1,7 @@
 package src.controlador;
 
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import src.modelo.entities.*;
-import src.vista.CargadorImagenesNivel;
-import src.vista.GestorSprites;
 import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 
@@ -21,35 +18,30 @@ public class GestorNivelesJuego {
 
         VistaCargando cargando = new VistaCargando(controlador.getVista(), "Generando nivel " + nivel + "...");
 
-        SwingWorker<NivelCreado, Void> worker = new SwingWorker<>() {
-
-            private Clip clipMusica;
-            private CargadorImagenesNivel cargadorImagenes;
+        SwingWorker<PreparadorNivel.NivelListo, Void> worker = new SwingWorker<>() {
 
             @Override
-            protected NivelCreado doInBackground() throws Exception {
-                NivelCreado resultado = creador.crearNivel(creador.getSpawnX(), creador.getSpawnY());
-                cargadorImagenes = new CargadorImagenesNivel();
-                cargadorImagenes.cargar(nivel);
-                GestorSprites.getInstance().precargarPersonajePara(resultado.jugador().getTipoSprite());
-                if (nivel == 3) {
-                    GestorSprites.getInstance().precargarEnemigoLetal();
-                }
-                clipMusica = controlador.getReproductorAudio().cargarSonido(nivel);
-
-                return resultado;
+            protected PreparadorNivel.NivelListo doInBackground() {
+                return new PreparadorNivel(controlador.getReproductorAudio()).preparar(nivel);
             }
 
             @Override
             protected void done() {
                 try {
-                    NivelCreado resultado = get();
-                    controlador.cambiarNivel(resultado.mapa(), resultado.jugador(), nivel, cargadorImagenes, clipMusica);
-                    cargando.dispose();
+                    PreparadorNivel.NivelListo listo = get();
+                    controlador.cambiarNivel(
+                        listo.nivel().mapa(),
+                        listo.nivel().jugador(),
+                        nivel,
+                        listo.imagenes(),
+                        listo.musica()
+                        );
                 } catch (Exception ex) {
                     cargando.dispose();
                     VistaDialogoEstilo.mostrarMensaje(controlador.getVista(), "Error", "", "Error al cargar el nivel: " + ex.getMessage());
                     ex.printStackTrace();
+                }finally {
+                    cargando.dispose();
                 }
             }
         };
