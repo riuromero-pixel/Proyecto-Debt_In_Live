@@ -9,8 +9,8 @@ public class EnemigoLetal extends Enemigo {
     private long ultimoTeletransporte = System.currentTimeMillis();
     private final java.util.Random random = new java.util.Random();
 
-    public EnemigoLetal (int x, int y, int danio) { //Enemigo que elimina al jugador con solo tocarlo
-    super(x ,y ,danio, new MovimientoDistraido(), 3);
+    public EnemigoLetal (int x, int y) { //Enemigo que elimina al jugador con solo tocarlo
+    super(x ,y ,1, new MovimientoDistraido(), 3);
     }
 
     @Override

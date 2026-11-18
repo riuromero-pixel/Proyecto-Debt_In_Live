@@ -80,7 +80,7 @@ public class GeneradorNivelMapa {
             || Math.abs(x - 5) + Math.abs(y - 5) < 8) && intentos < 100);
 
     if (intentos < 100) {
-        EnemigoLetal letal = new EnemigoLetal(x, y, 9999);
+        EnemigoLetal letal = new EnemigoLetal(x, y);
         mapa.getCeldas()[y][x].setContenido(letal);
         mapa.registrarEnemigo(letal);   // <-- NUEVO
     }
