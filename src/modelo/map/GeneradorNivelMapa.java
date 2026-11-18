@@ -4,6 +4,7 @@ import java.util.Random;
 import src.modelo.movimientos.EstrategiaMovimiento;
 import src.modelo.movimientos.MovimientoErrante;
 import src.modelo.movimientos.MovimientoPerseguidor;
+import src.modelo.movimientos.MovimientoDistraido;
 
 public class GeneradorNivelMapa {
 
@@ -39,6 +40,14 @@ public class GeneradorNivelMapa {
         colocarEnemigoLetal(mapa, nivel);
     }
 
+    private EstrategiaMovimiento elegirEstrategia() {
+        return switch (random.nextInt(3)) {
+            case 0 -> new MovimientoPerseguidor();
+            case 1 -> new MovimientoErrante();
+            default -> new MovimientoDistraido();
+        };
+}
+
     private void colocarAleatorio(Mapa mapa, int cantidad, int nivel) {
     int colocados = 0, intentos = 0, maxIntentos = cantidad * 50;
 
@@ -50,9 +59,7 @@ public class GeneradorNivelMapa {
         if (mapa.getCeldas()[y][x].getContenido() != null
                 || mapa.getCeldas()[y][x].getContenidoDebajo() != null) continue;
 
-        EstrategiaMovimiento estrategia = random.nextBoolean()
-                ? new MovimientoPerseguidor()
-                : new MovimientoErrante();
+        EstrategiaMovimiento estrategia = elegirEstrategia();
 
         Enemigo enemigo = new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel);
         mapa.getCeldas()[y][x].setContenido(enemigo);

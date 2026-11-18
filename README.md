@@ -103,9 +103,12 @@ GestorNiveles: todos le preguntan al `CreadorNivel` en lugar de hacer
 
 - **Problema:** La clase Enemigo contenía toda la lógica de movimiento adentro de un solo método. Todos los enemigos se comportaban igual y no había forma de tener variación sin meter un `if` gigante.
 
-- **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. Se definió la interfaz `EstrategiaMovimiento` con dos implementaciones: `MovimientoPerseguidor` (elige la celda vecina libre más cercana al jugador) y `MovimientoErrante` (elige al azar entre las celdas vecinas libres). La clase `Enemigo` guarda una estrategia y le **delega** el movimiento con `estrategia.mover(...)`, sin saber cuál es. Cada enemigo recibe su estrategia al ser creado (la elige `GeneradorNivelMapa`) y la conserva durante el nivel; la variación está **entre enemigos**, no dentro de uno. Agregar un comportamiento nuevo es crear una clase que implemente la interfaz, sin modificar `Enemigo` ni `Mapa`.
+- **Justificación:** Se utilizó este patrón para encapsular los distintos comportamientos de movimiento de los enemigos. Se definió la interfaz `EstrategiaMovimiento` con tres implementaciones:
+  - `MovimientoPerseguidor`: elige la celda vecina libre más cercana al jugador.
+  - `MovimientoErrante`: elige al azar entre las celdas vecinas libres.
+  - `MovimientoDistraido`: persigue al jugador, pero tras un tiempo aleatorio (entre 1 y 5 segundos) se distrae y deambula durante 7 segundos, y luego vuelve a perseguir. No repite código: **delega** en `MovimientoPerseguidor` y `MovimientoErrante` (composición) y solo agrega el control de tiempo.
 
-- **Similitud entre estrategias:** Ambas recorren las cuatro celdas vecinas y atacan si encuentran al jugador, porque ese es el esqueleto de moverse en una grilla. Lo que las diferencia, y lo que justifica que sean dos clases, es el **criterio de elección** de la celda destino: azar en `MovimientoErrante`, menor distancia Manhattan al jugador en `MovimientoPerseguidor`. Una posible mejora es subir el recorrido de vecinos a una clase base común.
+  La clase `Enemigo` guarda una estrategia y le **delega** el turno con `estrategia.mover(...)`, sin saber cuál es. La estrategia se asigna al crear el enemigo (la elige `GeneradorNivelMapa`, o el `EnemigoLetal` en su constructor). Agregar un comportamiento nuevo es crear una clase que implemente la interfaz, sin modificar `Enemigo` ni `Mapa`.
 
 -EstrategiaMovimiento.java
  ```java
@@ -113,16 +116,15 @@ public interface EstrategiaMovimiento {
     void mover(Enemigo enemigo, Personaje personaje, Mapa mapa);
 }
  ```
--Enemigo.java 
+-Enemigo.java (fragmento)
  ```java
-public class Enemigo extends ObjetoEntorno {
+public class Enemigo implements ContenidoCelda {
     private int x;
     private int y;
     private int danio;
     private EstrategiaMovimiento estrategia;
 
     public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
-        super(false);
         this.x = x;
         this.y = y;
         this.danio = danio;
@@ -137,12 +139,42 @@ public class Enemigo extends ObjetoEntorno {
     }
 }
  ```
--Asignación en GeneradorNivelMapa
+-EnemigoLetal.java (fragmento)
  ```java
-EstrategiaMovimiento estrategia = random.nextBoolean()
-        ? new MovimientoPerseguidor()
-        : new MovimientoErrante();
-Enemigo enemigo = new Enemigo(x, y, 10 + (nivel * 2), estrategia, nivel);
+public class EnemigoLetal extends Enemigo {
+
+    public EnemigoLetal(int x, int y, int danio) {
+        super(x, y, danio, new MovimientoDistraido(), 3);
+    }
+
+    @Override
+    public void actualizarMovimiento(Mapa mapa, Personaje jugador) {
+        long ahora = System.currentTimeMillis();
+        if (ahora - ultimoTeletransporte >= INTERVALO_TELETRANSPORTE_MS) {
+            if (intentarTeletransporte(mapa, jugador)) {
+                ultimoTeletransporte = ahora;
+                return;
+            }
+        }
+        super.actualizarMovimiento(mapa, jugador);
+    }
+}
+ ```
+-MovimientoDistraido.java (fragmento)
+ ```java
+public class MovimientoDistraido implements EstrategiaMovimiento {
+    private final EstrategiaMovimiento perseguidor = new MovimientoPerseguidor();
+    private final EstrategiaMovimiento errante = new MovimientoErrante();
+    private boolean distraido = false;
+    // ...
+
+    @Override
+    public void mover(Enemigo enemigo, Personaje jugador, Mapa mapa) {
+        actualizarFase();
+        EstrategiaMovimiento elegida = distraido ? errante : perseguidor;
+        elegida.mover(enemigo, jugador, mapa);
+    }
+}
  ```
 -----------------------------------------------------   
 Nombre del Patrón: Singleton.

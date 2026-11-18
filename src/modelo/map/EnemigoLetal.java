@@ -1,7 +1,7 @@
 package src.modelo.map;
 
 import src.modelo.entities.Personaje;
-import src.modelo.movimientos.MovimientoErrante;
+import src.modelo.movimientos.MovimientoDistraido;
 
 public class EnemigoLetal extends Enemigo {
 
@@ -10,7 +10,7 @@ public class EnemigoLetal extends Enemigo {
     private final java.util.Random random = new java.util.Random();
 
     public EnemigoLetal (int x, int y, int danio) { //Enemigo que elimina al jugador con solo tocarlo
-    super(x ,y ,danio, new MovimientoErrante(), 3);
+    super(x ,y ,danio, new MovimientoDistraido(), 3);
     }
 
     @Override
