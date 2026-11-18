@@ -5,14 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import src.modelo.entities.Adulto;
-import src.modelo.entities.Estudiante;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Bonus;
-import src.modelo.map.Dinero;
 import src.modelo.map.Pared;
 import src.modelo.map.Enemigo;
-import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
 import src.modelo.map.ObjetoEntorno;
 

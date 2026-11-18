@@ -7,7 +7,6 @@ import java.util.Random;
 import src.modelo.entities.Personaje;
 import src.modelo.map.Celda;
 import src.modelo.map.Enemigo;
-import src.modelo.map.EnemigoLetal;
 import src.modelo.map.Mapa;
 import src.modelo.map.Pared;
 

@@ -8,7 +8,6 @@ import javax.swing.*;
 import src.modelo.entities.*;
 import src.modelo.map.Mapa;
 import src.modelo.map.Reproductor_audio;
-import src.vista.EstadoVisualPersonaje;
 import src.vista.VistaCargando;
 import src.vista.VistaDialogoEstilo;
 import src.vista.VistaJuego;
