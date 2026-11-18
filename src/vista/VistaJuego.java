@@ -180,8 +180,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         double camYObjetivo = ev.getPosYVisual() - VIEW_ROWS / 2.0;
 
         // clamp para no salir del mapa
-        camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.ancho - VIEW_COLS));
-        camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.alto - VIEW_ROWS));
+        camXObjetivo = Math.max(0, Math.min(camXObjetivo, mapa.getAncho() - VIEW_COLS));
+        camYObjetivo = Math.max(0, Math.min(camYObjetivo, mapa.getAlto() - VIEW_ROWS));
 
         // primera vez: inicializar sin interpolar (evita un "salto" inicial desde 0,0)
         if (camXSuave < 0 || camYSuave < 0) {
@@ -262,8 +262,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
              if (evJugador != null) {
                 camXSuave = evJugador.getPosXVisual() - VIEW_COLS / 2.0;
                 camYSuave = evJugador.getPosYVisual() - VIEW_ROWS / 2.0;
-                camXSuave = Math.max(0, Math.min(camXSuave, mapa.ancho - VIEW_COLS));
-                camYSuave = Math.max(0, Math.min(camYSuave, mapa.alto - VIEW_ROWS));
+                camXSuave = Math.max(0, Math.min(camXSuave, mapa.getAncho() - VIEW_COLS));
+                camYSuave = Math.max(0, Math.min(camYSuave, mapa.getAlto() - VIEW_ROWS));
             } else {
                 camXSuave = 0;
                 camYSuave = 0;
@@ -282,7 +282,7 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         for (int y = inicioY; y <= inicioY + VIEW_ROWS; y++) {
             for (int x = inicioX; x <= inicioX + VIEW_COLS; x++) {
                 // Evitar dibujar fuera de los límites del mapa
-                if (y < 0 || y >= mapa.alto || x < 0 || x >= mapa.ancho) continue;
+                if (y < 0 || y >= mapa.getAlto() || x < 0 || x >= mapa.getAncho()) continue;
 
                 // Posición en pantalla usando las coordenadas double de la cámara
                 int px = (int) ((x - camX) * tamaño) + desplazamientoX;
@@ -298,8 +298,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
             }
 
              // dibujamos el contenido
-            if (mapa.celdas[y][x].contenido != null) {
-               Object obj = mapa.celdas[y][x].contenido;
+            if (mapa.conseguirCelda(x, y).getContenido() != null) {
+               Object obj = mapa.conseguirCelda(x, y).getContenido();
     
             // 1. SOLO si es Pared, dibujamos la imagen de pared
             if (obj instanceof ObjetoEntorno) {
@@ -360,10 +360,10 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
 }
 
 
-        for (int y = 0; y < mapa.alto; y++) {
-            for (int x = 0; x < mapa.ancho; x++) {
-                if (mapa.celdas[y][x].contenido instanceof Enemigo) {
-                    Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+        for (int y = 0; y < mapa.getAlto(); y++) {
+            for (int x = 0; x < mapa.getAncho(); x++) {
+                if (mapa.conseguirCelda(x, y).getContenido() instanceof Enemigo) {
+                    Enemigo en = (Enemigo) mapa.conseguirCelda(x, y).getContenido();
                     // Buscamos el estado visual del enemigo
                     EstadoVisualEnemigo evEn = estadosVisualesEnemigos.get(en);
 
@@ -379,8 +379,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
             
                     if (en.esLetal()){
                     String dirMuerte = "abajo";
-                        double difX = en.x - evEn.getPosXVisual();
-                        double difY = en.y - evEn.getPosYVisual();
+                        double difX = en.getX() - evEn.getPosXVisual();
+                        double difY = en.getY() - evEn.getPosYVisual();
                 
                         if (Math.abs(difX) > 0.01 || Math.abs(difY) > 0.01) {
                             
@@ -390,8 +390,8 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                                 dirMuerte = difY > 0 ? "abajo" : "arriba";
                             }
                         } else if (jugador != null) {
-                            double distJugadorX = jugador.getX() - en.x;
-                            double distJugadorY = jugador.getY() - en.y;
+                            double distJugadorX = jugador.getX() - en.getX();
+                            double distJugadorY = jugador.getY() - en.getY();
                             if (Math.abs(distJugadorX) > Math.abs(distJugadorY)) {
                                 dirMuerte = distJugadorX > 0 ? "derecha" : "izquierda";
                             } else {
@@ -586,18 +586,18 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     // Metodo que usa el Controlador para actualizar la posición de todos los enemigos
 public void actualizarEstadoVisualEnemigos(Mapa mapa) {
     // Recorremos todo el mapa buscando enemigos
-    for (int y = 0; y < mapa.alto; y++) {
-        for (int x = 0; x < mapa.ancho; x++) {
-            if (mapa.celdas[y][x].contenido instanceof Enemigo) {
-                Enemigo en = (Enemigo) mapa.celdas[y][x].contenido;
+    for (int y = 0; y < mapa.getAlto(); y++) {
+        for (int x = 0; x < mapa.getAncho(); x++) {
+            if (mapa.conseguirCelda(x, y).getContenido() instanceof Enemigo) {
+                Enemigo en = (Enemigo) mapa.conseguirCelda(x, y).getContenido();
                 
                 // Si el enemigo no tiene un estado visual todavía, se lo creamos
                 if (!estadosVisualesEnemigos.containsKey(en)) {
-                    estadosVisualesEnemigos.put(en, new EstadoVisualEnemigo(en.x, en.y));
+                    estadosVisualesEnemigos.put(en, new EstadoVisualEnemigo(en.getX(), en.getY()));
                 }
                 
                 // Le decimos al estado visual que se actualice con la posición lógica del enemigo
-                estadosVisualesEnemigos.get(en).actualizarPosicionVisual(en.x, en.y);
+                estadosVisualesEnemigos.get(en).actualizarPosicionVisual(en.getX(), en.getY());
             }
         }
     }

@@ -1,6 +1,8 @@
 package src.controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.concurrent.ExecutionException;
+
 import javax.swing.*;
 
 import src.modelo.entities.*;
@@ -152,15 +154,20 @@ private void iniciarNivel(int nivel) {
     SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
         @Override
         protected Object[] doInBackground() throws Exception {
-           
-            Thread.sleep(700); // simula la carga para que no parpadee el escritorio
 
             Mapa nuevoMapa = new Mapa(40, 40);
             nuevoMapa.cargarNivel(nivel);
             nuevoMapa.generarDinero();
 
-            Personaje nuevoJugador = PersonajeFactory.crearPersonaje(nivel, 5, 5, nuevoMapa);
-            nuevoMapa.celdas[5][5].contenido = null;
+            CreadorPersonaje creador;
+            if (nivel == 1) {
+                creador = new CreadorEstudiante();
+            } else if (nivel == 2) {
+                creador = new CreadorAdulto();
+            } else {
+                creador = new CreadorJubilado();
+            }
+            Personaje nuevoJugador = creador.crearPersonaje( 5, 5, nuevoMapa);
             nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
             return new Object[]{nuevoMapa, nuevoJugador};
@@ -330,7 +337,26 @@ private void ganarJuego(String mensaje) {
         if (recordDAO == null) return;
         long tiempoTotal = System.currentTimeMillis() - tiempoInicioPartida;
         Record nuevoRecord = new Record(this.nombreJugador, tiempoTotal, nivelAlcanzado);
-        recordDAO.guardar(nuevoRecord);
+        new SwingWorker<Boolean, Void>() {
+        @Override
+        protected Boolean doInBackground() {
+            return recordDAO.guardar(nuevoRecord);
+        }
+
+
+        @Override
+        protected void done() {
+            try {
+                if (!get()) {
+                    System.err.println("No se pudo guardar el récord.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }.execute();
     }
    
     // ---------- CIERRE ----------

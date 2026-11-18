@@ -4,6 +4,7 @@ import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
 import src.modelo.map.Pared;
 import src.modelo.map.Mapa;
+import src.modelo.map.ObjetoEntorno;
 import src.modelo.map.Enemigo;
 import src.modelo.map.EnemigoLetal;
 
@@ -11,6 +12,7 @@ public abstract class Personaje{
 protected int x;
 protected int y;
 protected int velocidad;
+protected int velocidadOriginal;
 protected int dinero;
 protected boolean bonusActivado = false;
 protected int golpesRestantes;   
@@ -80,14 +82,16 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
     
     //verificar si la celda destino tiene una pared (NO se puede pisar)
     Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
-    if (celdaDestino != null && celdaDestino.contenido instanceof Pared) {
-        return; // No se puede pisar una pared
+    if (celdaDestino != null && celdaDestino.getContenido() instanceof ObjetoEntorno) {
+        ObjetoEntorno objeto = (ObjetoEntorno) celdaDestino.getContenido();
+        if (!objeto.isPasoLibre()) {
+          return; // No se puede pisar una pared
+        }
     }
-    
     //verificar si la celda destino tiene un ENEMIGO o ENEMIGO LETAL (NO se mueve, solo recibe daño)
-    if (celdaDestino != null && celdaDestino.contenido instanceof Enemigo && !(celdaDestino.contenido instanceof EnemigoLetal)) {
-        Enemigo enemigo = (Enemigo) celdaDestino.contenido;
-        this.dinero -= enemigo.danio;
+    if (celdaDestino != null && celdaDestino.getContenido() instanceof Enemigo) {
+        Enemigo enemigo = (Enemigo) celdaDestino.getContenido();
+        enemigo.hacerDanio(this);;
         return; // NO nos movemos a la celda del enemigo
     }
     
@@ -99,8 +103,8 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
         
         //limpiar la celda anterior
         Celda celdaAnterior = mapa.conseguirCelda(this.x, this.y);
-        if (celdaAnterior != null && celdaAnterior.contenido == this) {
-            celdaAnterior.contenido = null;
+        if (celdaAnterior != null && celdaAnterior.getContenido() == this) {
+            celdaAnterior.setContenido(null);
         }
         
         this.x = nuevaX;
@@ -109,7 +113,7 @@ public void moverse(String tecla, int anchoMapa, int altoMapa) {
         //colocar al personaje en la nueva celda
         mapa.setPersonaje(this, nuevaX, nuevaY);
         Celda celdaActual = mapa.conseguirCelda(this.x, this.y);
-        if (celdaActual != null && celdaActual.contenido instanceof EnemigoLetal){
+        if (celdaActual != null && celdaActual.getContenido() instanceof EnemigoLetal){
             this.dinero = -9999;
             return;
         }
@@ -134,7 +138,7 @@ private Celda conseguirCelda(int x, int y) { // es un metodo para conseguir la c
     private boolean verificarPared(int x, int y) { //verifica si hay una pared en la celda que recibe por parametro
         Celda celda = conseguirCelda(x, y);
         if (celda == null) return false;
-        return celda.contenido != null && celda.contenido instanceof Pared;
+        return celda.getContenido() != null && celda.getContenido() instanceof Pared;
     }
 public void romperParedes() {
         long tiempoActual = System.currentTimeMillis();
@@ -165,7 +169,7 @@ public void romperParedes() {
                     // Eliminar la pared de la celda
                     Celda celda = conseguirCelda(nx, ny);
                     if (celda != null) {
-                        celda.contenido = null;
+                        celda.setContenido(null);
                     }
                     // Reiniciar contadores
                     golpesRestantes = 2;
@@ -178,6 +182,9 @@ public void romperParedes() {
 }
 
 public void activarBonus(Bonus bonus) {
+    if (!this.bonusActivado) {
+        velocidadOriginal = velocidad;
+    }
     this.bonusActivado = true;
     this.bonusFin = System.currentTimeMillis() + bonus.duracionMs;
 }
@@ -188,5 +195,6 @@ public void actualizarBonus() {
 }
 public void desactivarBonus() {
     this.bonusActivado = false;
+    this.velocidad = velocidadOriginal;
 }
 }

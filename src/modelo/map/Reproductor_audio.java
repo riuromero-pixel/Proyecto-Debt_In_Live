@@ -12,7 +12,7 @@ private Reproductor_audio() {
         // Constructor privado para evitar instanciación externa
     }
     //solo una instancia
-public static Reproductor_audio getInstancia() {
+public static synchronized Reproductor_audio getInstancia() {
         if (instanciaUnica == null) {
             instanciaUnica = new Reproductor_audio();
         }

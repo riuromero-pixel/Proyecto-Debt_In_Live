@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+import src.modelo.entities.Personaje;
+
 public class Bonus extends ObjetoEntorno {
 
     public int bonusVelocidad = 2; // Aumenta la velocidad del personaje
@@ -12,7 +14,7 @@ public class Bonus extends ObjetoEntorno {
     protected  Image imagenBonus;
 
     public Bonus(int bonusVelocidad, int duracionMs, int nivel) {
-        super(true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
+        super(true, true); // llama al constructor de la clase padre (ObjetoEntorno) y envia true osea que se puede pisar y tmb recoger
         this.bonusVelocidad = bonusVelocidad;
         this.duracionMs = duracionMs;
          try {
@@ -40,5 +42,8 @@ public class Bonus extends ObjetoEntorno {
         @Override
     public TipoObjetoEntorno getTipoObjeto() {
         return TipoObjetoEntorno.BONUS;
+    }
+    public void recolectar(Personaje personaje) {
+        personaje.activarBonus(this);
     }
 }

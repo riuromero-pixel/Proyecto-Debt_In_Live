@@ -8,8 +8,6 @@ import src.modelo.map.Bonus;
 
 public class Jubilado extends Personaje implements CreadorParedes{
 
-private int velocidadOriginal;
-
 public Jubilado(int x, int y, Mapa mapa) {
 super(x, y, 1, 100, false, mapa);
    this.velocidad = 1; // velocidad inicial mas baja por ser un jubilado
@@ -20,15 +18,8 @@ super(x, y, 1, 100, false, mapa);
     }
     
     public void activarBonus(Bonus bonus) {
-        if (!isBonusActivado()) {
-            velocidadOriginal = velocidad; // Guardar la velocidad original
-        }
         super.activarBonus(bonus);
         this.velocidad += bonus.bonusVelocidad + 3;
-    }
-    public void desactivarBonus() {
-        super.desactivarBonus();
-        this.velocidad = velocidadOriginal; 
     }
 
 @Override
@@ -61,11 +52,11 @@ public void crearParedes() {
         return;
     }
     
-    if (celda.contenido != null) {
+    if (celda.getContenido() != null) {
         return;
     }
     
-    celda.contenido = new Pared();
+    celda.setContenido(new Pared());
 }
 
 }

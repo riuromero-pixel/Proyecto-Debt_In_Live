@@ -1,5 +1,6 @@
 package src.modelo.map;
 
+import src.modelo.entities.Personaje;
 import src.modelo.movimientos.MovimientoPerseguidor;
 
 public class EnemigoLetal extends Enemigo{
@@ -11,5 +12,9 @@ public class EnemigoLetal extends Enemigo{
     @Override
     public boolean esLetal () {
         return true;
+    }
+    @Override 
+    public void hacerDanio(Personaje jugador) {
+        jugador.danioRecibido(jugador.getDinero() + 1);
     }
 }

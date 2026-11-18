@@ -5,9 +5,17 @@ import src.modelo.movimientos.EstrategiaMovimiento;
 import java.util.Random;
 
 public class Enemigo extends ObjetoEntorno {
-    public int x;
-    public int y;
-    public int danio;
+    private int x;
+    private int y;
+    private int danio;
+
+    //getters y setters
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getDanio() { return danio; }
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+    public void setDanio(int danio) { this.danio = danio; }
 
     private EstrategiaMovimiento estrategia;
 
@@ -16,7 +24,7 @@ public class Enemigo extends ObjetoEntorno {
     private int variante;
 
     public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
-        super(true);
+        super(true, false);
         this.x = x;
         this.y = y;
         this.danio = danio;
@@ -59,20 +67,20 @@ public class Enemigo extends ObjetoEntorno {
             if (celdaActual != null && celdaNueva != null) {
                 
                 // Si el enemigo se va de su celda y había dinero abajo, lo restauramos a visible
-                if (celdaActual.dineroDebajo != null) {
-                    celdaActual.contenido = celdaActual.dineroDebajo;
-                    celdaActual.dineroDebajo = null;
+                if (celdaActual.getDineroDebajo() != null) {
+                    celdaActual.setContenido(celdaActual.getDineroDebajo());
+                    celdaActual.setDineroDebajo(null);
                 } else {
-                    celdaActual.contenido = null;
+                    celdaActual.setContenido(null);
                 }
 
                 // Si la celda nueva a la que entra tiene dinero, lo resguardamos en 'dineroDebajo'
-                if (celdaNueva.contenido instanceof Dinero) {
-                    celdaNueva.dineroDebajo = (Dinero) celdaNueva.contenido;
+                if (celdaNueva.getContenido() instanceof Dinero) {
+                    celdaNueva.setDineroDebajo((Dinero) celdaNueva.getContenido());
                 }
 
                 // Colocamos al enemigo en la celda nueva y actualizamos sus coordenadas
-                celdaNueva.contenido = enemigo;
+                celdaNueva.setContenido(enemigo);
                 enemigo.x = mejorX;
                 enemigo.y = mejorY;
             }
@@ -86,8 +94,8 @@ public class Enemigo extends ObjetoEntorno {
     } 
 
     // borrado el metodo actualizarPosicionVisual
-    public int hacerDanio() {
-        return this.danio;
+    public void hacerDanio(Personaje jugador) {
+        jugador.danioRecibido(this.danio);
     }
 
     public boolean esLetal() {

@@ -21,25 +21,25 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
             {1, 0}   // Derecha
         };
 
-        int mejorX = enemigo.x;
-        int mejorY = enemigo.y;
+        int mejorX = enemigo.getX();
+        int mejorY = enemigo.getY();
         int menorDistancia = Integer.MAX_VALUE;
 
         for (int[] dir : direcciones) {
-            int nuevaX = enemigo.x + dir[0];
-            int nuevaY = enemigo.y + dir[1];
+            int nuevaX = enemigo.getX() + dir[0];
+            int nuevaY = enemigo.getY() + dir[1];
 
             Celda celdaDestino = mapa.conseguirCelda(nuevaX, nuevaY);
 
             if (celdaDestino != null) {
                 // SI LA CELDA TIENE AL PERSONAJE: Colisión directa, le hace daño y termina
-                if (celdaDestino.contenido instanceof Personaje) {
-                    personaje.danioRecibido(enemigo.danio);
+                if (celdaDestino.getContenido() instanceof Personaje) {
+                    personaje.danioRecibido(enemigo.getDanio());
                     return; 
                 }
 
                 // Si la celda está libre (no es pared ni otro enemigo)
-                if (!(celdaDestino.contenido instanceof Pared) && !(celdaDestino.contenido instanceof Enemigo)) {
+                if (!(celdaDestino.getContenido() instanceof Pared) && !(celdaDestino.getContenido() instanceof Enemigo)) {
                     int distancia = Math.abs(nuevaX - personaje.getX()) + Math.abs(nuevaY - personaje.getY());
 
                     if (distancia < menorDistancia) {
