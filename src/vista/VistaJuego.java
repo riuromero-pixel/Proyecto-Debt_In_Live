@@ -29,9 +29,6 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
     private final Map<Personaje, EstadoVisualPersonaje> estadosJugador = new HashMap<>();
     private final Map<Enemigo, EstadoVisualPersonaje> estadosEnemigos = new HashMap<>();
 
-    public void cargarImagenesNivel() {
-    imagenesNivel.cargar(nivelActual);
-}
     public VistaJuego(Mapa mapa, Personaje jugador, int nivelActual,
                   CargadorImagenesNivel imagenes) {
         this.mapa = mapa;

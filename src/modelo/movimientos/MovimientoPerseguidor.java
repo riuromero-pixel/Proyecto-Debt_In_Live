@@ -34,10 +34,9 @@ public class MovimientoPerseguidor implements EstrategiaMovimiento {
             if (celdaDestino != null) {
                 ContenidoCelda contenido = celdaDestino.getContenido();
 
-                if (contenido instanceof Personaje p) {
-                enemigo.aplicarDanio(p);
-                return;
-            }
+                if (contenido != null && contenido.interactuarConEnemigo(enemigo)) {
+                    return;
+                 }
 
                 // Si la celda está libre (no bloquea el paso)
                 if (contenido == null || !contenido.bloqueaPaso()) {

@@ -30,7 +30,7 @@ public class Estudiante extends Personaje{
 
 
 @Override
-public void saltar() {
+public void usarHabilidadEspecial() {
         long ahora = System.currentTimeMillis();
         if (ahora - ultimoSalto < COOLDOWN_SALTO_MS) return;
 

@@ -57,9 +57,9 @@ public class VistaComoJugar extends JDialog { // Clase que representa la ventana
                 "Presioná <b>R</b> para golpear las paredes que tengas al lado. " +
                 "Con unos cuantos golpes se rompen y te abren nuevos caminos por el mapa.",
                 false),
-        new Slide("Crear Paredes",
-                "Algunos personajes pueden crear paredes con la tecla <b>C</b>. " +
-                "Son útiles para bloquear el paso de los enemigos o armar tu propio camino.",
+        new Slide("Habilidades",
+                "Los personajes Adulto y Jubilado pueden crear paredes. " +
+                "Mientras que el estudiante puede saltar con la tecla <b>C</b>",
                 false),
         new Slide("Enemigos",
                 "Los enemigos (<b>V</b>) rondan por el mapa y te quitan dinero si te tocan. " +

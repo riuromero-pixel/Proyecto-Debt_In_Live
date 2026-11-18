@@ -4,6 +4,7 @@ import src.modelo.map.Bonus;
 import src.modelo.map.Celda;
 import src.modelo.map.Mapa;
 import src.modelo.map.ContenidoCelda;
+import src.modelo.map.Enemigo;
 import src.modelo.map.Golpeable;
 
 public abstract class Personaje implements ContenidoCelda {
@@ -48,6 +49,12 @@ public abstract class Personaje implements ContenidoCelda {
         return false;
     }
 
+    @Override
+    public boolean interactuarConEnemigo(Enemigo e) {
+        e.aplicarDanio(this);
+        return true;
+    }
+
     public abstract String getNombreTipo();
 
     public int getTipoSprite() {
@@ -59,15 +66,12 @@ public abstract class Personaje implements ContenidoCelda {
         return false;
     }
 
-    public void saltar() {
-    }
-
     protected void setPosicion(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public void crearParedes() {
+    public void usarHabilidadEspecial() {
     }
 
     public void morir() {

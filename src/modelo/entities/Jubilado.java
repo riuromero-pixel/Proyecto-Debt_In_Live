@@ -25,7 +25,7 @@ public class Jubilado extends Personaje {
     }
 
     @Override
-    public void crearParedes() {
+    public void usarHabilidadEspecial() {
         if (getDireccionActual() == null) return;
 
         char dir = getDireccionActual().charAt(0);

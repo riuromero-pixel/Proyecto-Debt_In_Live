@@ -7,4 +7,8 @@ public interface ContenidoCelda {
 
     boolean interactuar(Personaje p);
 
+    default boolean interactuarConEnemigo(Enemigo e) {
+        return false;
+    }
+
 }

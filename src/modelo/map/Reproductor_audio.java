@@ -5,7 +5,7 @@ import javax.sound.sampled.*;
 public class Reproductor_audio {
     private static Reproductor_audio instanciaUnica;
     private Clip clipActual;
-    private boolean silenciado = false;//atributo para controlar el silencio
+    private volatile boolean silenciado = false;//atributo para controlar el silencio
 
 private Reproductor_audio() {
         // Constructor privado para evitar instanciación externa

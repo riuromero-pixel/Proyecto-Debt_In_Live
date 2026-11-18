@@ -9,14 +9,4 @@ public class GestorEnemigosMapa {
             enemigo.actualizarMovimiento(mapa, jugador);
         }
     }
-
-    public boolean verificarColisionConEnemigo(Mapa mapa, Personaje jugador) {
-        for (Enemigo enemigo : mapa.getEnemigos()) {
-            if (enemigo.getX() == jugador.getX() && enemigo.getY() == jugador.getY()) {
-                enemigo.aplicarDanio(jugador);
-                return true;
-            }
-        }
-        return false;
-    }
 }

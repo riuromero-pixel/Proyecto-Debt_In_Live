@@ -21,7 +21,7 @@ public class Adulto extends Personaje {
     }
 
     @Override
-    public void crearParedes() {
+    public void usarHabilidadEspecial() {
         String dirStr = getDireccionActual();
         if (dirStr == null) return;
 

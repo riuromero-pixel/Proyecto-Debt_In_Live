@@ -41,7 +41,6 @@ public class Mapa {
     public List<Dinero> getDineros() { return dineros; }
 
     public void moverEnemigos(Personaje jugador) { gestorEnemigos.moverEnemigos(this, jugador); }
-    public boolean verificarColisionConEnemigo(Personaje jugador) { return gestorEnemigos.verificarColisionConEnemigo(this, jugador); }
 
     public int contarDineroRestante() { return gestorObjetos.contarDineroRestante(this); }
     public boolean noQuedaDinero() { return gestorObjetos.noQuedaDinero(this); }

@@ -20,11 +20,13 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
                      "tiempo INTEGER NOT NULL," +
                      "nivel INTEGER NOT NULL," +
                      "fecha TEXT NOT NULL)";
+        synchronized (conexion) {             
         try (Statement stmt = conexion.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
             System.out.println("Error al crear la tabla: " + e.getMessage());
         }
+    }
     }
 
     @Override
@@ -34,7 +36,7 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
                      "tiempo = MIN(tiempo, excluded.tiempo), " + 
                      "nivel = CASE WHEN excluded.tiempo < records.tiempo THEN excluded.nivel ELSE records.nivel END, " +
                      "fecha = CASE WHEN excluded.tiempo < records.tiempo THEN excluded.fecha ELSE records.fecha END";
-                     
+        synchronized (conexion) {             
         try (PreparedStatement s = conexion.prepareStatement(sql)) {
             s.setString(1, record.getNombreJugador());
             s.setLong(2, record.getTiempoMilisegundos());
@@ -46,6 +48,7 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
             return false;
         }
     }
+    }
 
     @Override
     public synchronized List<Record> obtenerMejores() { 
@@ -53,6 +56,7 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
     
         String sql = "SELECT jugador, tiempo, nivel FROM records " + "WHERE nivel = 3 ORDER BY tiempo ASC LIMIT 10"; 
         
+        synchronized (conexion) {
         try (PreparedStatement s = conexion.prepareStatement(sql);
              ResultSet filas = s.executeQuery()) {
             while (filas.next()) {
@@ -66,5 +70,6 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
             e.printStackTrace();
         }
         return lista;
+    }
     }
 }
