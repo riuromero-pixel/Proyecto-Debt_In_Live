@@ -4,7 +4,7 @@ import src.modelo.entities.Personaje;
 import src.modelo.movimientos.EstrategiaMovimiento;
 import java.util.Random;
 
-public class Enemigo extends ObjetoEntorno {
+public class Enemigo implements ContenidoCelda {
     private int x;
     private int y;
     private int danio;
@@ -14,7 +14,6 @@ public class Enemigo extends ObjetoEntorno {
     private int variante;
 
     public Enemigo(int x, int y, int danio, EstrategiaMovimiento estrategia, int nivel) {
-        super(false);
         this.x = x;
         this.y = y;
         this.danio = danio;
@@ -38,6 +37,11 @@ public class Enemigo extends ObjetoEntorno {
 
     public int getVariante() {
         return this.variante;
+    }
+
+    @Override
+    public boolean bloqueaPaso() {
+        return true;
     }
     
     @Override 

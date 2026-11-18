@@ -54,6 +54,11 @@ public abstract class Personaje implements ContenidoCelda {
         return 0;
     }
 
+    @Override
+    public boolean interactuar(Personaje p) {
+        return false;
+    }
+
     public void saltar() {
     }
 

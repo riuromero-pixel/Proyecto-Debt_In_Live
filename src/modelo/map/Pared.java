@@ -1,6 +1,8 @@
 package src.modelo.map;
 import java.util.Random;
 
+import src.modelo.entities.Personaje;
+
 public class Pared extends ObjetoEntorno implements Golpeable {
     private int variante;
     private int golpesRestantes = 2;
@@ -17,6 +19,11 @@ public class Pared extends ObjetoEntorno implements Golpeable {
     }
     public int getVariante() {
         return variante;
+    }
+
+    @Override
+    public boolean interactuar(Personaje p) {
+        return false;
     }
 
     @Override 
