@@ -95,7 +95,6 @@ this.vistaMenu.setAccionSilenciar(this.accionSilenciarGlobal);
         @Override
         protected Object[] doInBackground() throws Exception {
             // HILO SECUNDARIO 
-
             Mapa mapa = new Mapa(40, 40);
             mapa.cargarNivel(1);
             mapa.generarDinero();

@@ -75,13 +75,11 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
                 imagenSilla2 = ImageIO.read(new File("images/sprites/estudiante/paredes/sillaarriba.png"));
                 imagenSilla3 = ImageIO.read(new File("images/sprites/estudiante/paredes/silladerecha.png"));
                 imagenSilla4 = ImageIO.read(new File("images/sprites/estudiante/paredes/sillaizquierda.png"));
-                
                 // Enemigos nivel 1 (4 variantes)
                     spritesEnemigos[0] = ImageIO.read(new File("images/sprites/estudiante/enemigos/alfajor.png"));
                     spritesEnemigos[1] = ImageIO.read(new File("images/sprites/estudiante/enemigos/futbol.png"));
                     spritesEnemigos[2] = ImageIO.read(new File("images/sprites/estudiante/enemigos/play5.png"));
                     spritesEnemigos[3] = ImageIO.read(new File("images/sprites/estudiante/enemigos/steam.png"));
-
             } catch (IOException e) {
                 System.out.println("Error al cargar los sprites del nivel 1");
             }
@@ -137,12 +135,10 @@ public class VistaJuego extends JFrame { // Clase que representa la ventana del 
         setLocationRelativeTo(null);
         setResizable(false);
         setFocusable(true);
-
-         // Pantalla completa
-         setUndecorated(true);
-
-         // Fondo oscuro (por si algo queda sin cubrir)
-         getContentPane().setBackground(new Color(30, 30, 40));
+        // Pantalla completa
+        setUndecorated(true);
+        // Fondo oscuro (por si algo queda sin cubrir)
+        getContentPane().setBackground(new Color(30, 30, 40));
 
     }
     public void mostrarGameOver(){

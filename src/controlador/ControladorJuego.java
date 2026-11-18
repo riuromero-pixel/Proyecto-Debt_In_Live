@@ -88,7 +88,7 @@ private void iniciarTimers() {
         if (juegoActivo) {
             jugador.actualizarBonus();
 
-// === Animación del sprite del jugador ===
+        // === Animación del sprite del jugador ===
         boolean moviendo = (teclaPulsada != ' ');
         vista.actualizarEstadoVisualJugador(jugador, moviendo, teclaPulsada);
 
@@ -166,7 +166,7 @@ private void iniciarNivel(int nivel) {
             Celda celdaInicio = nuevoMapa.conseguirCelda(5, 5);
             if (celdaInicio != null) { 
               celdaInicio.setContenido(null);
-             }            
+            }            
             nuevoMapa.setPersonaje(nuevoJugador, 5, 5);
 
             return new Object[]{nuevoMapa, nuevoJugador};
