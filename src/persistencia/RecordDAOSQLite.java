@@ -30,7 +30,7 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
     }
 
     @Override
-    public synchronized boolean guardar(Record record) {
+    public boolean guardar(Record record) {
         String sql = "INSERT INTO records (jugador, tiempo, nivel, fecha) VALUES (?, ?, ?, ?) " +
                      "ON CONFLICT(jugador) DO UPDATE SET " +
                      "tiempo = MIN(tiempo, excluded.tiempo), " + 
@@ -51,7 +51,7 @@ public class RecordDAOSQLite implements RecordDAO { // Implementación de Record
     }
 
     @Override
-    public synchronized List<Record> obtenerMejores() { 
+    public List<Record> obtenerMejores() { 
         List<Record> lista = new ArrayList<>();
     
         String sql = "SELECT jugador, tiempo, nivel FROM records " + "WHERE nivel = 3 ORDER BY tiempo ASC LIMIT 10"; 
